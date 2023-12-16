@@ -3,7 +3,7 @@ package pfcp_test
 import (
 	"testing"
 
-	"github.com/dot-5g/pfcp/pfcp"
+	"github.com/dot-5g/pfcp"
 )
 
 type MockUdpSender struct {
