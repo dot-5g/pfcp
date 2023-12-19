@@ -40,7 +40,7 @@ func (pfcp *Pfcp) sendPfcpMessage(header PFCPHeader, payload []byte, messageType
 		log.Printf("Failed to send PFCP %s: %v\n", messageType, err)
 		return err
 	}
-	log.Printf("PFCP %s sent successfully.\n", messageType)
+	log.Printf("PFCP %s sent successfully to %s.\n", messageType, pfcp.ServerAddress)
 	return nil
 }
 
