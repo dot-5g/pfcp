@@ -1,9 +1,9 @@
-package pfcp_test
+package client_test
 
 import (
 	"testing"
 
-	"github.com/dot-5g/pfcp"
+	"github.com/dot-5g/pfcp/client"
 )
 
 type MockUdpSender struct {
@@ -14,14 +14,14 @@ func (m *MockUdpSender) Send(msg []byte) error {
 	return m.SendFunc(msg)
 }
 
-func TestSendHeartbeatRequest(t *testing.T) {
+func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
 	mockSender := &MockUdpSender{
 		SendFunc: func(msg []byte) error {
 			return nil
 		},
 	}
 
-	pfcpClient := pfcp.NewPfcp("127.0.0.1:8805")
+	pfcpClient := client.New("127.0.0.1:8805")
 	pfcpClient.Udp = mockSender
 
 	err := pfcpClient.SendHeartbeatRequest()
