@@ -16,10 +16,10 @@ func main() {
 }
 
 func RunServer() {
-	pfcpServer := server.New()
+	pfcpServer := server.New("localhost:8805")
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
 	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
-	pfcpServer.Run("localhost:8805")
+	pfcpServer.Run()
 }
 
 func HandleHeartbeatRequest(h server.HeartbeatRequest) {
