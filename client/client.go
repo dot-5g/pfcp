@@ -1,15 +1,37 @@
-package pfcp
+package client
 
 import (
 	"encoding/binary"
 	"log"
 	"time"
+
+	"github.com/dot-5g/pfcp/network"
 )
+
+type Pfcp struct {
+	ServerAddress string
+	Udp           network.UdpSender
+}
 
 type RecoveryTimeStamp time.Time
 
 type HeartbeatRequest struct {
 	RecoveryTimeStamp RecoveryTimeStamp
+}
+
+type HeartbeatResponse struct {
+	RecoveryTimeStamp RecoveryTimeStamp
+}
+
+func New(ServerAddress string) *Pfcp {
+
+	udpClient, err := network.NewUdp(ServerAddress)
+	if err != nil {
+		log.Printf("Failed to initialize UDP client: %v\n", err)
+		return nil
+	}
+
+	return &Pfcp{ServerAddress: ServerAddress, Udp: udpClient}
 }
 
 func (pfcp *Pfcp) sendPfcpMessage(header PFCPHeader, payload []byte, messageType string) error {
@@ -18,7 +40,7 @@ func (pfcp *Pfcp) sendPfcpMessage(header PFCPHeader, payload []byte, messageType
 		log.Printf("Failed to send PFCP %s: %v\n", messageType, err)
 		return err
 	}
-	log.Printf("PFCP %s sent successfully.\n", messageType)
+	log.Printf("PFCP %s sent successfully to %s.\n", messageType, pfcp.ServerAddress)
 	return nil
 }
 

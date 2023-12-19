@@ -1,4 +1,4 @@
-package pfcp
+package client
 
 import (
 	"bytes"
