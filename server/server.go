@@ -10,9 +10,9 @@ import (
 	"github.com/dot-5g/pfcp/network"
 )
 
-type HandleHeartbeatRequest func(messages.HeartbeatRequest)
+type HandleHeartbeatRequest func(*messages.HeartbeatRequest)
 
-type HandleHeartbeatResponse func(messages.HeartbeatResponse)
+type HandleHeartbeatResponse func(*messages.HeartbeatResponse)
 
 type PfcpMessage struct {
 	Header  messages.PFCPHeader
@@ -54,7 +54,7 @@ func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
 			}
 
 			if server.heartbeatRequestHandler != nil {
-				server.heartbeatRequestHandler(heartbeatRequest)
+				server.heartbeatRequestHandler(&heartbeatRequest)
 			}
 		} else {
 			log.Printf("Error: timestampBytes slice is too short to contain a valid timestamp.")

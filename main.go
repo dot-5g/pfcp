@@ -23,10 +23,10 @@ func RunServer() {
 	pfcpServer.Run()
 }
 
-func HandleHeartbeatRequest(h messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
 
 }
 
-func HandleHeartbeatResponse(h messages.HeartbeatResponse) {
+func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
 
 }

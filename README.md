@@ -28,18 +28,26 @@ func main() {
 
 
 ```go
+package main
+
+import (
+	"github.com/dot-5g/pfcp/messages"
+	"github.com/dot-5g/pfcp/server"
+)
+
 func main() {
-    pfcpServer := server.New()
-    pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
-    pfcpServer.HeartbeatResponse(HandleHeartbeatRequest)
-    pfcpServer.Run("localhost:8805")
+	pfcpServer := server.New("localhost:8805")
+	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
+	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
+	pfcpServer.Run()
 }
 
-func HandleHeartbeatRequest(h *heartbeatRequest) {
-    // Do something
+func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
+	// Do something
 }
 
-func HandleHeartbeatResponse(h *heartbeatRequest) {
-    // Do something
+func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
+	// Do something
 }
+
 ```

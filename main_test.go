@@ -16,7 +16,7 @@ var (
 	receivedRecoveryTimestamp messages.RecoveryTimeStamp
 )
 
-func HandleHeartbeatRequest(h messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
 	mu.Lock()
 	defer mu.Unlock()
 	handlerCalled = true
