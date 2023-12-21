@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -47,11 +48,29 @@ func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
 	pfcpMessage := PfcpMessage{Header: header, Message: data[HeaderSize:]}
 
 	if pfcpMessage.Header.MessageType == 1 {
+		if server.heartbeatRequestHandler == nil {
+			log.Println("Heartbeat request handler is nil")
+			return
+		}
 		recoveryTimeStamp := messages.FromBytes(pfcpMessage.Message)
 		heartbeatRequest := messages.HeartbeatRequest{
 			RecoveryTimeStamp: recoveryTimeStamp,
 		}
+		fmt.Printf("Heartbeat request: %v\n", heartbeatRequest)
 		server.heartbeatRequestHandler(&heartbeatRequest)
+	}
+
+	if pfcpMessage.Header.MessageType == 2 {
+		if server.heartbeatResponseHandler == nil {
+			log.Println("Heartbeat response handler is nil")
+			return
+		}
+		recoveryTimeStamp := messages.FromBytes(pfcpMessage.Message)
+		heartbeatResponse := messages.HeartbeatResponse{
+			RecoveryTimeStamp: recoveryTimeStamp,
+		}
+		fmt.Printf("Heartbeat response: %v\n", heartbeatResponse)
+		server.heartbeatResponseHandler(&heartbeatResponse)
 	}
 }
 
@@ -61,4 +80,8 @@ func (server *Server) HeartbeatRequest(handler HandleHeartbeatRequest) {
 
 func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
 	server.heartbeatResponseHandler = handler
+}
+
+func (server *Server) Close() {
+	server.udpServer.Close()
 }

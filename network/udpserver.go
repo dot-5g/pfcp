@@ -3,9 +3,13 @@ package network
 import (
 	"log"
 	"net"
+	"sync"
 )
 
 type UdpServer struct {
+	conn    *net.UDPConn
+	closeCh chan struct{}
+	wg      sync.WaitGroup
 	Handler func([]byte, net.Addr)
 }
 
@@ -14,33 +18,47 @@ func (udpServer *UdpServer) SetHandler(handler func([]byte, net.Addr)) {
 }
 
 func NewUdpServer() *UdpServer {
-	return &UdpServer{}
+	return &UdpServer{
+		closeCh: make(chan struct{}),
+	}
 }
 
 func (udpServer *UdpServer) Run(address string) error {
-	addr, err := net.ResolveUDPAddr("udp", address)
+	var err error
+	addr, _ := net.ResolveUDPAddr("udp", address)
+	udpServer.conn, err = net.ListenUDP("udp", addr)
 	if err != nil {
 		return err
 	}
 
-	conn, err := net.ListenUDP("udp", addr)
-	if err != nil {
-		return err
-	}
+	udpServer.wg.Add(1)
+	go func() {
+		defer udpServer.wg.Done()
+		for {
+			select {
+			case <-udpServer.closeCh:
+				return
+			default:
+				buffer := make([]byte, 1024)
+				length, remoteAddr, err := udpServer.conn.ReadFrom(buffer)
+				if err != nil {
+					log.Printf("Error reading from UDP: %v", err)
+					continue
+				}
+
+				if udpServer.Handler != nil {
+					go udpServer.Handler(buffer[:length], remoteAddr)
+				}
+			}
+		}
+	}()
+
 	log.Printf("Listening on %s\n", addr)
+	return nil
+}
 
-	defer conn.Close()
-
-	for {
-		buffer := make([]byte, 1024)
-		length, remoteAddr, err := conn.ReadFrom(buffer)
-		if err != nil {
-			log.Printf("Error reading from UDP: %v", err)
-			continue
-		}
-
-		if udpServer.Handler != nil {
-			go udpServer.Handler(buffer[:length], remoteAddr)
-		}
-	}
+func (udpServer *UdpServer) Close() {
+	close(udpServer.closeCh)
+	udpServer.conn.Close()
+	udpServer.wg.Wait()
 }
