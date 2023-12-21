@@ -3,6 +3,7 @@ package messages
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 type PFCPHeader struct {
@@ -15,7 +16,7 @@ type PFCPHeader struct {
 func SerializePFCPHeader(header PFCPHeader) []byte {
 	buf := new(bytes.Buffer)
 
-	// Octet 1: Version (3 bits), Spare (3 bits), FO (1 bit set to 0), MP (1 bit set to 0), S (1 bit set to 0)
+	// Octet 1: Version (3 bits), Spare (2 bits), FO (1 bit set to 0), MP (1 bit set to 0), S (1 bit set to 0)
 	firstOctet := (header.Version << 5)
 	buf.WriteByte(firstOctet)
 
@@ -28,7 +29,7 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	// Octets 5, 6, and 7: Sequence Number (3 bytes)
 	seqNumBytes := make([]byte, 4)
 	binary.BigEndian.PutUint32(seqNumBytes, header.SequenceNumber)
-	buf.Write(seqNumBytes[0:3]) // Only write the first 3 bytes
+	buf.Write(seqNumBytes[1:])
 
 	// Octet 8: Spare (1 byte set to 0)
 	buf.WriteByte(0)
@@ -36,26 +37,27 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	return buf.Bytes()
 }
 
-// NewPFCPHeader creates a new PFCPHeader with the given message type and sequence number.
 func NewPFCPHeader(messageType byte, sequenceNumber uint32) PFCPHeader {
 	return PFCPHeader{
-		Version:        1, // Assuming the version is 1
+		Version:        1,
 		MessageType:    messageType,
 		MessageLength:  0, // To be set later
 		SequenceNumber: sequenceNumber,
 	}
 }
 
-func ParsePFCPHeader(data []byte) PFCPHeader {
+func ParsePFCPHeader(data []byte) (PFCPHeader, error) {
+	if len(data) != 8 {
+		return PFCPHeader{}, fmt.Errorf("expected 8 bytes, got %d", len(data))
+	}
 
 	header := PFCPHeader{}
 	header.Version = data[0] >> 5
 	header.MessageType = data[1]
 	header.MessageLength = binary.BigEndian.Uint16(data[2:4])
 
-	seqNumBytes := make([]byte, 4)
-	copy(seqNumBytes, data[4:7])
+	seqNumBytes := []byte{0, data[4], data[5], data[6]}
 	header.SequenceNumber = binary.BigEndian.Uint32(seqNumBytes)
 
-	return header
+	return header, nil
 }

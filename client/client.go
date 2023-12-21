@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/binary"
 	"log"
 	"time"
 
@@ -41,12 +40,11 @@ func serializeMessage(header messages.PFCPHeader, payload []byte) []byte {
 	return append(headerBytes, payload...)
 }
 
-func (pfcp *Pfcp) SendHeartbeatRequest() (messages.RecoveryTimeStamp, error) {
-	timestamp := time.Now().Unix()
-	timeBytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(timeBytes, uint64(timestamp))
+func (pfcp *Pfcp) SendHeartbeatRequest(time time.Time) (messages.RecoveryTimeStamp, error) {
+	// Create a RecoveryTimeStamp with the current time
+	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time)
+	timeBytes := recoveryTimeStamp.ToBytes()
 	header := messages.NewPFCPHeader(1, 1)
 	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Request")
-	recoveryTimeStamp := messages.RecoveryTimeStamp(time.Unix(timestamp, 0))
 	return recoveryTimeStamp, err
 }
