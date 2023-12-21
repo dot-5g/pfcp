@@ -1,11 +1,14 @@
 package server
 
 import (
+	"log"
 	"net"
 
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
 )
+
+const HeaderSize = 8
 
 type HandleHeartbeatRequest func(*messages.HeartbeatRequest)
 
@@ -37,8 +40,11 @@ func (server *Server) Run() {
 
 func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
 
-	header := messages.ParsePFCPHeader(data[:8])
-	pfcpMessage := PfcpMessage{Header: header, Message: data[8:]}
+	header, err := messages.ParsePFCPHeader(data[:HeaderSize])
+	if err != nil {
+		log.Printf("Error parsing PFCP header: %v", err)
+	}
+	pfcpMessage := PfcpMessage{Header: header, Message: data[HeaderSize:]}
 
 	if pfcpMessage.Header.MessageType == 1 {
 		recoveryTimeStamp := messages.FromBytes(pfcpMessage.Message)

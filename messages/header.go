@@ -29,17 +29,14 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	// Octets 5, 6, and 7: Sequence Number (3 bytes)
 	seqNumBytes := make([]byte, 4)
 	binary.BigEndian.PutUint32(seqNumBytes, header.SequenceNumber)
-	buf.Write(seqNumBytes[0:3]) // Only write the first 3 bytes
+	buf.Write(seqNumBytes[1:])
 
 	// Octet 8: Spare (1 byte set to 0)
 	buf.WriteByte(0)
 
-	fmt.Printf("Length of PFCP header: %d\n", buf.Len())
-
 	return buf.Bytes()
 }
 
-// NewPFCPHeader creates a new PFCPHeader with the given message type and sequence number.
 func NewPFCPHeader(messageType byte, sequenceNumber uint32) PFCPHeader {
 	return PFCPHeader{
 		Version:        1,
@@ -49,10 +46,9 @@ func NewPFCPHeader(messageType byte, sequenceNumber uint32) PFCPHeader {
 	}
 }
 
-func ParsePFCPHeader(data []byte) PFCPHeader {
-
+func ParsePFCPHeader(data []byte) (PFCPHeader, error) {
 	if len(data) != 8 {
-		panic(fmt.Sprintf("Invalid PFCP header length: %d", len(data)))
+		return PFCPHeader{}, fmt.Errorf("expected 8 bytes, got %d", len(data))
 	}
 
 	header := PFCPHeader{}
@@ -60,11 +56,8 @@ func ParsePFCPHeader(data []byte) PFCPHeader {
 	header.MessageType = data[1]
 	header.MessageLength = binary.BigEndian.Uint16(data[2:4])
 
-	seqNumBytes := make([]byte, 4)
-	copy(seqNumBytes, data[4:7])
+	seqNumBytes := []byte{0, data[4], data[5], data[6]}
 	header.SequenceNumber = binary.BigEndian.Uint32(seqNumBytes)
 
-	fmt.Printf("Parsed PFCP header: %+v\n", header)
-
-	return header
+	return header, nil
 }
