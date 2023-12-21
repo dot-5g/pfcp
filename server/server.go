@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"log"
 	"net"
 
@@ -11,9 +10,14 @@ import (
 
 const HeaderSize = 8
 
-type HandleHeartbeatRequest func(*messages.HeartbeatRequest)
+const (
+	HeartbeatRequestType  byte = 1
+	HeartbeatResponseType byte = 2
+)
 
+type HandleHeartbeatRequest func(*messages.HeartbeatRequest)
 type HandleHeartbeatResponse func(*messages.HeartbeatResponse)
+type MessageHandler func(*PfcpMessage)
 
 type PfcpMessage struct {
 	Header  messages.PFCPHeader
@@ -21,17 +25,18 @@ type PfcpMessage struct {
 }
 
 type Server struct {
-	address                  string
-	udpServer                *network.UdpServer
-	heartbeatRequestHandler  HandleHeartbeatRequest
-	heartbeatResponseHandler HandleHeartbeatResponse
+	address         string
+	udpServer       *network.UdpServer
+	messageHandlers map[byte]MessageHandler
 }
 
 func New(address string) *Server {
-	return &Server{
-		address:   address,
-		udpServer: network.NewUdpServer(),
+	server := &Server{
+		address:         address,
+		udpServer:       network.NewUdpServer(),
+		messageHandlers: make(map[byte]MessageHandler),
 	}
+	return server
 }
 
 func (server *Server) Run() {
@@ -39,49 +44,52 @@ func (server *Server) Run() {
 	server.udpServer.Run(server.address)
 }
 
-func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
-
-	header, err := messages.ParsePFCPHeader(data[:HeaderSize])
-	if err != nil {
-		log.Printf("Error parsing PFCP header: %v", err)
-	}
-	pfcpMessage := PfcpMessage{Header: header, Message: data[HeaderSize:]}
-
-	if pfcpMessage.Header.MessageType == 1 {
-		if server.heartbeatRequestHandler == nil {
-			log.Println("Heartbeat request handler is nil")
-			return
-		}
-		recoveryTimeStamp := messages.FromBytes(pfcpMessage.Message)
-		heartbeatRequest := messages.HeartbeatRequest{
-			RecoveryTimeStamp: recoveryTimeStamp,
-		}
-		fmt.Printf("Heartbeat request: %v\n", heartbeatRequest)
-		server.heartbeatRequestHandler(&heartbeatRequest)
-	}
-
-	if pfcpMessage.Header.MessageType == 2 {
-		if server.heartbeatResponseHandler == nil {
-			log.Println("Heartbeat response handler is nil")
-			return
-		}
-		recoveryTimeStamp := messages.FromBytes(pfcpMessage.Message)
-		heartbeatResponse := messages.HeartbeatResponse{
-			RecoveryTimeStamp: recoveryTimeStamp,
-		}
-		fmt.Printf("Heartbeat response: %v\n", heartbeatResponse)
-		server.heartbeatResponseHandler(&heartbeatResponse)
-	}
+func (server *Server) Close() {
+	server.udpServer.Close()
 }
 
 func (server *Server) HeartbeatRequest(handler HandleHeartbeatRequest) {
-	server.heartbeatRequestHandler = handler
+	server.registerHandler(HeartbeatRequestType, func(msg *PfcpMessage) {
+		server.handleHeartbeatRequest(msg, handler)
+	})
 }
 
 func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
-	server.heartbeatResponseHandler = handler
+	server.registerHandler(HeartbeatResponseType, func(msg *PfcpMessage) {
+		server.handleHeartbeatResponse(msg, handler)
+	})
+}
+func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
+	header, err := messages.ParsePFCPHeader(data[:HeaderSize])
+	if err != nil {
+		log.Printf("Error parsing PFCP header: %v", err)
+		return
+	}
+	pfcpMessage := PfcpMessage{Header: header, Message: data[HeaderSize:]}
+
+	if genericHandler, exists := server.messageHandlers[pfcpMessage.Header.MessageType]; exists {
+		genericHandler(&pfcpMessage)
+	} else {
+		log.Printf("No handler registered for message type %d", pfcpMessage.Header.MessageType)
+	}
 }
 
-func (server *Server) Close() {
-	server.udpServer.Close()
+func (server *Server) handleHeartbeatRequest(msg *PfcpMessage, handler HandleHeartbeatRequest) {
+	recoveryTimeStamp := messages.FromBytes(msg.Message)
+	heartbeatRequest := messages.HeartbeatRequest{
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
+	handler(&heartbeatRequest)
+}
+
+func (server *Server) handleHeartbeatResponse(msg *PfcpMessage, handler HandleHeartbeatResponse) {
+	recoveryTimeStamp := messages.FromBytes(msg.Message)
+	heartbeatResponse := messages.HeartbeatResponse{
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
+	handler(&heartbeatResponse)
+}
+
+func (server *Server) registerHandler(messageType byte, handler MessageHandler) {
+	server.messageHandlers[messageType] = handler
 }
