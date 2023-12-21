@@ -1,10 +1,7 @@
 package server
 
 import (
-	"encoding/binary"
-	"log"
 	"net"
-	"time"
 
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
@@ -40,25 +37,15 @@ func (server *Server) Run() {
 
 func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
 
-	pfcpMessage := ParseUDPMessage(data)
+	header := messages.ParsePFCPHeader(data[:8])
+	pfcpMessage := PfcpMessage{Header: header, Message: data[8:]}
 
 	if pfcpMessage.Header.MessageType == 1 {
-		timestampBytes := pfcpMessage.Message
-
-		if len(timestampBytes) >= 4 {
-			timestamp := binary.BigEndian.Uint32(timestampBytes)
-			recoveryTime := time.Unix(int64(timestamp), 0)
-
-			heartbeatRequest := messages.HeartbeatRequest{
-				RecoveryTimeStamp: messages.RecoveryTimeStamp(recoveryTime),
-			}
-
-			if server.heartbeatRequestHandler != nil {
-				server.heartbeatRequestHandler(&heartbeatRequest)
-			}
-		} else {
-			log.Printf("Error: timestampBytes slice is too short to contain a valid timestamp.")
+		recoveryTimeStamp := messages.FromBytes(pfcpMessage.Message)
+		heartbeatRequest := messages.HeartbeatRequest{
+			RecoveryTimeStamp: recoveryTimeStamp,
 		}
+		server.heartbeatRequestHandler(&heartbeatRequest)
 	}
 }
 
@@ -68,9 +55,4 @@ func (server *Server) HeartbeatRequest(handler HandleHeartbeatRequest) {
 
 func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
 	server.heartbeatResponseHandler = handler
-}
-
-func ParseUDPMessage(data []byte) PfcpMessage {
-	header := messages.ParsePFCPHeader(data)
-	return PfcpMessage{Header: header, Message: data[12:]}
 }

@@ -32,7 +32,7 @@ func TestGivenHandleHeartbeatRequestWhenRunThenHeartbeatRequestHandled(t *testin
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatRequest()
+	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatRequest(time.Now())
 	if err != nil {
 		t.Fatalf("Failed to send Heartbeat request: %v", err)
 	}
@@ -44,7 +44,7 @@ func TestGivenHandleHeartbeatRequestWhenRunThenHeartbeatRequestHandled(t *testin
 		t.Errorf("Heartbeat request handler was not called")
 	}
 	if receivedRecoveryTimestamp != sentRecoveryTimeStamp {
-		t.Errorf("Heartbeat request handler was called with wrong timestamp: %v", receivedRecoveryTimestamp)
+		t.Errorf("Heartbeat request handler was called with wrong timestamp.\n- Sent timestamp: %v\n- Received timestamp %v\n", sentRecoveryTimeStamp, receivedRecoveryTimestamp)
 	}
 	mu.Unlock()
 

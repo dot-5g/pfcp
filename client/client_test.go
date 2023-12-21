@@ -2,6 +2,7 @@ package client_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/dot-5g/pfcp/client"
 )
@@ -24,7 +25,7 @@ func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
 	pfcpClient := client.New("127.0.0.1:8805")
 	pfcpClient.Udp = mockSender
 
-	_, err := pfcpClient.SendHeartbeatRequest()
+	_, err := pfcpClient.SendHeartbeatRequest(time.Now())
 	if err != nil {
 		t.Errorf("SendHeartbeatRequest failed: %v", err)
 	}

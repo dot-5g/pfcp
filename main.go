@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/messages"
@@ -10,7 +11,7 @@ import (
 
 func main() {
 	pfcpClient := client.New("1.2.3.4:8805")
-	_, err := pfcpClient.SendHeartbeatRequest()
+	_, err := pfcpClient.SendHeartbeatRequest(time.Now())
 	if err != nil {
 		log.Fatalf("SendHeartbeatRequest failed: %v", err)
 	}
