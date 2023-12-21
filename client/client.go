@@ -48,3 +48,11 @@ func (pfcp *Pfcp) SendHeartbeatRequest(time time.Time) (messages.RecoveryTimeSta
 	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Request")
 	return recoveryTimeStamp, err
 }
+
+func (pfcp *Pfcp) SendHeartbeatResponse(time time.Time) (messages.RecoveryTimeStamp, error) {
+	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time)
+	timeBytes := recoveryTimeStamp.ToBytes()
+	header := messages.NewPFCPHeader(2, 1)
+	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Response")
+	return recoveryTimeStamp, err
+}
