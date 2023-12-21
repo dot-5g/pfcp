@@ -1,4 +1,3 @@
-
 name: Main workflow
 
 on:
@@ -17,11 +16,11 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
 
       - name: Build
         run: go build
-  
+
   go-vet:
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +28,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
 
       - name: Go vet
         run: go vet ./...
@@ -41,7 +40,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
 
       - name: Unit tests
-        run: go test ./...
+        run: go test ./... -cover

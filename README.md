@@ -1,5 +1,8 @@
 # PFCP
 
+[![GoDoc](https://godoc.org/github.com/dot-5g/pfcp?status.svg)](https://godoc.org/github.com/dot-5g/pfcp)
+
+
 A Go library for using the PFCP protocol in 5G networks as defined in the [ETSI TS 29.244 specification](https://www.etsi.org/deliver/etsi_ts/129200_129299/129244/16.04.00_60/ts_129244v160400p.pdf). 
 
 ## Usage
