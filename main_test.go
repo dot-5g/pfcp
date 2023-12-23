@@ -14,12 +14,14 @@ var (
 	heartbeatRequestMu                        sync.Mutex
 	heartbeatRequesthandlerCalled             bool
 	heartbeatRequestreceivedRecoveryTimestamp messages.RecoveryTimeStamp
+	heartbeatRequestReceivedSequenceNumber    uint32
 )
 
 var (
 	heartbeatResponseMu                        sync.Mutex
 	heartbeatResponsehandlerCalled             bool
 	heartbeatResponsereceivedRecoveryTimestamp messages.RecoveryTimeStamp
+	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
 func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
@@ -27,6 +29,7 @@ func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
 	defer heartbeatRequestMu.Unlock()
 	heartbeatRequesthandlerCalled = true
 	heartbeatRequestreceivedRecoveryTimestamp = h.RecoveryTimeStamp
+	heartbeatRequestReceivedSequenceNumber = h.SequenceNumber
 }
 
 func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
@@ -34,6 +37,7 @@ func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
 	defer heartbeatResponseMu.Unlock()
 	heartbeatResponsehandlerCalled = true
 	heartbeatResponsereceivedRecoveryTimestamp = h.RecoveryTimeStamp
+	heartbeatResponseReceivedSequenceNumber = h.SequenceNumber
 }
 
 func TestServer(t *testing.T) {
@@ -44,13 +48,15 @@ func TestServer(t *testing.T) {
 func HeartbeatRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
+	sentSequenceNumber := uint32(32)
+	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
 
 	go pfcpServer.Run()
 
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatRequest(time.Now())
+	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sentSequenceNumber)
 	if err != nil {
 		t.Fatalf("Failed to send Heartbeat request: %v", err)
 	}
@@ -64,6 +70,9 @@ func HeartbeatRequest(t *testing.T) {
 	if heartbeatRequestreceivedRecoveryTimestamp != sentRecoveryTimeStamp {
 		t.Errorf("Heartbeat request handler was called with wrong timestamp.\n- Sent timestamp: %v\n- Received timestamp %v\n", sentRecoveryTimeStamp, heartbeatRequestreceivedRecoveryTimestamp)
 	}
+	if heartbeatRequestReceivedSequenceNumber != sentSequenceNumber {
+		t.Errorf("Heartbeat request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sentSequenceNumber, heartbeatRequestReceivedSequenceNumber)
+	}
 	heartbeatRequestMu.Unlock()
 	pfcpServer.Close()
 }
@@ -71,13 +80,15 @@ func HeartbeatRequest(t *testing.T) {
 func HeartbeatResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
+	sentSequenceNumber := uint32(971)
+	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
 
 	go pfcpServer.Run()
 
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatResponse(time.Now())
+	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatResponse(recoveryTimeStamp, sentSequenceNumber)
 	if err != nil {
 		t.Fatalf("Failed to send Heartbeat response: %v", err)
 	}
@@ -91,6 +102,10 @@ func HeartbeatResponse(t *testing.T) {
 	if heartbeatResponsereceivedRecoveryTimestamp != sentRecoveryTimeStamp {
 		t.Errorf("Heartbeat response handler was called with wrong timestamp.\n- Sent timestamp: %v\n- Received timestamp %v\n", sentRecoveryTimeStamp, heartbeatResponsereceivedRecoveryTimestamp)
 	}
+	if heartbeatResponseReceivedSequenceNumber != sentSequenceNumber {
+		t.Errorf("Heartbeat response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sentSequenceNumber, heartbeatResponseReceivedSequenceNumber)
+	}
+
 	heartbeatResponseMu.Unlock()
 	pfcpServer.Close()
 

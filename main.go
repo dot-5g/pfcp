@@ -11,7 +11,10 @@ import (
 
 func main() {
 	pfcpClient := client.New("1.2.3.4:8805")
-	_, err := pfcpClient.SendHeartbeatRequest(time.Now())
+	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
+	sequenceNumber := uint32(21)
+
+	_, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sequenceNumber)
 	if err != nil {
 		log.Fatalf("SendHeartbeatRequest failed: %v", err)
 	}

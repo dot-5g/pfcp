@@ -20,7 +20,10 @@ import (
 
 func main() {
 	pfcpClient := client.New("1.2.3.4:8805")
-	_, err := pfcpClient.SendHeartbeatRequest()
+	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
+	sequenceNumber := uint32(21)
+
+	_, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sequenceNumber)
 	if err != nil {
 		log.Fatalf("SendHeartbeatRequest failed: %v", err)
 	}
@@ -54,3 +57,23 @@ func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
 }
 
 ```
+
+## Procedures
+
+### Node
+
+- [x] Heartbeat
+- [ ] Load Control (Optional)
+- [ ] Overload Control (Optional)
+- [ ] PFCP PFD Management (Optional)
+- [ ] PFCP Association Setup
+- [ ] PFCP Association Update
+- [ ] PFCP Association Release
+- [ ] PFCP Node Report
+
+### Session
+
+- [ ] PFCP Session Establishment
+- [ ] PFCP Session Modification
+- [ ] PFCP Session Deletion
+- [ ] PFCP Session Report
