@@ -3,7 +3,7 @@ package client
 import (
 	"log"
 
-	"github.com/dot-5g/pfcp/information_elements"
+	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
 )
@@ -22,7 +22,7 @@ func New(ServerAddress string) *Pfcp {
 	return &Pfcp{ServerAddress: ServerAddress, Udp: udpClient}
 }
 
-func (pfcp *Pfcp) sendPfcpMessage(header messages.PFCPHeader, elements []information_elements.InformationElement, messageType string) error {
+func (pfcp *Pfcp) sendPfcpMessage(header messages.PFCPHeader, elements []ie.InformationElement, messageType string) error {
 	var payload []byte
 	for _, element := range elements {
 		payload = append(payload, element.Serialize()...)
@@ -42,14 +42,14 @@ func serializeMessage(header messages.PFCPHeader, payload []byte) []byte {
 	return append(headerBytes, payload...)
 }
 
-func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp information_elements.RecoveryTimeStamp, sequenceNumber uint32) (information_elements.RecoveryTimeStamp, error) {
+func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
 	header := messages.NewPFCPHeader(messages.PFCPHeartbeatRequest, sequenceNumber)
-	err := pfcp.sendPfcpMessage(header, []information_elements.InformationElement{recoveryTimeStamp}, "Heartbeat Request")
+	err := pfcp.sendPfcpMessage(header, []ie.InformationElement{recoveryTimeStamp}, "Heartbeat Request")
 	return recoveryTimeStamp, err
 }
 
-func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp information_elements.RecoveryTimeStamp, sequenceNumber uint32) (information_elements.RecoveryTimeStamp, error) {
+func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
 	header := messages.NewPFCPHeader(messages.PFCPHeartbeatResponse, sequenceNumber)
-	err := pfcp.sendPfcpMessage(header, []information_elements.InformationElement{recoveryTimeStamp}, "Heartbeat Response")
+	err := pfcp.sendPfcpMessage(header, []ie.InformationElement{recoveryTimeStamp}, "Heartbeat Response")
 	return recoveryTimeStamp, err
 }
