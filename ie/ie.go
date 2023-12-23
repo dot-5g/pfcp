@@ -22,7 +22,6 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		ieType := int(binary.BigEndian.Uint16(b[index : index+2]))
 		ieLength := int(binary.BigEndian.Uint16(b[index+2 : index+4]))
 		index += 4 // Move past the header
-		fmt.Printf("IE type: %d, length: %d\n", ieType, ieLength)
 
 		if len(b[index:]) < ieLength {
 			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieLength, len(b[index:]))
