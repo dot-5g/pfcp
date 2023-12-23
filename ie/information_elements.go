@@ -1,4 +1,4 @@
-package information_elements
+package ie
 
 type InformationElement interface {
 	Serialize() []byte

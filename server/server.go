@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/dot-5g/pfcp/information_elements"
+	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
 )
@@ -76,7 +76,7 @@ func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
 }
 
 func (server *Server) handleHeartbeatRequest(msg *PfcpMessage, handler HandleHeartbeatRequest) {
-	recoveryTimeStamp := information_elements.Deserialize(msg.Message)
+	recoveryTimeStamp := ie.Deserialize(msg.Message)
 	heartbeatRequest := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
 		SequenceNumber:    msg.Header.SequenceNumber,
@@ -85,7 +85,7 @@ func (server *Server) handleHeartbeatRequest(msg *PfcpMessage, handler HandleHea
 }
 
 func (server *Server) handleHeartbeatResponse(msg *PfcpMessage, handler HandleHeartbeatResponse) {
-	recoveryTimeStamp := information_elements.Deserialize(msg.Message)
+	recoveryTimeStamp := ie.Deserialize(msg.Message)
 	heartbeatResponse := messages.HeartbeatResponse{
 		RecoveryTimeStamp: recoveryTimeStamp,
 		SequenceNumber:    msg.Header.SequenceNumber,

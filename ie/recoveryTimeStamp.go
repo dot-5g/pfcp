@@ -1,4 +1,4 @@
-package information_elements
+package ie
 
 import (
 	"encoding/binary"

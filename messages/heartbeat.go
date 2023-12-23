@@ -1,15 +1,15 @@
 package messages
 
 import (
-	"github.com/dot-5g/pfcp/information_elements"
+	"github.com/dot-5g/pfcp/ie"
 )
 
 type HeartbeatRequest struct {
-	RecoveryTimeStamp information_elements.RecoveryTimeStamp
+	RecoveryTimeStamp ie.RecoveryTimeStamp
 	SequenceNumber    uint32
 }
 
 type HeartbeatResponse struct {
-	RecoveryTimeStamp information_elements.RecoveryTimeStamp
+	RecoveryTimeStamp ie.RecoveryTimeStamp
 	SequenceNumber    uint32
 }
