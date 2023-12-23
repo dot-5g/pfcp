@@ -13,6 +13,14 @@ type PFCPHeader struct {
 	SequenceNumber uint32
 }
 
+type PFCPMessageType int
+
+const (
+	PFCPHeartbeatRequest PFCPMessageType = iota
+	PFCPHeartbeatResponse
+	PFCPAssociationSetupRequest
+)
+
 func SerializePFCPHeader(header PFCPHeader) []byte {
 	buf := new(bytes.Buffer)
 
@@ -37,10 +45,23 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	return buf.Bytes()
 }
 
-func NewPFCPHeader(messageType byte, sequenceNumber uint32) PFCPHeader {
+func messageTypeToByte(messageType PFCPMessageType) byte {
+	switch messageType {
+	case PFCPHeartbeatRequest:
+		return 1
+	case PFCPHeartbeatResponse:
+		return 2
+	case PFCPAssociationSetupRequest:
+		return 5
+	default:
+		return 0
+	}
+}
+
+func NewPFCPHeader(messageType PFCPMessageType, sequenceNumber uint32) PFCPHeader {
 	return PFCPHeader{
 		Version:        1,
-		MessageType:    messageType,
+		MessageType:    messageTypeToByte(messageType),
 		MessageLength:  0, // To be set later
 		SequenceNumber: sequenceNumber,
 	}

@@ -78,6 +78,7 @@ func (server *Server) handleHeartbeatRequest(msg *PfcpMessage, handler HandleHea
 	recoveryTimeStamp := messages.FromBytes(msg.Message)
 	heartbeatRequest := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
+		SequenceNumber:    msg.Header.SequenceNumber,
 	}
 	handler(&heartbeatRequest)
 }
@@ -86,6 +87,7 @@ func (server *Server) handleHeartbeatResponse(msg *PfcpMessage, handler HandleHe
 	recoveryTimeStamp := messages.FromBytes(msg.Message)
 	heartbeatResponse := messages.HeartbeatResponse{
 		RecoveryTimeStamp: recoveryTimeStamp,
+		SequenceNumber:    msg.Header.SequenceNumber,
 	}
 	handler(&heartbeatResponse)
 }

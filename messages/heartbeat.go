@@ -13,10 +13,12 @@ type RecoveryTimeStamp struct {
 
 type HeartbeatRequest struct {
 	RecoveryTimeStamp RecoveryTimeStamp
+	SequenceNumber    uint32
 }
 
 type HeartbeatResponse struct {
 	RecoveryTimeStamp RecoveryTimeStamp
+	SequenceNumber    uint32
 }
 
 func NewRecoveryTimeStamp(value time.Time) RecoveryTimeStamp {

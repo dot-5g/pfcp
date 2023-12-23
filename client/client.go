@@ -2,7 +2,6 @@ package client
 
 import (
 	"log"
-	"time"
 
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
@@ -40,19 +39,16 @@ func serializeMessage(header messages.PFCPHeader, payload []byte) []byte {
 	return append(headerBytes, payload...)
 }
 
-func (pfcp *Pfcp) SendHeartbeatRequest(time time.Time) (messages.RecoveryTimeStamp, error) {
-	// Create a RecoveryTimeStamp with the current time
-	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time)
+func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp messages.RecoveryTimeStamp, sequenceNumber uint32) (messages.RecoveryTimeStamp, error) {
 	timeBytes := recoveryTimeStamp.ToBytes()
-	header := messages.NewPFCPHeader(1, 1)
+	header := messages.NewPFCPHeader(messages.PFCPHeartbeatRequest, sequenceNumber)
 	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Request")
 	return recoveryTimeStamp, err
 }
 
-func (pfcp *Pfcp) SendHeartbeatResponse(time time.Time) (messages.RecoveryTimeStamp, error) {
-	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time)
+func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp messages.RecoveryTimeStamp, sequenceNumber uint32) (messages.RecoveryTimeStamp, error) {
 	timeBytes := recoveryTimeStamp.ToBytes()
-	header := messages.NewPFCPHeader(2, 1)
+	header := messages.NewPFCPHeader(messages.PFCPHeartbeatResponse, sequenceNumber)
 	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Response")
 	return recoveryTimeStamp, err
 }
