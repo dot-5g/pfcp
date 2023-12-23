@@ -7,7 +7,6 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
-	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
@@ -25,20 +24,19 @@ var (
 	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
-func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(sequenceNumber uint32, recoveryTimeStamp ie.RecoveryTimeStamp) {
 	heartbeatRequestMu.Lock()
 	defer heartbeatRequestMu.Unlock()
 	heartbeatRequesthandlerCalled = true
-	heartbeatRequestreceivedRecoveryTimestamp = h.RecoveryTimeStamp
-	heartbeatRequestReceivedSequenceNumber = h.SequenceNumber
+	heartbeatRequestreceivedRecoveryTimestamp = recoveryTimeStamp
+	heartbeatRequestReceivedSequenceNumber = sequenceNumber
 }
-
-func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
+func HandleHeartbeatResponse(sequenceNumber uint32, recoveryTimeStamp ie.RecoveryTimeStamp) {
 	heartbeatResponseMu.Lock()
 	defer heartbeatResponseMu.Unlock()
 	heartbeatResponsehandlerCalled = true
-	heartbeatResponsereceivedRecoveryTimestamp = h.RecoveryTimeStamp
-	heartbeatResponseReceivedSequenceNumber = h.SequenceNumber
+	heartbeatResponsereceivedRecoveryTimestamp = recoveryTimeStamp
+	heartbeatResponseReceivedSequenceNumber = sequenceNumber
 }
 
 func TestServer(t *testing.T) {

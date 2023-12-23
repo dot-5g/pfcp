@@ -16,14 +16,10 @@ const (
 	HeartbeatResponseType byte = 2
 )
 
-type HandleHeartbeatRequest func(*messages.HeartbeatRequest)
-type HandleHeartbeatResponse func(*messages.HeartbeatResponse)
-type MessageHandler func(*PfcpMessage)
-
-type PfcpMessage struct {
-	Header  messages.PFCPHeader
-	Message []byte
-}
+// Define a new handler type that specifically accepts RecoveryTimeStampIE
+type HandleHeartbeatRequest func(sequenceNumber uint32, recoveryTimeStampIE ie.RecoveryTimeStamp)
+type HandleHeartbeatResponse func(sequenceNumber uint32, recoveryTimeStampIE ie.RecoveryTimeStamp)
+type MessageHandler func(header messages.PFCPHeader, ies []ie.InformationElement)
 
 type Server struct {
 	address         string
@@ -50,47 +46,50 @@ func (server *Server) Close() {
 }
 
 func (server *Server) HeartbeatRequest(handler HandleHeartbeatRequest) {
-	server.registerHandler(HeartbeatRequestType, func(msg *PfcpMessage) {
-		server.handleHeartbeatRequest(msg, handler)
+	server.registerHandler(HeartbeatRequestType, func(header messages.PFCPHeader, ies []ie.InformationElement) {
+		var recoveryTimeStamp ie.RecoveryTimeStamp
+		for _, elem := range ies {
+			if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
+				recoveryTimeStamp = tsIE
+				break
+			}
+		}
+
+		handler(header.SequenceNumber, recoveryTimeStamp)
 	})
 }
 
 func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
-	server.registerHandler(HeartbeatResponseType, func(msg *PfcpMessage) {
-		server.handleHeartbeatResponse(msg, handler)
+	server.registerHandler(HeartbeatResponseType, func(header messages.PFCPHeader, ies []ie.InformationElement) {
+		var recoveryTimeStamp ie.RecoveryTimeStamp
+		for _, elem := range ies {
+			if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
+				recoveryTimeStamp = tsIE
+				break
+			}
+		}
+
+		handler(header.SequenceNumber, recoveryTimeStamp)
 	})
 }
+
 func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
 	header, err := messages.ParsePFCPHeader(data[:HeaderSize])
 	if err != nil {
 		log.Printf("Error parsing PFCP header: %v", err)
 		return
 	}
-	pfcpMessage := PfcpMessage{Header: header, Message: data[HeaderSize:]}
+	ies, err := ie.ParseInformationElements(data[HeaderSize:])
+	if err != nil {
+		log.Printf("Error parsing Information Elements: %v", err)
+		return
+	}
 
-	if genericHandler, exists := server.messageHandlers[pfcpMessage.Header.MessageType]; exists {
-		genericHandler(&pfcpMessage)
+	if handler, exists := server.messageHandlers[header.MessageType]; exists {
+		handler(header, ies)
 	} else {
-		log.Printf("No handler registered for message type %d", pfcpMessage.Header.MessageType)
+		log.Printf("No handler registered for message type %d", header.MessageType)
 	}
-}
-
-func (server *Server) handleHeartbeatRequest(msg *PfcpMessage, handler HandleHeartbeatRequest) {
-	recoveryTimeStamp := ie.Deserialize(msg.Message)
-	heartbeatRequest := messages.HeartbeatRequest{
-		RecoveryTimeStamp: recoveryTimeStamp,
-		SequenceNumber:    msg.Header.SequenceNumber,
-	}
-	handler(&heartbeatRequest)
-}
-
-func (server *Server) handleHeartbeatResponse(msg *PfcpMessage, handler HandleHeartbeatResponse) {
-	recoveryTimeStamp := ie.Deserialize(msg.Message)
-	heartbeatResponse := messages.HeartbeatResponse{
-		RecoveryTimeStamp: recoveryTimeStamp,
-		SequenceNumber:    msg.Header.SequenceNumber,
-	}
-	handler(&heartbeatResponse)
 }
 
 func (server *Server) registerHandler(messageType byte, handler MessageHandler) {

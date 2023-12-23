@@ -6,7 +6,6 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
-	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
@@ -28,10 +27,10 @@ func RunServer() {
 	pfcpServer.Run()
 }
 
-func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(sequenceNumber uint32, recoveryTimeStamp ie.RecoveryTimeStamp) {
 
 }
 
-func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
+func HandleHeartbeatResponse(sequenceNumber uint32, recoveryTimeStamp ie.RecoveryTimeStamp) {
 
 }

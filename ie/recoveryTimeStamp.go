@@ -16,7 +16,7 @@ type RecoveryTimeStamp struct {
 func NewRecoveryTimeStamp(value time.Time) RecoveryTimeStamp {
 	return RecoveryTimeStamp{
 		Type:   96,
-		Length: 8,
+		Length: 4,
 		Value:  value.Unix() + ntpEpochOffset,
 	}
 }
@@ -29,10 +29,10 @@ func (rt RecoveryTimeStamp) Serialize() []byte {
 	return bytes
 }
 
-func Deserialize(b []byte) RecoveryTimeStamp {
+func DeserializeRecoveryTimeStamp(ieType int, ieLength int, ieValue []byte) RecoveryTimeStamp {
 	return RecoveryTimeStamp{
-		Type:   int(binary.BigEndian.Uint16(b[0:2])),
-		Length: int(binary.BigEndian.Uint16(b[2:4])),
-		Value:  int64(binary.BigEndian.Uint32(b[4:8])),
+		Type:   ieType,
+		Length: ieLength,
+		Value:  int64(binary.BigEndian.Uint32(ieValue)),
 	}
 }
