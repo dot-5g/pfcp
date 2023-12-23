@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/dot-5g/pfcp/client"
+	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
 func main() {
 	pfcpClient := client.New("1.2.3.4:8805")
-	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
+	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(21)
 
 	_, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sequenceNumber)

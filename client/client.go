@@ -3,6 +3,7 @@ package client
 import (
 	"log"
 
+	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
 )
@@ -13,17 +14,19 @@ type Pfcp struct {
 }
 
 func New(ServerAddress string) *Pfcp {
-
 	udpClient, err := network.NewUdp(ServerAddress)
 	if err != nil {
 		log.Printf("Failed to initialize UDP client: %v\n", err)
 		return nil
 	}
-
 	return &Pfcp{ServerAddress: ServerAddress, Udp: udpClient}
 }
 
-func (pfcp *Pfcp) sendPfcpMessage(header messages.PFCPHeader, payload []byte, messageType string) error {
+func (pfcp *Pfcp) sendPfcpMessage(header messages.PFCPHeader, elements []ie.InformationElement, messageType string) error {
+	var payload []byte
+	for _, element := range elements {
+		payload = append(payload, element.Serialize()...)
+	}
 	message := serializeMessage(header, payload)
 	if err := pfcp.Udp.Send(message); err != nil {
 		log.Printf("Failed to send PFCP %s: %v\n", messageType, err)
@@ -39,16 +42,14 @@ func serializeMessage(header messages.PFCPHeader, payload []byte) []byte {
 	return append(headerBytes, payload...)
 }
 
-func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp messages.RecoveryTimeStamp, sequenceNumber uint32) (messages.RecoveryTimeStamp, error) {
-	timeBytes := recoveryTimeStamp.ToBytes()
+func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
 	header := messages.NewPFCPHeader(messages.PFCPHeartbeatRequest, sequenceNumber)
-	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Request")
+	err := pfcp.sendPfcpMessage(header, []ie.InformationElement{recoveryTimeStamp}, "Heartbeat Request")
 	return recoveryTimeStamp, err
 }
 
-func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp messages.RecoveryTimeStamp, sequenceNumber uint32) (messages.RecoveryTimeStamp, error) {
-	timeBytes := recoveryTimeStamp.ToBytes()
+func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
 	header := messages.NewPFCPHeader(messages.PFCPHeartbeatResponse, sequenceNumber)
-	err := pfcp.sendPfcpMessage(header, timeBytes, "Heartbeat Response")
+	err := pfcp.sendPfcpMessage(header, []ie.InformationElement{recoveryTimeStamp}, "Heartbeat Response")
 	return recoveryTimeStamp, err
 }

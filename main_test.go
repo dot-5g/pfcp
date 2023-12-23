@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dot-5g/pfcp/client"
+	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
@@ -13,14 +14,14 @@ import (
 var (
 	heartbeatRequestMu                        sync.Mutex
 	heartbeatRequesthandlerCalled             bool
-	heartbeatRequestreceivedRecoveryTimestamp messages.RecoveryTimeStamp
+	heartbeatRequestreceivedRecoveryTimestamp ie.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber    uint32
 )
 
 var (
 	heartbeatResponseMu                        sync.Mutex
 	heartbeatResponsehandlerCalled             bool
-	heartbeatResponsereceivedRecoveryTimestamp messages.RecoveryTimeStamp
+	heartbeatResponsereceivedRecoveryTimestamp ie.RecoveryTimeStamp
 	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
@@ -49,7 +50,7 @@ func HeartbeatRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
 	sentSequenceNumber := uint32(32)
-	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
+	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 
 	go pfcpServer.Run()
 
@@ -81,7 +82,7 @@ func HeartbeatResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
 	sentSequenceNumber := uint32(971)
-	recoveryTimeStamp := messages.NewRecoveryTimeStamp(time.Now())
+	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 
 	go pfcpServer.Run()
 
