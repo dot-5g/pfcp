@@ -13,6 +13,7 @@ type InformationElement interface {
 
 func ParseInformationElements(b []byte) ([]InformationElement, error) {
 	var ies []InformationElement
+	var err error
 
 	index := 0
 
@@ -21,29 +22,30 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			return nil, fmt.Errorf("not enough bytes for IE header")
 		}
 
-		ieType := int(binary.BigEndian.Uint16(b[index : index+2]))
-		ieLength := int(binary.BigEndian.Uint16(b[index+2 : index+4]))
-		index += IEHeaderLength // Move past the header
-
-		if len(b[index:]) < ieLength {
+		ieType := binary.BigEndian.Uint16(b[index : index+2])
+		ieLength := binary.BigEndian.Uint16(b[index+2 : index+4])
+		index += IEHeaderLength
+		if len(b[index:]) < int(ieLength) {
 			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieLength, len(b[index:]))
 		}
 
-		ieValue := b[index : index+ieLength]
+		ieValue := b[index : index+int(ieLength)]
 		var ie InformationElement
 		switch ieType {
+		case 60:
+			ie = DeserializeNodeID(ieType, ieLength, ieValue)
 		case 96:
 			ie = DeserializeRecoveryTimeStamp(ieType, ieLength, ieValue)
 		default:
-			return nil, fmt.Errorf("unknown IE type %d", ieType)
+			err = fmt.Errorf("unknown IE type %d", ieType)
 		}
 
 		if ie != nil {
 			ies = append(ies, ie)
 		}
 
-		index += ieLength
+		index += int(ieLength)
 	}
 
-	return ies, nil
+	return ies, err
 }

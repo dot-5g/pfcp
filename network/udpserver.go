@@ -10,10 +10,10 @@ type UdpServer struct {
 	conn    *net.UDPConn
 	closeCh chan struct{}
 	wg      sync.WaitGroup
-	Handler func([]byte, net.Addr)
+	Handler func([]byte)
 }
 
-func (udpServer *UdpServer) SetHandler(handler func([]byte, net.Addr)) {
+func (udpServer *UdpServer) SetHandler(handler func([]byte)) {
 	udpServer.Handler = handler
 }
 
@@ -40,14 +40,14 @@ func (udpServer *UdpServer) Run(address string) error {
 				return
 			default:
 				buffer := make([]byte, 1024)
-				length, remoteAddr, err := udpServer.conn.ReadFrom(buffer)
+				length, _, err := udpServer.conn.ReadFrom(buffer)
 				if err != nil {
 					log.Printf("Error reading from UDP: %v", err)
 					continue
 				}
 
 				if udpServer.Handler != nil {
-					go udpServer.Handler(buffer[:length], remoteAddr)
+					go udpServer.Handler(buffer[:length])
 				}
 			}
 		}

@@ -13,7 +13,7 @@ func TestNewNodeIDIPv4(t *testing.T) {
 		t.Errorf("Expected NodeID, got %d", nodeID.Type)
 	}
 
-	if nodeID.Length != 4 {
+	if nodeID.Length != 4+1 {
 		t.Errorf("Expected NodeID length 4, got %d", nodeID.Length)
 	}
 
@@ -41,7 +41,7 @@ func TestNewNodeIDIPv6(t *testing.T) {
 		t.Errorf("Expected NodeID, got %d", nodeID.Type)
 	}
 
-	if nodeID.Length != 16 {
+	if nodeID.Length != 16+1 {
 		t.Errorf("Expected NodeID length 16, got %d", nodeID.Length)
 	}
 
@@ -69,7 +69,7 @@ func TestNewNodeIDFQDN(t *testing.T) {
 		t.Errorf("Expected NodeID, got %d", nodeID.Type)
 	}
 
-	if nodeID.Length != 15 {
+	if nodeID.Length != 15+1 {
 		t.Errorf("Expected NodeID length 15, got %d", nodeID.Length)
 	}
 

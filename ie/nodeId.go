@@ -37,7 +37,7 @@ func NewNodeID(nodeIDType NodeIDType, nodeIDValue string) NodeID {
 			panic("invalid IPv4 address")
 		}
 		nodeIDValueBytes = ipv4
-		length = uint16(len(nodeIDValueBytes))
+		length = uint16(len(nodeIDValueBytes)) + 1
 	case IPv6:
 		ip := net.ParseIP(nodeIDValue)
 		if ip == nil {
@@ -48,14 +48,14 @@ func NewNodeID(nodeIDType NodeIDType, nodeIDValue string) NodeID {
 			panic("invalid IPv6 address")
 		}
 		nodeIDValueBytes = ipv6
-		length = uint16(len(nodeIDValueBytes))
+		length = uint16(len(nodeIDValueBytes)) + 1
 	case FQDN:
 		fqdn := []byte(nodeIDValue)
 		if len(fqdn) > 255 {
 			panic("FQDN too long")
 		}
 		nodeIDValueBytes = fqdn
-		length = uint16(len(nodeIDValueBytes))
+		length = uint16(len(nodeIDValueBytes)) + 1
 
 	default:
 		panic(fmt.Sprintf("invalid NodeIDType %d", nodeIDType))
@@ -84,5 +84,19 @@ func (n NodeID) Serialize() []byte {
 	// Octets 6 to n+5: Node ID Value
 	buf.Write(n.NodeIDValue)
 
+	fmt.Printf("Node ID - serialized: %v\n", buf.Bytes())
+
 	return buf.Bytes()
+}
+
+func DeserializeNodeID(ieType uint16, ieLength uint16, ieValue []byte) NodeID {
+	nodeIDType := NodeIDType(ieValue[0] & 0x0F) // Ensure NodeIDType is only 4 bits
+	nodeIDValue := ieValue[1:]
+
+	return NodeID{
+		Type:        ieType,
+		Length:      ieLength,
+		NodeIDType:  nodeIDType,
+		NodeIDValue: nodeIDValue,
+	}
 }
