@@ -42,6 +42,7 @@ func HandleHeartbeatResponse(sequenceNumber uint32, recoveryTimeStamp ie.Recover
 func TestServer(t *testing.T) {
 	t.Run("TestHeartbeatRequest", HeartbeatRequest)
 	t.Run("TestHeartbeatResponse", HeartbeatResponse)
+	t.Run("TestPFCPAssociationSetupRequest", PFCPAssociationSetupRequest)
 }
 
 func HeartbeatRequest(t *testing.T) {
@@ -107,5 +108,15 @@ func HeartbeatResponse(t *testing.T) {
 
 	heartbeatResponseMu.Unlock()
 	pfcpServer.Close()
+
+}
+
+func PFCPAssociationSetupRequest(t *testing.T) {
+
+	pfcpClient := client.New("127.0.0.1:8805")
+	nodeID := ie.NewNodeID(ie.IPv4, "1.2.3.4")
+	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	sequenceNumber := uint32(21)
+	pfcpClient.SendPFCPAssociationSetupRequest(nodeID, recoveryTimeStamp, sequenceNumber)
 
 }

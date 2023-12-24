@@ -3,21 +3,68 @@ package ie
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
+	"net"
 )
+
+const (
+	IPv4 NodeIDType = iota
+	IPv6
+	FQDN
+)
+
+type NodeIDType int
 
 type NodeID struct {
 	Type        uint16
 	Length      uint16
-	NodeIDType  int
+	NodeIDType  NodeIDType
 	NodeIDValue []byte
 }
 
-func NewNodeID(nodeIDType int, nodeIDValue []byte) NodeID {
+func NewNodeID(nodeIDType NodeIDType, nodeIDValue string) NodeID {
+	var nodeIDValueBytes []byte
+	var length uint16
+
+	switch nodeIDType {
+	case IPv4:
+		ip := net.ParseIP(nodeIDValue)
+		if ip == nil {
+			panic("invalid IPv4 address")
+		}
+		ipv4 := ip.To4()
+		if ipv4 == nil {
+			panic("invalid IPv4 address")
+		}
+		nodeIDValueBytes = ipv4
+		length = uint16(len(nodeIDValueBytes))
+	case IPv6:
+		ip := net.ParseIP(nodeIDValue)
+		if ip == nil {
+			panic("invalid IPv6 address")
+		}
+		ipv6 := ip.To16()
+		if ipv6 == nil {
+			panic("invalid IPv6 address")
+		}
+		nodeIDValueBytes = ipv6
+		length = uint16(len(nodeIDValueBytes))
+	case FQDN:
+		fqdn := []byte(nodeIDValue)
+		if len(fqdn) > 255 {
+			panic("FQDN too long")
+		}
+		nodeIDValueBytes = fqdn
+		length = uint16(len(nodeIDValueBytes))
+
+	default:
+		panic(fmt.Sprintf("invalid NodeIDType %d", nodeIDType))
+	}
 	return NodeID{
 		Type:        60,
-		Length:      uint16(len(nodeIDValue) + 1),
+		Length:      length,
 		NodeIDType:  nodeIDType,
-		NodeIDValue: nodeIDValue,
+		NodeIDValue: nodeIDValueBytes,
 	}
 }
 

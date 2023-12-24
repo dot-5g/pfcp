@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+const IEHeaderLength = 4
+
 type InformationElement interface {
 	Serialize() []byte
 }
@@ -15,13 +17,13 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 	index := 0
 
 	for index < len(b) {
-		if len(b[index:]) < 4 {
+		if len(b[index:]) < IEHeaderLength {
 			return nil, fmt.Errorf("not enough bytes for IE header")
 		}
 
 		ieType := int(binary.BigEndian.Uint16(b[index : index+2]))
 		ieLength := int(binary.BigEndian.Uint16(b[index+2 : index+4]))
-		index += 4 // Move past the header
+		index += IEHeaderLength // Move past the header
 
 		if len(b[index:]) < ieLength {
 			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieLength, len(b[index:]))
