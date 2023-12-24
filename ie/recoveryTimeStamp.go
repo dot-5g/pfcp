@@ -8,8 +8,8 @@ import (
 const ntpEpochOffset = 2208988800 // Offset between Unix and NTP epoch (seconds)
 
 type RecoveryTimeStamp struct {
-	Type   int
-	Length int
+	Type   uint16
+	Length uint16
 	Value  int64 // Seconds since 1900
 }
 
@@ -29,7 +29,7 @@ func (rt RecoveryTimeStamp) Serialize() []byte {
 	return bytes
 }
 
-func DeserializeRecoveryTimeStamp(ieType int, ieLength int, ieValue []byte) RecoveryTimeStamp {
+func DeserializeRecoveryTimeStamp(ieType uint16, ieLength uint16, ieValue []byte) RecoveryTimeStamp {
 	return RecoveryTimeStamp{
 		Type:   ieType,
 		Length: ieLength,

@@ -2,7 +2,6 @@ package server
 
 import (
 	"log"
-	"net"
 
 	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
@@ -12,13 +11,16 @@ import (
 const HeaderSize = 8
 
 const (
-	HeartbeatRequestType  byte = 1
-	HeartbeatResponseType byte = 2
+	HeartbeatRequestType             byte = 1
+	HeartbeatResponseType            byte = 2
+	PFCPAssociationSetupRequestType  byte = 5
+	PFCPAssociationSetupResponseType byte = 6
 )
 
-// Define a new handler type that specifically accepts RecoveryTimeStampIE
 type HandleHeartbeatRequest func(sequenceNumber uint32, recoveryTimeStampIE ie.RecoveryTimeStamp)
 type HandleHeartbeatResponse func(sequenceNumber uint32, recoveryTimeStampIE ie.RecoveryTimeStamp)
+type HandlePFCPAssociationSetupRequest func(sequenceNumber uint32, nodeID ie.NodeID, recoveryTimeStampIE ie.RecoveryTimeStamp)
+
 type MessageHandler func(header messages.PFCPHeader, ies []ie.InformationElement)
 
 type Server struct {
@@ -73,7 +75,24 @@ func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
 	})
 }
 
-func (server *Server) handleUDPMessage(data []byte, addr net.Addr) {
+func (server *Server) PFCPAssociationSetupRequest(handler HandlePFCPAssociationSetupRequest) {
+	server.registerHandler(PFCPAssociationSetupRequestType, func(header messages.PFCPHeader, ies []ie.InformationElement) {
+		var recoveryTimeStamp ie.RecoveryTimeStamp
+		var nodeID ie.NodeID
+		for _, elem := range ies {
+			if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
+				recoveryTimeStamp = tsIE
+			}
+			if nodeIDIE, ok := elem.(ie.NodeID); ok {
+				nodeID = nodeIDIE
+			}
+		}
+
+		handler(header.SequenceNumber, nodeID, recoveryTimeStamp)
+	})
+}
+
+func (server *Server) handleUDPMessage(data []byte) {
 	header, err := messages.ParsePFCPHeader(data[:HeaderSize])
 	if err != nil {
 		log.Printf("Error parsing PFCP header: %v", err)
