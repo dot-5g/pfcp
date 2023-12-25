@@ -81,7 +81,5 @@ func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(nodeID ie.NodeID, cause ie.Ca
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Setup Response: %w", err)
 	}
-	fmt.Printf("PFCP Association Setup Response sent successfully to %s.\n", pfcp.ServerAddress)
-	fmt.Printf("Payload: %v\n", payload)
 	return nil
 }

@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -38,7 +37,6 @@ func HandlePFCPAssociationSetupRequest(sequenceNumber uint32, nodeID ie.NodeID, 
 }
 
 func HandlePFCPAssociationSetupResponse(sequenceNumber uint32, nodeID ie.NodeID, cause ie.Cause, recoveryTimeStamp ie.RecoveryTimeStamp) {
-	fmt.Printf("HandlePFCPAssociationSetupResponse- we here\n")
 	pfcpAssociationSetupResponseMu.Lock()
 	defer pfcpAssociationSetupResponseMu.Unlock()
 	pfcpAssociationSetupResponsehandlerCalled = true
