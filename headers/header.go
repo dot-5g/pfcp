@@ -1,9 +1,11 @@
-package messages
+package headers
 
 import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
+	"github.com/dot-5g/pfcp/messages"
 )
 
 type PFCPHeader struct {
@@ -12,14 +14,6 @@ type PFCPHeader struct {
 	MessageLength  uint16
 	SequenceNumber uint32
 }
-
-type PFCPMessageType int
-
-const (
-	PFCPHeartbeatRequest PFCPMessageType = iota
-	PFCPHeartbeatResponse
-	PFCPAssociationSetupRequest
-)
 
 func SerializePFCPHeader(header PFCPHeader) []byte {
 	buf := new(bytes.Buffer)
@@ -45,23 +39,10 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	return buf.Bytes()
 }
 
-func messageTypeToByte(messageType PFCPMessageType) byte {
-	switch messageType {
-	case PFCPHeartbeatRequest:
-		return 1
-	case PFCPHeartbeatResponse:
-		return 2
-	case PFCPAssociationSetupRequest:
-		return 5
-	default:
-		return 0
-	}
-}
-
-func NewPFCPHeader(messageType PFCPMessageType, sequenceNumber uint32) PFCPHeader {
+func NewPFCPHeader(messageType messages.PFCPMessageType, sequenceNumber uint32) PFCPHeader {
 	return PFCPHeader{
 		Version:        1,
-		MessageType:    messageTypeToByte(messageType),
+		MessageType:    messages.MessageTypeToByte(messageType),
 		MessageLength:  0, // To be set later
 		SequenceNumber: sequenceNumber,
 	}

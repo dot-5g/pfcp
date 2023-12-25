@@ -32,6 +32,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		ieValue := b[index : index+int(ieLength)]
 		var ie InformationElement
 		switch ieType {
+		case 19:
+			ie = DeserializeCause(ieType, ieLength, ieValue)
 		case 60:
 			ie = DeserializeNodeID(ieType, ieLength, ieValue)
 		case 96:
