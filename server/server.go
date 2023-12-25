@@ -3,8 +3,8 @@ package server
 import (
 	"log"
 
+	"github.com/dot-5g/pfcp/headers"
 	"github.com/dot-5g/pfcp/ie"
-	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
 )
 
@@ -20,8 +20,9 @@ const (
 type HandleHeartbeatRequest func(sequenceNumber uint32, recoveryTimeStampIE ie.RecoveryTimeStamp)
 type HandleHeartbeatResponse func(sequenceNumber uint32, recoveryTimeStampIE ie.RecoveryTimeStamp)
 type HandlePFCPAssociationSetupRequest func(sequenceNumber uint32, nodeID ie.NodeID, recoveryTimeStampIE ie.RecoveryTimeStamp)
+type HandlePFCPAssociationSetupResponse func(sequenceNumber uint32, nodeID ie.NodeID, cause ie.Cause, recoveryTimeStampIE ie.RecoveryTimeStamp)
 
-type MessageHandler func(header messages.PFCPHeader, ies []ie.InformationElement)
+type MessageHandler func(header headers.PFCPHeader, ies []ie.InformationElement)
 
 type Server struct {
 	address         string
@@ -38,9 +39,13 @@ func New(address string) *Server {
 	return server
 }
 
-func (server *Server) Run() {
+func (server *Server) Run() error {
 	server.udpServer.SetHandler(server.handleUDPMessage)
-	server.udpServer.Run(server.address)
+	err := server.udpServer.Run(server.address)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (server *Server) Close() {
@@ -48,7 +53,7 @@ func (server *Server) Close() {
 }
 
 func (server *Server) HeartbeatRequest(handler HandleHeartbeatRequest) {
-	server.registerHandler(HeartbeatRequestType, func(header messages.PFCPHeader, ies []ie.InformationElement) {
+	server.registerHandler(HeartbeatRequestType, func(header headers.PFCPHeader, ies []ie.InformationElement) {
 		var recoveryTimeStamp ie.RecoveryTimeStamp
 		for _, elem := range ies {
 			if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
@@ -62,7 +67,7 @@ func (server *Server) HeartbeatRequest(handler HandleHeartbeatRequest) {
 }
 
 func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
-	server.registerHandler(HeartbeatResponseType, func(header messages.PFCPHeader, ies []ie.InformationElement) {
+	server.registerHandler(HeartbeatResponseType, func(header headers.PFCPHeader, ies []ie.InformationElement) {
 		var recoveryTimeStamp ie.RecoveryTimeStamp
 		for _, elem := range ies {
 			if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
@@ -76,7 +81,7 @@ func (server *Server) HeartbeatResponse(handler HandleHeartbeatResponse) {
 }
 
 func (server *Server) PFCPAssociationSetupRequest(handler HandlePFCPAssociationSetupRequest) {
-	server.registerHandler(PFCPAssociationSetupRequestType, func(header messages.PFCPHeader, ies []ie.InformationElement) {
+	server.registerHandler(PFCPAssociationSetupRequestType, func(header headers.PFCPHeader, ies []ie.InformationElement) {
 		var recoveryTimeStamp ie.RecoveryTimeStamp
 		var nodeID ie.NodeID
 		for _, elem := range ies {
@@ -92,8 +97,29 @@ func (server *Server) PFCPAssociationSetupRequest(handler HandlePFCPAssociationS
 	})
 }
 
+func (server *Server) PFCPAssociationSetupResponse(handler HandlePFCPAssociationSetupResponse) {
+	server.registerHandler(PFCPAssociationSetupResponseType, func(header headers.PFCPHeader, ies []ie.InformationElement) {
+		var recoveryTimeStamp ie.RecoveryTimeStamp
+		var nodeID ie.NodeID
+		var cause ie.Cause
+		for _, elem := range ies {
+			if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
+				recoveryTimeStamp = tsIE
+			}
+			if nodeIDIE, ok := elem.(ie.NodeID); ok {
+				nodeID = nodeIDIE
+			}
+			if causeIE, ok := elem.(ie.Cause); ok {
+				cause = causeIE
+			}
+		}
+
+		handler(header.SequenceNumber, nodeID, cause, recoveryTimeStamp)
+	})
+}
+
 func (server *Server) handleUDPMessage(data []byte) {
-	header, err := messages.ParsePFCPHeader(data[:HeaderSize])
+	header, err := headers.ParsePFCPHeader(data[:HeaderSize])
 	if err != nil {
 		log.Printf("Error parsing PFCP header: %v", err)
 		return

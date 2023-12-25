@@ -84,8 +84,6 @@ func (n NodeID) Serialize() []byte {
 	// Octets 6 to n+5: Node ID Value
 	buf.Write(n.NodeIDValue)
 
-	fmt.Printf("Node ID - serialized: %v\n", buf.Bytes())
-
 	return buf.Bytes()
 }
 
