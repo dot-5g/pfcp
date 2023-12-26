@@ -67,7 +67,7 @@ func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
 - [ ] Overload Control (Optional)
 - [ ] PFCP PFD Management (Optional)
 - [x] PFCP Association Setup
-- [ ] PFCP Association Update
+- [x] PFCP Association Update
 - [ ] PFCP Association Release
 - [ ] PFCP Node Report
 
