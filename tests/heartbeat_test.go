@@ -41,8 +41,7 @@ func HandleHeartbeatResponse(sequenceNumber uint32, recoveryTimeStamp ie.Recover
 
 func TestHeartbeat(t *testing.T) {
 	t.Run("TestHeartbeatRequest", HeartbeatRequest)
-	// t.Run("TestHeartbeatResponse", HeartbeatResponse)
-
+	t.Run("TestHeartbeatResponse", HeartbeatResponse)
 }
 
 func HeartbeatRequest(t *testing.T) {
@@ -83,6 +82,8 @@ func HeartbeatResponse(t *testing.T) {
 	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
 	sentSequenceNumber := uint32(971)
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+
+	pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
