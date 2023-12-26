@@ -45,7 +45,7 @@ func serializeMessage(header headers.PFCPHeader, payload []byte) []byte {
 }
 
 func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
-	header := headers.NewPFCPHeader(messages.PFCPHeartbeatRequest, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.HeartbeatRequest, sequenceNumber)
 	payload := []ie.InformationElement{recoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -55,7 +55,7 @@ func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp, s
 }
 
 func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
-	header := headers.NewPFCPHeader(messages.PFCPHeartbeatResponse, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.HeartbeatResponse, sequenceNumber)
 	payload := []ie.InformationElement{recoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -80,6 +80,26 @@ func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(nodeID ie.NodeID, cause ie.Ca
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Setup Response: %w", err)
+	}
+	return nil
+}
+
+func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(nodeID ie.NodeID, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateRequest, sequenceNumber)
+	payload := []ie.InformationElement{nodeID}
+	err := pfcp.sendPfcpMessage(header, payload)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Association Update Request: %w", err)
+	}
+	return nil
+}
+
+func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(nodeID ie.NodeID, cause ie.Cause, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateResponse, sequenceNumber)
+	payload := []ie.InformationElement{nodeID, cause}
+	err := pfcp.sendPfcpMessage(header, payload)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Association Update Response: %w", err)
 	}
 	return nil
 }
