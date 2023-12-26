@@ -1,25 +1,10 @@
 package messages
 
-type PFCPMessageType int
-
 const (
-	PFCPHeartbeatRequest PFCPMessageType = iota
-	PFCPHeartbeatResponse
-	PFCPAssociationSetupRequest
-	PFCPAssociationSetupResponse
+	HeartbeatRequest              byte = 1
+	HeartbeatResponse             byte = 2
+	PFCPAssociationSetupRequest   byte = 5
+	PFCPAssociationSetupResponse  byte = 6
+	PFCPAssociationUpdateRequest  byte = 7
+	PFCPAssociationUpdateResponse byte = 8
 )
-
-func MessageTypeToByte(messageType PFCPMessageType) byte {
-	switch messageType {
-	case PFCPHeartbeatRequest:
-		return 1
-	case PFCPHeartbeatResponse:
-		return 2
-	case PFCPAssociationSetupRequest:
-		return 5
-	case PFCPAssociationSetupResponse:
-		return 6
-	default:
-		return 0
-	}
-}

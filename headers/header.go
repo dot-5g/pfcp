@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-
-	"github.com/dot-5g/pfcp/messages"
 )
+
+const HeaderSize = 8
 
 type PFCPHeader struct {
 	Version        byte
@@ -39,18 +39,18 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	return buf.Bytes()
 }
 
-func NewPFCPHeader(messageType messages.PFCPMessageType, sequenceNumber uint32) PFCPHeader {
+func NewPFCPHeader(messageType byte, sequenceNumber uint32) PFCPHeader {
 	return PFCPHeader{
 		Version:        1,
-		MessageType:    messages.MessageTypeToByte(messageType),
+		MessageType:    messageType,
 		MessageLength:  0, // To be set later
 		SequenceNumber: sequenceNumber,
 	}
 }
 
 func ParsePFCPHeader(data []byte) (PFCPHeader, error) {
-	if len(data) != 8 {
-		return PFCPHeader{}, fmt.Errorf("expected 8 bytes, got %d", len(data))
+	if len(data) != HeaderSize {
+		return PFCPHeader{}, fmt.Errorf("expected %d bytes, got %d", HeaderSize, len(data))
 	}
 
 	header := PFCPHeader{}
