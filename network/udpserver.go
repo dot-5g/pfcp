@@ -70,8 +70,20 @@ func (udpServer *UdpServer) listen() {
 	}
 }
 
-func (udpServer *UdpServer) Close() {
-	close(udpServer.closeCh)
-	udpServer.conn.Close()
+func (udpServer *UdpServer) Close() error {
+	var err error
+	select {
+	case <-udpServer.closeCh:
+	default:
+		close(udpServer.closeCh)
+	}
+
+	if udpServer.conn != nil {
+		err = udpServer.conn.Close()
+	} else {
+		fmt.Printf("UDP server was not running\n")
+	}
+
 	udpServer.wg.Wait()
+	return err
 }
