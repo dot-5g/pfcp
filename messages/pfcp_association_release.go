@@ -13,6 +13,19 @@ type PFCPAssociationReleaseResponse struct {
 	Cause          ie.Cause
 }
 
+func NewPFCPAssociationReleaseRequest(nodeID ie.NodeID) PFCPAssociationReleaseRequest {
+	return PFCPAssociationReleaseRequest{
+		NodeID: nodeID,
+	}
+}
+
+func NewPFCPAssociationReleaseResponse(nodeID ie.NodeID, cause ie.Cause) PFCPAssociationReleaseResponse {
+	return PFCPAssociationReleaseResponse{
+		NodeID: nodeID,
+		Cause:  cause,
+	}
+}
+
 func ParsePFCPAssociationReleaseRequest(data []byte) (PFCPAssociationReleaseRequest, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID

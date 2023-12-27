@@ -11,9 +11,20 @@ type HeartbeatRequest struct {
 }
 
 type HeartbeatResponse struct {
-	MessageType       MessageType
 	SequenceNumber    uint32
 	RecoveryTimeStamp ie.RecoveryTimeStamp
+}
+
+func NewHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp) HeartbeatRequest {
+	return HeartbeatRequest{
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
+}
+
+func NewHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp) HeartbeatResponse {
+	return HeartbeatResponse{
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
 }
 
 func ParseHeartbeatRequest(data []byte) (HeartbeatRequest, error) {

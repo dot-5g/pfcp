@@ -51,6 +51,7 @@ func HeartbeatRequest(t *testing.T) {
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
 	sentSequenceNumber := uint32(32)
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	heartbeatRequestMsg := messages.NewHeartbeatRequest(recoveryTimeStamp)
 
 	pfcpServer.Run()
 
@@ -59,7 +60,7 @@ func HeartbeatRequest(t *testing.T) {
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sentSequenceNumber)
+	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sentSequenceNumber)
 	if err != nil {
 		t.Fatalf("Failed to send Heartbeat request: %v", err)
 	}
@@ -84,6 +85,7 @@ func HeartbeatResponse(t *testing.T) {
 	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
 	sentSequenceNumber := uint32(971)
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	heartbeatResponseMsg := messages.NewHeartbeatResponse(recoveryTimeStamp)
 
 	pfcpServer.Run()
 
@@ -92,7 +94,7 @@ func HeartbeatResponse(t *testing.T) {
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatResponse(recoveryTimeStamp, sentSequenceNumber)
+	sentRecoveryTimeStamp, err := pfcpClient.SendHeartbeatResponse(heartbeatResponseMsg, sentSequenceNumber)
 	if err != nil {
 		t.Fatalf("Failed to send Heartbeat response: %v", err)
 	}
