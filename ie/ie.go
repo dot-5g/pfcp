@@ -9,7 +9,6 @@ const IEHeaderLength = 4
 
 type InformationElement interface {
 	Serialize() []byte
-	Type() uint16
 }
 
 func ParseInformationElements(b []byte) ([]InformationElement, error) {
@@ -39,6 +38,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie = DeserializeNodeID(ieType, ieLength, ieValue)
 		case 96:
 			ie = DeserializeRecoveryTimeStamp(ieType, ieLength, ieValue)
+		case 101:
+			ie = DeserializeNodeReportType(ieType, ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}

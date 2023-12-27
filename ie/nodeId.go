@@ -87,10 +87,6 @@ func (n NodeID) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (n NodeID) Type() uint16 {
-	return n.IEtype
-}
-
 func DeserializeNodeID(ieType uint16, ieLength uint16, ieValue []byte) NodeID {
 	nodeIDType := NodeIDType(ieValue[0] & 0x0F) // Ensure NodeIDType is only 4 bits
 	nodeIDValue := ieValue[1:]
