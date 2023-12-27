@@ -103,3 +103,23 @@ func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(nodeID ie.NodeID, cause ie.C
 	}
 	return nil
 }
+
+func (pfcp *Pfcp) SendPFCPAssociationReleaseRequest(nodeID ie.NodeID, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPAssociationReleaseRequestMessageType, sequenceNumber)
+	payload := []ie.InformationElement{nodeID}
+	err := pfcp.sendPfcpMessage(header, payload)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Association Release Request: %w", err)
+	}
+	return nil
+}
+
+func (pfcp *Pfcp) SendPFCPAssociationReleaseResponse(nodeID ie.NodeID, cause ie.Cause, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPAssociationReleaseResponseMessageType, sequenceNumber)
+	payload := []ie.InformationElement{nodeID, cause}
+	err := pfcp.sendPfcpMessage(header, payload)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Association Release Response: %w", err)
+	}
+	return nil
+}
