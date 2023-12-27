@@ -7,6 +7,7 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
+	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
@@ -24,18 +25,19 @@ var (
 	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
-func HandleHeartbeatRequest(sequenceNumber uint32, recoveryTimeStamp ie.RecoveryTimeStamp) {
+func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestMu.Lock()
 	defer heartbeatRequestMu.Unlock()
 	heartbeatRequesthandlerCalled = true
-	heartbeatRequestreceivedRecoveryTimestamp = recoveryTimeStamp
+	heartbeatRequestreceivedRecoveryTimestamp = msg.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber = sequenceNumber
 }
-func HandleHeartbeatResponse(sequenceNumber uint32, recoveryTimeStamp ie.RecoveryTimeStamp) {
+
+func HandleHeartbeatResponse(sequenceNumber uint32, msg messages.HeartbeatResponse) {
 	heartbeatResponseMu.Lock()
 	defer heartbeatResponseMu.Unlock()
 	heartbeatResponsehandlerCalled = true
-	heartbeatResponsereceivedRecoveryTimestamp = recoveryTimeStamp
+	heartbeatResponsereceivedRecoveryTimestamp = msg.RecoveryTimeStamp
 	heartbeatResponseReceivedSequenceNumber = sequenceNumber
 }
 

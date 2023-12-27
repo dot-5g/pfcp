@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
+	"github.com/dot-5g/pfcp/messages"
 )
 
 const HeaderSize = 8
 
 type PFCPHeader struct {
 	Version        byte
-	MessageType    byte
+	MessageType    messages.MessageType
 	MessageLength  uint16
 	SequenceNumber uint32
 }
@@ -23,7 +25,7 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	buf.WriteByte(firstOctet)
 
 	// Octet 2: Message Type (1 byte)
-	buf.WriteByte(header.MessageType)
+	buf.WriteByte(byte(header.MessageType))
 
 	// Octets 3 and 4: Message Length (2 bytes)
 	binary.Write(buf, binary.BigEndian, header.MessageLength)
@@ -39,7 +41,7 @@ func SerializePFCPHeader(header PFCPHeader) []byte {
 	return buf.Bytes()
 }
 
-func NewPFCPHeader(messageType byte, sequenceNumber uint32) PFCPHeader {
+func NewPFCPHeader(messageType messages.MessageType, sequenceNumber uint32) PFCPHeader {
 	return PFCPHeader{
 		Version:        1,
 		MessageType:    messageType,
@@ -55,7 +57,7 @@ func ParsePFCPHeader(data []byte) (PFCPHeader, error) {
 
 	header := PFCPHeader{}
 	header.Version = data[0] >> 5
-	header.MessageType = data[1]
+	header.MessageType = messages.MessageType(data[1])
 	header.MessageLength = binary.BigEndian.Uint16(data[2:4])
 
 	seqNumBytes := []byte{0, data[4], data[5], data[6]}

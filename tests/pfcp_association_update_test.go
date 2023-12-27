@@ -7,6 +7,7 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
+	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
@@ -25,21 +26,21 @@ var (
 	pfcpAssociationUpdateResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPAssociationUpdateRequest(sequenceNumber uint32, nodeID ie.NodeID) {
+func HandlePFCPAssociationUpdateRequest(sequenceNumber uint32, msg messages.PFCPAssociationUpdateRequest) {
 	pfcpAssociationUpdateRequestMu.Lock()
 	defer pfcpAssociationUpdateRequestMu.Unlock()
 	pfcpAssociationUpdateRequesthandlerCalled = true
 	pfcpAssociationUpdateRequestReceivedSequenceNumber = sequenceNumber
-	pfcpAssociationUpdateRequestReceivedNodeID = nodeID
+	pfcpAssociationUpdateRequestReceivedNodeID = msg.NodeID
 }
 
-func HandlePFCPAssociationUpdateResponse(sequenceNumber uint32, nodeID ie.NodeID, cause ie.Cause) {
+func HandlePFCPAssociationUpdateResponse(sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse) {
 	pfcpAssociationUpdateResponseMu.Lock()
 	defer pfcpAssociationUpdateResponseMu.Unlock()
 	pfcpAssociationUpdateResponsehandlerCalled = true
 	pfcpAssociationUpdateResponseReceivedSequenceNumber = sequenceNumber
-	pfcpAssociationUpdateResponseReceivedNodeID = nodeID
-	pfcpAssociationUpdateResponseReceivedCause = cause
+	pfcpAssociationUpdateResponseReceivedNodeID = msg.NodeID
+	pfcpAssociationUpdateResponseReceivedCause = msg.Cause
 }
 
 func TestPFCPAssociationUpdate(t *testing.T) {
@@ -65,7 +66,7 @@ func PFCPAssociationUpdateRequest(t *testing.T) {
 
 	pfcpAssociationUpdateRequestMu.Lock()
 	if !pfcpAssociationUpdateRequesthandlerCalled {
-		t.Errorf("PFCP Association Update Request handler was not called")
+		t.Fatalf("PFCP Association Update Request handler was not called")
 	}
 
 	if pfcpAssociationUpdateRequestReceivedSequenceNumber != sequenceNumber {
@@ -113,7 +114,7 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 
 	pfcpAssociationUpdateResponseMu.Lock()
 	if !pfcpAssociationUpdateResponsehandlerCalled {
-		t.Errorf("PFCP Association Update Response handler was not called")
+		t.Fatalf("PFCP Association Update Response handler was not called")
 	}
 
 	if pfcpAssociationUpdateResponseReceivedSequenceNumber != sequenceNumber {
@@ -142,8 +143,8 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 		t.Errorf("PFCP Association Update Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpAssociationUpdateResponseReceivedCause.Length)
 	}
 
-	if pfcpAssociationUpdateResponseReceivedCause.Type != cause.Type {
-		t.Errorf("PFCP Association Update Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Type, pfcpAssociationUpdateResponseReceivedCause.Type)
+	if pfcpAssociationUpdateResponseReceivedCause.IEtype != cause.IEtype {
+		t.Errorf("PFCP Association Update Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpAssociationUpdateResponseReceivedCause.IEtype)
 	}
 
 	if pfcpAssociationUpdateResponseReceivedCause.Value != cause.Value {

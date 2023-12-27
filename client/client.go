@@ -45,7 +45,7 @@ func serializeMessage(header headers.PFCPHeader, payload []byte) []byte {
 }
 
 func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
-	header := headers.NewPFCPHeader(messages.HeartbeatRequest, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.HeartbeatRequestMessageType, sequenceNumber)
 	payload := []ie.InformationElement{recoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -55,7 +55,7 @@ func (pfcp *Pfcp) SendHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp, s
 }
 
 func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
-	header := headers.NewPFCPHeader(messages.HeartbeatResponse, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.HeartbeatResponseMessageType, sequenceNumber)
 	payload := []ie.InformationElement{recoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -65,7 +65,7 @@ func (pfcp *Pfcp) SendHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp, 
 }
 
 func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(nodeID ie.NodeID, recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) error {
-	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupRequest, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupRequestMessageType, sequenceNumber)
 	payload := []ie.InformationElement{nodeID, recoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -75,7 +75,7 @@ func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(nodeID ie.NodeID, recoveryTime
 }
 
 func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(nodeID ie.NodeID, cause ie.Cause, recoveryTimeStamp ie.RecoveryTimeStamp, sequenceNumber uint32) error {
-	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupResponse, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupResponseMessageType, sequenceNumber)
 	payload := []ie.InformationElement{nodeID, cause, recoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -85,7 +85,7 @@ func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(nodeID ie.NodeID, cause ie.Ca
 }
 
 func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(nodeID ie.NodeID, sequenceNumber uint32) error {
-	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateRequest, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateRequestMessageType, sequenceNumber)
 	payload := []ie.InformationElement{nodeID}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
@@ -95,7 +95,7 @@ func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(nodeID ie.NodeID, sequenceNum
 }
 
 func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(nodeID ie.NodeID, cause ie.Cause, sequenceNumber uint32) error {
-	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateResponse, sequenceNumber)
+	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateResponseMessageType, sequenceNumber)
 	payload := []ie.InformationElement{nodeID, cause}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {

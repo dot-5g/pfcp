@@ -16,7 +16,7 @@ const (
 type NodeIDType int
 
 type NodeID struct {
-	Type        uint16
+	IEtype      uint16
 	Length      uint16
 	NodeIDType  NodeIDType
 	NodeIDValue []byte
@@ -61,7 +61,7 @@ func NewNodeID(nodeIDType NodeIDType, nodeIDValue string) NodeID {
 		panic(fmt.Sprintf("invalid NodeIDType %d", nodeIDType))
 	}
 	return NodeID{
-		Type:        60,
+		IEtype:      60,
 		Length:      length,
 		NodeIDType:  nodeIDType,
 		NodeIDValue: nodeIDValueBytes,
@@ -72,7 +72,7 @@ func (n NodeID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
 	// Octets 1 to 2: Type (60)
-	binary.Write(buf, binary.BigEndian, uint16(n.Type))
+	binary.Write(buf, binary.BigEndian, uint16(n.IEtype))
 
 	// Octets 3 to 4: Length
 	binary.Write(buf, binary.BigEndian, uint16(n.Length))
@@ -87,12 +87,16 @@ func (n NodeID) Serialize() []byte {
 	return buf.Bytes()
 }
 
+func (n NodeID) Type() uint16 {
+	return n.IEtype
+}
+
 func DeserializeNodeID(ieType uint16, ieLength uint16, ieValue []byte) NodeID {
 	nodeIDType := NodeIDType(ieValue[0] & 0x0F) // Ensure NodeIDType is only 4 bits
 	nodeIDValue := ieValue[1:]
 
 	return NodeID{
-		Type:        ieType,
+		IEtype:      ieType,
 		Length:      ieLength,
 		NodeIDType:  nodeIDType,
 		NodeIDValue: nodeIDValue,

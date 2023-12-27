@@ -7,6 +7,7 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
+	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
@@ -27,23 +28,23 @@ var (
 	pfcpAssociationSetupResponseReceivedCause             ie.Cause
 )
 
-func HandlePFCPAssociationSetupRequest(sequenceNumber uint32, nodeID ie.NodeID, recoveryTimeStamp ie.RecoveryTimeStamp) {
+func HandlePFCPAssociationSetupRequest(sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest) {
 	pfcpAssociationSetupRequestMu.Lock()
 	defer pfcpAssociationSetupRequestMu.Unlock()
 	pfcpAssociationSetupRequesthandlerCalled = true
 	pfcpAssociationSetupRequestReceivedSequenceNumber = sequenceNumber
-	pfcpAssociationSetupRequestReceivedRecoveryTimeStamp = recoveryTimeStamp
-	pfcpAssociationSetupRequestReceivedNodeID = nodeID
+	pfcpAssociationSetupRequestReceivedRecoveryTimeStamp = msg.RecoveryTimeStamp
+	pfcpAssociationSetupRequestReceivedNodeID = msg.NodeID
 }
 
-func HandlePFCPAssociationSetupResponse(sequenceNumber uint32, nodeID ie.NodeID, cause ie.Cause, recoveryTimeStamp ie.RecoveryTimeStamp) {
+func HandlePFCPAssociationSetupResponse(sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse) {
 	pfcpAssociationSetupResponseMu.Lock()
 	defer pfcpAssociationSetupResponseMu.Unlock()
 	pfcpAssociationSetupResponsehandlerCalled = true
 	pfcpAssociationSetupResponseReceivedSequenceNumber = sequenceNumber
-	pfcpAssociationSetupResponseReceivedRecoveryTimeStamp = recoveryTimeStamp
-	pfcpAssociationSetupResponseReceivedNodeID = nodeID
-	pfcpAssociationSetupResponseReceivedCause = cause
+	pfcpAssociationSetupResponseReceivedRecoveryTimeStamp = msg.RecoveryTimeStamp
+	pfcpAssociationSetupResponseReceivedNodeID = msg.NodeID
+	pfcpAssociationSetupResponseReceivedCause = msg.Cause
 }
 
 func TestPFCPAssociationSetup(t *testing.T) {
@@ -70,7 +71,7 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 
 	pfcpAssociationSetupRequestMu.Lock()
 	if !pfcpAssociationSetupRequesthandlerCalled {
-		t.Errorf("PFCP Association Setup Request handler was not called")
+		t.Fatalf("PFCP Association Setup Request handler was not called")
 	}
 
 	if pfcpAssociationSetupRequestReceivedSequenceNumber != sequenceNumber {
@@ -153,8 +154,8 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		}
 	}
 
-	if pfcpAssociationSetupResponseReceivedCause.Type != cause.Type {
-		t.Errorf("PFCP Association Setup Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Type, pfcpAssociationSetupResponseReceivedCause.Type)
+	if pfcpAssociationSetupResponseReceivedCause.IEtype != cause.IEtype {
+		t.Errorf("PFCP Association Setup Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpAssociationSetupResponseReceivedCause.IEtype)
 	}
 
 	if pfcpAssociationSetupResponseReceivedCause.Length != cause.Length {
