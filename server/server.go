@@ -14,17 +14,21 @@ type HandlePFCPAssociationSetupRequest func(sequenceNumber uint32, msg messages.
 type HandlePFCPAssociationSetupResponse func(sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse)
 type HandlePFCPAssociationUpdateRequest func(sequenceNumber uint32, msg messages.PFCPAssociationUpdateRequest)
 type HandlePFCPAssociationUpdateResponse func(sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse)
+type HandlePFCPAssociationReleaseRequest func(sequenceNumber uint32, msg messages.PFCPAssociationReleaseRequest)
+type HandlePFCPAssociationReleaseResponse func(sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse)
 
 type Server struct {
 	address   string
 	udpServer *network.UdpServer
 
-	heartbeatRequestHandler              HandleHeartbeatRequest
-	heartbeatResponseHandler             HandleHeartbeatResponse
-	pfcpAssociationSetupRequestHandler   HandlePFCPAssociationSetupRequest
-	pfcpAssociationSetupResponseHandler  HandlePFCPAssociationSetupResponse
-	pfcpAssociationUpdateRequestHandler  HandlePFCPAssociationUpdateRequest
-	pfcpAssociationUpdateResponseHandler HandlePFCPAssociationUpdateResponse
+	heartbeatRequestHandler               HandleHeartbeatRequest
+	heartbeatResponseHandler              HandleHeartbeatResponse
+	pfcpAssociationSetupRequestHandler    HandlePFCPAssociationSetupRequest
+	pfcpAssociationSetupResponseHandler   HandlePFCPAssociationSetupResponse
+	pfcpAssociationUpdateRequestHandler   HandlePFCPAssociationUpdateRequest
+	pfcpAssociationUpdateResponseHandler  HandlePFCPAssociationUpdateResponse
+	pfcpAssociationReleaseRequestHandler  HandlePFCPAssociationReleaseRequest
+	pfcpAssociationReleaseResponseHandler HandlePFCPAssociationReleaseResponse
 }
 
 func New(address string) *Server {
@@ -67,6 +71,14 @@ func (server *Server) PFCPAssociationUpdateRequest(handler HandlePFCPAssociation
 
 func (server *Server) PFCPAssociationUpdateResponse(handler HandlePFCPAssociationUpdateResponse) {
 	server.pfcpAssociationUpdateResponseHandler = handler
+}
+
+func (server *Server) PFCPAssociationReleaseRequest(handler HandlePFCPAssociationReleaseRequest) {
+	server.pfcpAssociationReleaseRequestHandler = handler
+}
+
+func (server *Server) PFCPAssociationReleaseResponse(handler HandlePFCPAssociationReleaseResponse) {
+	server.pfcpAssociationReleaseResponseHandler = handler
 }
 
 func (server *Server) handleUDPMessage(data []byte) {
@@ -143,6 +155,28 @@ func (server *Server) handleUDPMessage(data []byte) {
 			return
 		}
 		server.pfcpAssociationUpdateResponseHandler(header.SequenceNumber, msg)
+	case messages.PFCPAssociationReleaseRequestMessageType:
+		if server.pfcpAssociationReleaseRequestHandler == nil {
+			log.Printf("No handler for PFCP Association Release Request")
+			return
+		}
+		msg, err := messages.ParsePFCPAssociationReleaseRequest(data[headers.HeaderSize:])
+		if err != nil {
+			log.Printf("Error parsing PFCP Association Release Request: %v", err)
+			return
+		}
+		server.pfcpAssociationReleaseRequestHandler(header.SequenceNumber, msg)
+	case messages.PFCPAssociationReleaseResponseMessageType:
+		if server.pfcpAssociationReleaseResponseHandler == nil {
+			log.Printf("No handler for PFCP Association Release Response")
+			return
+		}
+		msg, err := messages.ParsePFCPAssociationReleaseResponse(data[headers.HeaderSize:])
+		if err != nil {
+			log.Printf("Error parsing PFCP Association Release Response: %v", err)
+			return
+		}
+		server.pfcpAssociationReleaseResponseHandler(header.SequenceNumber, msg)
 	default:
 		log.Printf("Unknown PFCP message type: %v", header.MessageType)
 	}

@@ -71,7 +71,7 @@ func HandleHeartbeatResponse(sequenceNumber uint32, msg messages.HeartbeatRespon
 - [ ] PFCP PFD Management (Optional)
 - [x] PFCP Association Setup
 - [x] PFCP Association Update
-- [ ] PFCP Association Release
+- [x] PFCP Association Release
 - [ ] PFCP Node Report
 
 ### Session
