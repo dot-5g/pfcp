@@ -16,6 +16,20 @@ type HeartbeatResponse struct {
 	RecoveryTimeStamp ie.RecoveryTimeStamp
 }
 
+func NewHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp) HeartbeatRequest {
+	return HeartbeatRequest{
+		MessageType:       HeartbeatRequestMessageType,
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
+}
+
+func NewHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp) HeartbeatResponse {
+	return HeartbeatResponse{
+		MessageType:       HeartbeatResponseMessageType,
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
+}
+
 func ParseHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp

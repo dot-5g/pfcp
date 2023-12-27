@@ -18,14 +18,16 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
+	"github.com/dot-5g/pfcp/messages"
 )
 
 func main() {
 	pfcpClient := client.New("1.2.3.4:8805")
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(21)
+	heartbeatRequestMsg := messages.NewHeartbeatRequest(recoveryTimeStamp)
 
-	_, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sequenceNumber)
+	_, err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
 	if err != nil {
 		log.Fatalf("SendHeartbeatRequest failed: %v", err)
 	}
@@ -48,7 +50,6 @@ import (
 func main() {
 	pfcpServer := server.New("localhost:8805")
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
-	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
 	pfcpServer.Run()
 }
 
@@ -56,9 +57,6 @@ func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest
 	fmt.Printf("Received Heartbeat Request - Recovery TimeStamp: %v", msg.RecoveryTimeStamp)
 }
 
-func HandleHeartbeatResponse(sequenceNumber uint32, msg messages.HeartbeatResponse) {
-	fmt.Printf("Received Heartbeat Response - Recovery TimeStamp: %v", msg.RecoveryTimeStamp)
-}
 ```
 
 ## Procedures

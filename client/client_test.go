@@ -6,6 +6,7 @@ import (
 
 	"github.com/dot-5g/pfcp/client"
 	"github.com/dot-5g/pfcp/ie"
+	"github.com/dot-5g/pfcp/messages"
 )
 
 type MockUdpSender struct {
@@ -26,8 +27,9 @@ func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
 	pfcpClient.Udp = mockSender
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(21)
+	heartbeatRequestMsg := messages.NewHeartbeatRequest(recoveryTimeStamp)
 
-	_, err := pfcpClient.SendHeartbeatRequest(recoveryTimeStamp, sequenceNumber)
+	_, err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
 
 	if err != nil {
 		t.Errorf("SendHeartbeatRequest failed: %v", err)
