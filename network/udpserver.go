@@ -80,8 +80,6 @@ func (udpServer *UdpServer) Close() error {
 
 	if udpServer.conn != nil {
 		err = udpServer.conn.Close()
-	} else {
-		fmt.Printf("UDP server was not running\n")
 	}
 
 	udpServer.wg.Wait()

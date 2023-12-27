@@ -9,6 +9,7 @@ const IEHeaderLength = 4
 
 type InformationElement interface {
 	Serialize() []byte
+	Type() uint16
 }
 
 func ParseInformationElements(b []byte) ([]InformationElement, error) {

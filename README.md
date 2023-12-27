@@ -14,8 +14,10 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/dot-5g/pfcp/client"
+	"github.com/dot-5g/pfcp/ie"
 )
 
 func main() {
@@ -37,6 +39,8 @@ func main() {
 package main
 
 import (
+	"fmt"
+
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
@@ -48,14 +52,13 @@ func main() {
 	pfcpServer.Run()
 }
 
-func HandleHeartbeatRequest(h *messages.HeartbeatRequest) {
-	// Do something
+func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest) {
+	fmt.Printf("Received Heartbeat Request - Recovery TimeStamp: %v", msg.RecoveryTimeStamp)
 }
 
-func HandleHeartbeatResponse(h *messages.HeartbeatResponse) {
-	// Do something
+func HandleHeartbeatResponse(sequenceNumber uint32, msg messages.HeartbeatResponse) {
+	fmt.Printf("Received Heartbeat Response - Recovery TimeStamp: %v", msg.RecoveryTimeStamp)
 }
-
 ```
 
 ## Procedures

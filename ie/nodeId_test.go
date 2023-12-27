@@ -9,8 +9,8 @@ import (
 func TestNewNodeIDIPv4(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.IPv4, "1.2.3.4")
 
-	if nodeID.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", nodeID.Type)
+	if nodeID.IEtype != 60 {
+		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
 	}
 
 	if nodeID.Length != 4+1 {
@@ -37,8 +37,8 @@ func TestNewNodeIDIPv4(t *testing.T) {
 func TestNewNodeIDIPv6(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.IPv6, "2001:db8::68")
 
-	if nodeID.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", nodeID.Type)
+	if nodeID.IEtype != 60 {
+		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
 	}
 
 	if nodeID.Length != 16+1 {
@@ -65,8 +65,8 @@ func TestNewNodeIDIPv6(t *testing.T) {
 func TestNewNodeIDFQDN(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.FQDN, "www.example.com")
 
-	if nodeID.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", nodeID.Type)
+	if nodeID.IEtype != 60 {
+		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
 	}
 
 	if nodeID.Length != 15+1 {

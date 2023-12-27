@@ -1,10 +1,12 @@
 package messages
 
+type MessageType byte
+
 const (
-	HeartbeatRequest              byte = 1
-	HeartbeatResponse             byte = 2
-	PFCPAssociationSetupRequest   byte = 5
-	PFCPAssociationSetupResponse  byte = 6
-	PFCPAssociationUpdateRequest  byte = 7
-	PFCPAssociationUpdateResponse byte = 8
+	HeartbeatRequestMessageType              MessageType = 1
+	HeartbeatResponseMessageType             MessageType = 2
+	PFCPAssociationSetupRequestMessageType   MessageType = 5
+	PFCPAssociationSetupResponseMessageType  MessageType = 6
+	PFCPAssociationUpdateRequestMessageType  MessageType = 7
+	PFCPAssociationUpdateResponseMessageType MessageType = 8
 )
