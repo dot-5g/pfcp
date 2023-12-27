@@ -70,7 +70,7 @@ func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest
 - [x] PFCP Association Setup
 - [x] PFCP Association Update
 - [x] PFCP Association Release
-- [ ] PFCP Node Report
+- [x] PFCP Node Report
 
 ### Session
 

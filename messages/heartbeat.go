@@ -6,12 +6,10 @@ import (
 
 type HeartbeatRequest struct {
 	MessageType       MessageType
-	SequenceNumber    uint32
 	RecoveryTimeStamp ie.RecoveryTimeStamp
 }
 
 type HeartbeatResponse struct {
-	SequenceNumber    uint32
 	RecoveryTimeStamp ie.RecoveryTimeStamp
 }
 

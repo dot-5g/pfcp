@@ -3,14 +3,12 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPAssociationUpdateRequest struct {
-	SequenceNumber uint32
-	NodeID         ie.NodeID
+	NodeID ie.NodeID
 }
 
 type PFCPAssociationUpdateResponse struct {
-	SequenceNumber uint32
-	NodeID         ie.NodeID
-	Cause          ie.Cause
+	NodeID ie.NodeID
+	Cause  ie.Cause
 }
 
 func NewPFCPAssociationUpdateRequest(nodeID ie.NodeID) PFCPAssociationUpdateRequest {

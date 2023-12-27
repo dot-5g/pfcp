@@ -123,3 +123,23 @@ func (pfcp *Pfcp) SendPFCPAssociationReleaseResponse(msg messages.PFCPAssociatio
 	}
 	return nil
 }
+
+func (pfcp *Pfcp) SendPFCPNodeReportRequest(msg messages.PFCPNodeReportRequest, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPNodeReportRequestMessageType, sequenceNumber)
+	payload := []ie.InformationElement{msg.NodeID, msg.NodeReportType}
+	err := pfcp.sendPfcpMessage(header, payload)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Node Report Request: %w", err)
+	}
+	return nil
+}
+
+func (pfcp *Pfcp) SendPFCPNodeReportResponse(msg messages.PFCPNodeReportResponse, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPNodeReportResponseMessageType, sequenceNumber)
+	payload := []ie.InformationElement{msg.NodeID, msg.Cause}
+	err := pfcp.sendPfcpMessage(header, payload)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Node Report Response: %w", err)
+	}
+	return nil
+}

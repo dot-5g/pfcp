@@ -34,10 +34,6 @@ func (cause Cause) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (cause Cause) Type() uint16 {
-	return cause.IEtype
-}
-
 func DeserializeCause(ieType uint16, ieLength uint16, ieValue []byte) Cause {
 	return Cause{
 		IEtype: ieType,

@@ -16,6 +16,8 @@ type HandlePFCPAssociationUpdateRequest func(sequenceNumber uint32, msg messages
 type HandlePFCPAssociationUpdateResponse func(sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse)
 type HandlePFCPAssociationReleaseRequest func(sequenceNumber uint32, msg messages.PFCPAssociationReleaseRequest)
 type HandlePFCPAssociationReleaseResponse func(sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse)
+type HandlePFCPNodeReportRequest func(sequenceNumber uint32, msg messages.PFCPNodeReportRequest)
+type HandlePFCPNodeReportResponse func(sequenceNumber uint32, msg messages.PFCPNodeReportResponse)
 
 type Server struct {
 	address   string
@@ -29,6 +31,8 @@ type Server struct {
 	pfcpAssociationUpdateResponseHandler  HandlePFCPAssociationUpdateResponse
 	pfcpAssociationReleaseRequestHandler  HandlePFCPAssociationReleaseRequest
 	pfcpAssociationReleaseResponseHandler HandlePFCPAssociationReleaseResponse
+	pfcpNodeReportRequestHandler          HandlePFCPNodeReportRequest
+	pfcpNodeReportResponseHandler         HandlePFCPNodeReportResponse
 }
 
 func New(address string) *Server {
@@ -79,6 +83,14 @@ func (server *Server) PFCPAssociationReleaseRequest(handler HandlePFCPAssociatio
 
 func (server *Server) PFCPAssociationReleaseResponse(handler HandlePFCPAssociationReleaseResponse) {
 	server.pfcpAssociationReleaseResponseHandler = handler
+}
+
+func (server *Server) PFCPNodeReportRequest(handler HandlePFCPNodeReportRequest) {
+	server.pfcpNodeReportRequestHandler = handler
+}
+
+func (server *Server) PFCPNodeReportResponse(handler HandlePFCPNodeReportResponse) {
+	server.pfcpNodeReportResponseHandler = handler
 }
 
 func (server *Server) handleUDPMessage(data []byte) {
@@ -177,6 +189,28 @@ func (server *Server) handleUDPMessage(data []byte) {
 			return
 		}
 		server.pfcpAssociationReleaseResponseHandler(header.SequenceNumber, msg)
+	case messages.PFCPNodeReportRequestMessageType:
+		if server.pfcpNodeReportRequestHandler == nil {
+			log.Printf("No handler for PFCP Node Report Request")
+			return
+		}
+		msg, err := messages.ParsePFCPNodeReportRequest(data[headers.HeaderSize:])
+		if err != nil {
+			log.Printf("Error parsing PFCP Node Report Request: %v", err)
+			return
+		}
+		server.pfcpNodeReportRequestHandler(header.SequenceNumber, msg)
+	case messages.PFCPNodeReportResponseMessageType:
+		if server.pfcpNodeReportResponseHandler == nil {
+			log.Printf("No handler for PFCP Node Report Response")
+			return
+		}
+		msg, err := messages.ParsePFCPNodeReportResponse(data[headers.HeaderSize:])
+		if err != nil {
+			log.Printf("Error parsing PFCP Node Report Response: %v", err)
+			return
+		}
+		server.pfcpNodeReportResponseHandler(header.SequenceNumber, msg)
 	default:
 		log.Printf("Unknown PFCP message type: %v", header.MessageType)
 	}

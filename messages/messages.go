@@ -11,4 +11,6 @@ const (
 	PFCPAssociationUpdateResponseMessageType  MessageType = 8
 	PFCPAssociationReleaseRequestMessageType  MessageType = 9
 	PFCPAssociationReleaseResponseMessageType MessageType = 10
+	PFCPNodeReportRequestMessageType          MessageType = 12
+	PFCPNodeReportResponseMessageType         MessageType = 13
 )

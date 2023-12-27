@@ -29,10 +29,6 @@ func (rt RecoveryTimeStamp) Serialize() []byte {
 	return bytes
 }
 
-func (rt RecoveryTimeStamp) Type() uint16 {
-	return rt.IEtype
-}
-
 func DeserializeRecoveryTimeStamp(ieType uint16, ieLength uint16, ieValue []byte) RecoveryTimeStamp {
 	return RecoveryTimeStamp{
 		IEtype: ieType,
