@@ -3,25 +3,12 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPAssociationReleaseRequest struct {
-	NodeID ie.NodeID
+	NodeID ie.NodeID // Mandatory
 }
 
 type PFCPAssociationReleaseResponse struct {
-	NodeID ie.NodeID
-	Cause  ie.Cause
-}
-
-func NewPFCPAssociationReleaseRequest(nodeID ie.NodeID) PFCPAssociationReleaseRequest {
-	return PFCPAssociationReleaseRequest{
-		NodeID: nodeID,
-	}
-}
-
-func NewPFCPAssociationReleaseResponse(nodeID ie.NodeID, cause ie.Cause) PFCPAssociationReleaseResponse {
-	return PFCPAssociationReleaseResponse{
-		NodeID: nodeID,
-		Cause:  cause,
-	}
+	NodeID ie.NodeID // Mandatory
+	Cause  ie.Cause  // Mandatory
 }
 
 func ParsePFCPAssociationReleaseRequest(data []byte) (PFCPAssociationReleaseRequest, error) {

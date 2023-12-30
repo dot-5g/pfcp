@@ -5,27 +5,13 @@ import (
 )
 
 type PFCPNodeReportRequest struct {
-	NodeID         ie.NodeID
-	NodeReportType ie.NodeReportType
+	NodeID         ie.NodeID         // Mandatory
+	NodeReportType ie.NodeReportType // Mandatory
 }
 
 type PFCPNodeReportResponse struct {
-	NodeID ie.NodeID
-	Cause  ie.Cause
-}
-
-func NewPFCPNodeReportRequest(nodeID ie.NodeID, nodeReportType ie.NodeReportType) PFCPNodeReportRequest {
-	return PFCPNodeReportRequest{
-		NodeID:         nodeID,
-		NodeReportType: nodeReportType,
-	}
-}
-
-func NewPFCPNodeReportResponse(nodeID ie.NodeID, cause ie.Cause) PFCPNodeReportResponse {
-	return PFCPNodeReportResponse{
-		NodeID: nodeID,
-		Cause:  cause,
-	}
+	NodeID ie.NodeID // Mandatory
+	Cause  ie.Cause  // Mandatory
 }
 
 func ParsePFCPNodeReportRequest(data []byte) (PFCPNodeReportRequest, error) {

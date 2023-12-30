@@ -5,38 +5,32 @@ import (
 )
 
 type HeartbeatRequest struct {
-	MessageType       MessageType
-	RecoveryTimeStamp ie.RecoveryTimeStamp
+	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
+	SourceIPAddress   ie.SourceIPAddress   // Optional
 }
 
 type HeartbeatResponse struct {
-	RecoveryTimeStamp ie.RecoveryTimeStamp
-}
-
-func NewHeartbeatRequest(recoveryTimeStamp ie.RecoveryTimeStamp) HeartbeatRequest {
-	return HeartbeatRequest{
-		RecoveryTimeStamp: recoveryTimeStamp,
-	}
-}
-
-func NewHeartbeatResponse(recoveryTimeStamp ie.RecoveryTimeStamp) HeartbeatResponse {
-	return HeartbeatResponse{
-		RecoveryTimeStamp: recoveryTimeStamp,
-	}
+	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
 func ParseHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
+	var sourceIPAddress ie.SourceIPAddress
 	for _, elem := range ies {
 		if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
 			recoveryTimeStamp = tsIE
+			continue
+		}
+		if ipIE, ok := elem.(ie.SourceIPAddress); ok {
+			sourceIPAddress = ipIE
 			continue
 		}
 	}
 
 	return HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
+		SourceIPAddress:   sourceIPAddress,
 	}, err
 }
 

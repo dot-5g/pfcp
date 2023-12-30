@@ -3,29 +3,14 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPAssociationSetupRequest struct {
-	NodeID            ie.NodeID
-	RecoveryTimeStamp ie.RecoveryTimeStamp
+	NodeID            ie.NodeID            // Mandatory
+	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
 type PFCPAssociationSetupResponse struct {
-	NodeID            ie.NodeID
-	Cause             ie.Cause
-	RecoveryTimeStamp ie.RecoveryTimeStamp
-}
-
-func NewPFCPAssociationSetupRequest(nodeID ie.NodeID, recoveryTimeStamp ie.RecoveryTimeStamp) PFCPAssociationSetupRequest {
-	return PFCPAssociationSetupRequest{
-		NodeID:            nodeID,
-		RecoveryTimeStamp: recoveryTimeStamp,
-	}
-}
-
-func NewPFCPAssociationSetupResponse(nodeID ie.NodeID, cause ie.Cause, recoveryTimeStamp ie.RecoveryTimeStamp) PFCPAssociationSetupResponse {
-	return PFCPAssociationSetupResponse{
-		NodeID:            nodeID,
-		Cause:             cause,
-		RecoveryTimeStamp: recoveryTimeStamp,
-	}
+	NodeID            ie.NodeID            // Mandatory
+	Cause             ie.Cause             // Mandatory
+	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
 func ParsePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest, error) {
