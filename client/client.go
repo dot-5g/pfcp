@@ -73,6 +73,11 @@ func (pfcp *Pfcp) SendHeartbeatResponse(msg messages.HeartbeatResponse, sequence
 func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(msg messages.PFCPAssociationSetupRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupRequestMessageType, sequenceNumber)
 	payload := []ie.InformationElement{msg.NodeID, msg.RecoveryTimeStamp}
+
+	if !msg.UPFunctionFeatures.IsZeroValue() {
+		payload = append(payload, msg.UPFunctionFeatures)
+	}
+
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Setup Request: %w", err)

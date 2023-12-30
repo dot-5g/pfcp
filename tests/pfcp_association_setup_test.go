@@ -12,11 +12,12 @@ import (
 )
 
 var (
-	pfcpAssociationSetupRequestMu                        sync.Mutex
-	pfcpAssociationSetupRequesthandlerCalled             bool
-	pfcpAssociationSetupRequestReceivedSequenceNumber    uint32
-	pfcpAssociationSetupRequestReceivedRecoveryTimeStamp ie.RecoveryTimeStamp
-	pfcpAssociationSetupRequestReceivedNodeID            ie.NodeID
+	pfcpAssociationSetupRequestMu                         sync.Mutex
+	pfcpAssociationSetupRequesthandlerCalled              bool
+	pfcpAssociationSetupRequestReceivedSequenceNumber     uint32
+	pfcpAssociationSetupRequestReceivedRecoveryTimeStamp  ie.RecoveryTimeStamp
+	pfcpAssociationSetupRequestReceivedNodeID             ie.NodeID
+	pfcpAssociationSetupRequestReceivedUPFunctionFeatures ie.UPFunctionFeatures
 )
 
 var (
@@ -35,6 +36,7 @@ func HandlePFCPAssociationSetupRequest(sequenceNumber uint32, msg messages.PFCPA
 	pfcpAssociationSetupRequestReceivedSequenceNumber = sequenceNumber
 	pfcpAssociationSetupRequestReceivedRecoveryTimeStamp = msg.RecoveryTimeStamp
 	pfcpAssociationSetupRequestReceivedNodeID = msg.NodeID
+	pfcpAssociationSetupRequestReceivedUPFunctionFeatures = msg.UPFunctionFeatures
 }
 
 func HandlePFCPAssociationSetupResponse(sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse) {
@@ -65,9 +67,15 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.IPv4, "12.23.34.45")
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(32)
+	features := [](ie.UPFeature){
+		ie.BUCP,
+		ie.TRACE,
+	}
+	upFeatures := ie.NewUPFunctionFeatures(features)
 	PFCPAssociationSetupRequestMsg := messages.PFCPAssociationSetupRequest{
-		NodeID:            nodeID,
-		RecoveryTimeStamp: recoveryTimeStamp,
+		NodeID:             nodeID,
+		RecoveryTimeStamp:  recoveryTimeStamp,
+		UPFunctionFeatures: upFeatures,
 	}
 
 	pfcpClient.SendPFCPAssociationSetupRequest(PFCPAssociationSetupRequestMsg, sequenceNumber)
@@ -102,6 +110,22 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 	for i := range nodeID.NodeIDValue {
 		if pfcpAssociationSetupRequestReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
 			t.Errorf("PFCP Association Setup Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpAssociationSetupRequestReceivedNodeID.NodeIDValue)
+		}
+	}
+
+	if pfcpAssociationSetupRequestReceivedUPFunctionFeatures.Length != upFeatures.Length {
+		t.Errorf("PFCP Association Setup Request handler was called with wrong UP function features length.\n- Sent UP function features length: %v\n- Received UP function features length %v\n", upFeatures.Length, pfcpAssociationSetupRequestReceivedUPFunctionFeatures.Length)
+	}
+
+	receivedFeatures := pfcpAssociationSetupRequestReceivedUPFunctionFeatures.GetFeatures()
+
+	if len(receivedFeatures) != len(features) {
+		t.Errorf("PFCP Association Setup Request handler was called with wrong UP function features.\n- Sent UP function features: %v\n- Received UP function features %v\n", features, receivedFeatures)
+	}
+
+	for i := range features {
+		if receivedFeatures[i] != features[i] {
+			t.Errorf("PFCP Association Setup Request handler was called with wrong UP function features.\n- Sent UP function features: %v\n- Received UP function features %v\n", features, receivedFeatures)
 		}
 	}
 
