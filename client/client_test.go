@@ -27,9 +27,11 @@ func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
 	pfcpClient.Udp = mockSender
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(21)
-	heartbeatRequestMsg := messages.NewHeartbeatRequest(recoveryTimeStamp)
+	heartbeatRequestMsg := messages.HeartbeatRequest{
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
 
-	_, err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
+	err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
 
 	if err != nil {
 		t.Errorf("SendHeartbeatRequest failed: %v", err)

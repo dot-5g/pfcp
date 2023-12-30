@@ -44,24 +44,30 @@ func serializeMessage(header headers.PFCPHeader, payload []byte) []byte {
 	return append(headerBytes, payload...)
 }
 
-func (pfcp *Pfcp) SendHeartbeatRequest(msg messages.HeartbeatRequest, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
+func (pfcp *Pfcp) SendHeartbeatRequest(msg messages.HeartbeatRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.HeartbeatRequestMessageType, sequenceNumber)
+
 	payload := []ie.InformationElement{msg.RecoveryTimeStamp}
+
+	if !msg.SourceIPAddress.IsZeroValue() {
+		payload = append(payload, msg.SourceIPAddress)
+	}
+
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
-		return msg.RecoveryTimeStamp, fmt.Errorf("error sending PFCP Heartbeat Request: %w", err)
+		return fmt.Errorf("error sending PFCP Heartbeat Request: %w", err)
 	}
-	return msg.RecoveryTimeStamp, nil
+	return nil
 }
 
-func (pfcp *Pfcp) SendHeartbeatResponse(msg messages.HeartbeatResponse, sequenceNumber uint32) (ie.RecoveryTimeStamp, error) {
+func (pfcp *Pfcp) SendHeartbeatResponse(msg messages.HeartbeatResponse, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.HeartbeatResponseMessageType, sequenceNumber)
 	payload := []ie.InformationElement{msg.RecoveryTimeStamp}
 	err := pfcp.sendPfcpMessage(header, payload)
 	if err != nil {
-		return msg.RecoveryTimeStamp, fmt.Errorf("error sending PFCP Heartbeat Response: %w", err)
+		return fmt.Errorf("error sending PFCP Heartbeat Response: %w", err)
 	}
-	return msg.RecoveryTimeStamp, nil
+	return nil
 }
 
 func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(msg messages.PFCPAssociationSetupRequest, sequenceNumber uint32) error {

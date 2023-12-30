@@ -40,6 +40,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie = DeserializeRecoveryTimeStamp(ieType, ieLength, ieValue)
 		case 101:
 			ie = DeserializeNodeReportType(ieType, ieLength, ieValue)
+		case 192:
+			ie, err = DeserializeSourceIPAddress(ieType, ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}

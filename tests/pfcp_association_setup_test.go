@@ -65,7 +65,10 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.IPv4, "12.23.34.45")
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(32)
-	PFCPAssociationSetupRequestMsg := messages.NewPFCPAssociationSetupRequest(nodeID, recoveryTimeStamp)
+	PFCPAssociationSetupRequestMsg := messages.PFCPAssociationSetupRequest{
+		NodeID:            nodeID,
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
 
 	pfcpClient.SendPFCPAssociationSetupRequest(PFCPAssociationSetupRequestMsg, sequenceNumber)
 
@@ -120,7 +123,11 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 	cause := ie.NewCause(2)
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(32)
-	PFCPAssociationSetupResponseMsg := messages.NewPFCPAssociationSetupResponse(nodeID, cause, recoveryTimeStamp)
+	PFCPAssociationSetupResponseMsg := messages.PFCPAssociationSetupResponse{
+		NodeID:            nodeID,
+		Cause:             cause,
+		RecoveryTimeStamp: recoveryTimeStamp,
+	}
 
 	pfcpClient.SendPFCPAssociationSetupResponse(PFCPAssociationSetupResponseMsg, sequenceNumber)
 

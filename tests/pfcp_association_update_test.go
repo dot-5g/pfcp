@@ -60,7 +60,9 @@ func PFCPAssociationUpdateRequest(t *testing.T) {
 	pfcpClient := client.New("127.0.0.1:8805")
 	nodeID := ie.NewNodeID(ie.IPv4, "12.23.34.45")
 	sequenceNumber := uint32(32)
-	PFCPAssociationUpdateRequestMsg := messages.NewPFCPAssociationUpdateRequest(nodeID)
+	PFCPAssociationUpdateRequestMsg := messages.PFCPAssociationUpdateRequest{
+		NodeID: nodeID,
+	}
 
 	pfcpClient.SendPFCPAssociationUpdateRequest(PFCPAssociationUpdateRequestMsg, sequenceNumber)
 
@@ -109,7 +111,10 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.IPv4, "3.4.5.6")
 	sequenceNumber := uint32(32)
 	cause := ie.NewCause(2)
-	PFCPAssociationUpdateResponseMsg := messages.NewPFCPAssociationUpdateResponse(nodeID, cause)
+	PFCPAssociationUpdateResponseMsg := messages.PFCPAssociationUpdateResponse{
+		NodeID: nodeID,
+		Cause:  cause,
+	}
 
 	pfcpClient.SendPFCPAssociationUpdateResponse(PFCPAssociationUpdateResponseMsg, sequenceNumber)
 

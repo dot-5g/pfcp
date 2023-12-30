@@ -68,7 +68,10 @@ func PFCPNodeReportRequest(t *testing.T) {
 
 	nodeReportType := ie.NewNodeReportType(gpqr, ckdr, uprr, upfr)
 	sequenceNumber := uint32(32)
-	PFCPNodeReportRequestMsg := messages.NewPFCPNodeReportRequest(nodeID, nodeReportType)
+	PFCPNodeReportRequestMsg := messages.PFCPNodeReportRequest{
+		NodeID:         nodeID,
+		NodeReportType: nodeReportType,
+	}
 
 	pfcpClient.SendPFCPNodeReportRequest(PFCPNodeReportRequestMsg, sequenceNumber)
 
@@ -141,7 +144,10 @@ func PFCPNodeReportResponse(t *testing.T) {
 	nodeID := ie.NewNodeID(ie.IPv4, "3.4.5.6")
 	sequenceNumber := uint32(32)
 	cause := ie.NewCause(2)
-	PFCPNodeReportResponseMsg := messages.NewPFCPNodeReportResponse(nodeID, cause)
+	PFCPNodeReportResponseMsg := messages.PFCPNodeReportResponse{
+		NodeID: nodeID,
+		Cause:  cause,
+	}
 
 	pfcpClient.SendPFCPNodeReportResponse(PFCPNodeReportResponseMsg, sequenceNumber)
 
