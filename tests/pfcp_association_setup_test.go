@@ -64,7 +64,7 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID(ie.IPv4, "12.23.34.45")
+	nodeID := ie.NewNodeID("12.23.34.45")
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(32)
 	features := [](ie.UPFeature){
@@ -143,7 +143,7 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID(ie.IPv4, "1.2.3.4")
+	nodeID := ie.NewNodeID("1.2.3.4")
 	cause := ie.NewCause(2)
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
 	sequenceNumber := uint32(32)

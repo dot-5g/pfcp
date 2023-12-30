@@ -1,7 +1,6 @@
 package ie
 
 import (
-	"fmt"
 	"net"
 )
 
@@ -16,31 +15,36 @@ type SourceIPAddress struct {
 	MaskPrefixLength uint8
 }
 
-func NewSourceIPAddress(cidr string) (SourceIPAddress, error) {
+func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress, error) {
 	sourceIPAddress := SourceIPAddress{
 		IEtype: 192,
 	}
 
-	ip, ipnet, err := net.ParseCIDR(cidr)
-	if err != nil {
-		return sourceIPAddress, fmt.Errorf("invalid CIDR")
-	}
+	length := 2
 
-	if ip.To4() != nil {
+	ipv4, ipv4net, _ := net.ParseCIDR(ipv4Address)
+	ipv6, ipv6net, _ := net.ParseCIDR(ipv6Address)
+
+	if ipv4.To4() != nil {
 		sourceIPAddress.V4 = true
-		sourceIPAddress.IPv4Address = ip.To4()
-		sourceIPAddress.Length = 6
-	} else {
-		sourceIPAddress.V6 = true
-		sourceIPAddress.IPv6Address = ip.To16()
-		sourceIPAddress.Length = 18
-	}
-
-	if ipnet != nil {
+		sourceIPAddress.IPv4Address = ipv4.To4()
+		length += 4
 		sourceIPAddress.MPL = true
-		ones, _ := ipnet.Mask.Size()
+		ones, _ := ipv4net.Mask.Size()
 		sourceIPAddress.MaskPrefixLength = uint8(ones)
 	}
+
+	if ipv6.To16() != nil {
+		sourceIPAddress.V6 = true
+		sourceIPAddress.IPv6Address = ipv6.To16()
+		sourceIPAddress.Length = 18
+		length += 16
+		sourceIPAddress.MPL = true
+		ones, _ := ipv6net.Mask.Size()
+		sourceIPAddress.MaskPrefixLength = uint8(ones)
+	}
+	sourceIPAddress.Length = uint16(length)
+
 	return sourceIPAddress, nil
 }
 
@@ -49,19 +53,11 @@ func (sourceIPAddress SourceIPAddress) IsZeroValue() bool {
 }
 
 func (sourceIPAddress SourceIPAddress) Serialize() []byte {
-	var length uint16
-
-	if sourceIPAddress.V4 {
-		length = 6
-	}
-	if sourceIPAddress.V6 {
-		length = 18
-	}
-	bytes := make([]byte, 4+length)
+	bytes := make([]byte, 4+sourceIPAddress.Length)
 	bytes[0] = byte(sourceIPAddress.IEtype >> 8)
 	bytes[1] = byte(sourceIPAddress.IEtype)
-	bytes[2] = byte(length >> 8)
-	bytes[3] = byte(length)
+	bytes[2] = byte(sourceIPAddress.Length >> 8)
+	bytes[3] = byte(sourceIPAddress.Length)
 	if sourceIPAddress.MPL {
 		bytes[4] = 0x80
 	}

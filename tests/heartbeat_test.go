@@ -105,7 +105,7 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequestWithSourceIP)
 	sentSequenceNumber := uint32(32)
 	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
-	sourceIPAddress, _ := ie.NewSourceIPAddress("2.3.2.3/24")
+	sourceIPAddress, _ := ie.NewSourceIPAddress("2.3.2.3/24", "")
 	heartbeatRequestMsg := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
 		SourceIPAddress:   sourceIPAddress,

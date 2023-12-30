@@ -1,8 +1,6 @@
 package messages
 
 import (
-	"fmt"
-
 	"github.com/dot-5g/pfcp/ie"
 )
 
@@ -33,7 +31,6 @@ func ParsePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest,
 			continue
 		}
 		if upfeaturesIE, ok := elem.(ie.UPFunctionFeatures); ok {
-			fmt.Printf("upfeaturesIE: %v\n", upfeaturesIE)
 			upfeatures = upfeaturesIE
 			continue
 		}

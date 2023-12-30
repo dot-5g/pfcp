@@ -8,7 +8,7 @@ import (
 
 func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *testing.T) {
 
-	sourceIPAddress, err := ie.NewSourceIPAddress("1.2.3.4/24")
+	sourceIPAddress, err := ie.NewSourceIPAddress("1.2.3.4/24", "")
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
@@ -41,7 +41,7 @@ func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 
 func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *testing.T) {
 
-	sourceIPAddress, err := ie.NewSourceIPAddress("2001:db8::/32")
+	sourceIPAddress, err := ie.NewSourceIPAddress("", "2001:db8::/32")
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
@@ -72,9 +72,9 @@ func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 	}
 }
 
-func TestGivenSerializedIPV4AddressWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
+func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 
-	sourceIPAddress, err := ie.NewSourceIPAddress("2.2.3.1/24")
+	sourceIPAddress, err := ie.NewSourceIPAddress("2.2.3.1/24", "2001:db8::/32")
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
@@ -104,8 +104,8 @@ func TestGivenSerializedIPV4AddressWhenDeserializeThenFieldsSetCorrectly(t *test
 		t.Errorf("Expected NodeID V4 true, got %v", deserializedSourceIPAddress.V4)
 	}
 
-	if deserializedSourceIPAddress.V6 != false {
-		t.Errorf("Expected NodeID V6 false, got %v", deserializedSourceIPAddress.V6)
+	if deserializedSourceIPAddress.V6 != true {
+		t.Errorf("Expected NodeID V6 true, got %v", deserializedSourceIPAddress.V6)
 	}
 
 }

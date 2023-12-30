@@ -16,6 +16,7 @@ const (
 	NodeReportTypeIEType     IEType = 101
 	SourceIPAddressIEType    IEType = 192
 	UPFunctionFeaturesIEType IEType = 43
+	FSEIDIEType              IEType = 57
 )
 
 type InformationElement interface {
@@ -56,6 +57,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeSourceIPAddress(uint16(ieType), ieLength, ieValue)
 		case UPFunctionFeaturesIEType:
 			ie, err = DeserializeUPFunctionFeatures(uint16(ieType), ieLength, ieValue)
+		// case FSEIDIEType:
+		// 	ie, err = DeserializeFSEID(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}

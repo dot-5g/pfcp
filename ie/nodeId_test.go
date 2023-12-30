@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewNodeIDIPv4(t *testing.T) {
-	nodeID := ie.NewNodeID(ie.IPv4, "1.2.3.4")
+	nodeID := ie.NewNodeID("1.2.3.4")
 
 	if nodeID.IEtype != 60 {
 		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
@@ -35,7 +35,7 @@ func TestNewNodeIDIPv4(t *testing.T) {
 }
 
 func TestNewNodeIDIPv6(t *testing.T) {
-	nodeID := ie.NewNodeID(ie.IPv6, "2001:db8::68")
+	nodeID := ie.NewNodeID("2001:db8::68")
 
 	if nodeID.IEtype != 60 {
 		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
@@ -63,7 +63,7 @@ func TestNewNodeIDIPv6(t *testing.T) {
 }
 
 func TestNewNodeIDFQDN(t *testing.T) {
-	nodeID := ie.NewNodeID(ie.FQDN, "www.example.com")
+	nodeID := ie.NewNodeID("www.example.com")
 
 	if nodeID.IEtype != 60 {
 		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)

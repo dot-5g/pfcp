@@ -3,7 +3,6 @@ package ie
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"net"
 )
 
@@ -22,44 +21,31 @@ type NodeID struct {
 	NodeIDValue []byte
 }
 
-func NewNodeID(nodeIDType NodeIDType, nodeIDValue string) NodeID {
+func NewNodeID(nodeID string) NodeID {
 	var nodeIDValueBytes []byte
 	var length uint16
+	var nodeIDType NodeIDType
 
-	switch nodeIDType {
-	case IPv4:
-		ip := net.ParseIP(nodeIDValue)
-		if ip == nil {
-			panic("invalid IPv4 address")
-		}
-		ipv4 := ip.To4()
-		if ipv4 == nil {
-			panic("invalid IPv4 address")
-		}
-		nodeIDValueBytes = ipv4
+	ip := net.ParseIP(nodeID)
+
+	if ip.To4() != nil {
+		nodeIDValueBytes = ip.To4()
 		length = uint16(len(nodeIDValueBytes)) + 1
-	case IPv6:
-		ip := net.ParseIP(nodeIDValue)
-		if ip == nil {
-			panic("invalid IPv6 address")
-		}
-		ipv6 := ip.To16()
-		if ipv6 == nil {
-			panic("invalid IPv6 address")
-		}
-		nodeIDValueBytes = ipv6
+		nodeIDType = IPv4
+	} else if ip.To16() != nil {
+		nodeIDValueBytes = ip.To16()
 		length = uint16(len(nodeIDValueBytes)) + 1
-	case FQDN:
-		fqdn := []byte(nodeIDValue)
+		nodeIDType = IPv6
+	} else {
+		fqdn := []byte(nodeID)
 		if len(fqdn) > 255 {
 			panic("FQDN too long")
 		}
 		nodeIDValueBytes = fqdn
 		length = uint16(len(nodeIDValueBytes)) + 1
-
-	default:
-		panic(fmt.Sprintf("invalid NodeIDType %d", nodeIDType))
+		nodeIDType = FQDN
 	}
+
 	return NodeID{
 		IEtype:      60,
 		Length:      length,
