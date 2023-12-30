@@ -29,6 +29,10 @@ func (rt RecoveryTimeStamp) Serialize() []byte {
 	return bytes
 }
 
+func (rt RecoveryTimeStamp) IsZeroValue() bool {
+	return rt.Length == 0
+}
+
 func DeserializeRecoveryTimeStamp(ieType uint16, ieLength uint16, ieValue []byte) RecoveryTimeStamp {
 	return RecoveryTimeStamp{
 		IEtype: ieType,

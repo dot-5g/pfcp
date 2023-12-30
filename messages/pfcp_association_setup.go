@@ -1,10 +1,15 @@
 package messages
 
-import "github.com/dot-5g/pfcp/ie"
+import (
+	"fmt"
+
+	"github.com/dot-5g/pfcp/ie"
+)
 
 type PFCPAssociationSetupRequest struct {
-	NodeID            ie.NodeID            // Mandatory
-	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
+	NodeID             ie.NodeID             // Mandatory
+	RecoveryTimeStamp  ie.RecoveryTimeStamp  // Mandatory
+	UPFunctionFeatures ie.UPFunctionFeatures // Conditional
 }
 
 type PFCPAssociationSetupResponse struct {
@@ -17,6 +22,7 @@ func ParsePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest,
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var recoveryTimeStamp ie.RecoveryTimeStamp
+	var upfeatures ie.UPFunctionFeatures
 	for _, elem := range ies {
 		if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {
 			recoveryTimeStamp = tsIE
@@ -26,11 +32,17 @@ func ParsePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest,
 			nodeID = nodeIDIE
 			continue
 		}
+		if upfeaturesIE, ok := elem.(ie.UPFunctionFeatures); ok {
+			fmt.Printf("upfeaturesIE: %v\n", upfeaturesIE)
+			upfeatures = upfeaturesIE
+			continue
+		}
 	}
 
 	return PFCPAssociationSetupRequest{
-		NodeID:            nodeID,
-		RecoveryTimeStamp: recoveryTimeStamp,
+		NodeID:             nodeID,
+		RecoveryTimeStamp:  recoveryTimeStamp,
+		UPFunctionFeatures: upfeatures,
 	}, err
 }
 

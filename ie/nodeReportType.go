@@ -53,6 +53,10 @@ func (nrt NodeReportType) Serialize() []byte {
 	return buf.Bytes()
 }
 
+func (nrt NodeReportType) IsZeroValue() bool {
+	return nrt.Length == 0
+}
+
 func DeserializeNodeReportType(ieType uint16, ieLength uint16, ieValue []byte) NodeReportType {
 	var nrt NodeReportType
 

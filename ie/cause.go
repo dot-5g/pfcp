@@ -34,6 +34,10 @@ func (cause Cause) Serialize() []byte {
 	return buf.Bytes()
 }
 
+func (cause Cause) IsZeroValue() bool {
+	return cause.Length == 0
+}
+
 func DeserializeCause(ieType uint16, ieLength uint16, ieValue []byte) Cause {
 	return Cause{
 		IEtype: ieType,
