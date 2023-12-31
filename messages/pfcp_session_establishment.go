@@ -23,10 +23,10 @@ func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishment
 			controlPlaneFSEID = controlPlaneFSEIDIE
 			continue
 		}
-		if createPDRIE, ok := elem.(ie.CreatePDR); ok {
-			createPDR = createPDRIE
-			continue
-		}
+		// if createPDRIE, ok := elem.(ie.CreatePDR); ok {
+		// 	createPDR = createPDRIE
+		// 	continue
+		// }
 
 	}
 

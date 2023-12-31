@@ -10,14 +10,17 @@ const IEHeaderLength = 4
 type IEType uint16
 
 const (
+	PDIIEType                IEType = 17
 	CauseIEType              IEType = 19
+	SourceInterfaceIEType    IEType = 20
+	PrecedenceIEType         IEType = 29
+	UPFunctionFeaturesIEType IEType = 43
+	PDRIDIEType              IEType = 56
+	FSEIDIEType              IEType = 57
 	NodeIDIEType             IEType = 60
 	RecoveryTimeStampIEType  IEType = 96
 	NodeReportTypeIEType     IEType = 101
 	SourceIPAddressIEType    IEType = 192
-	UPFunctionFeaturesIEType IEType = 43
-	FSEIDIEType              IEType = 57
-	PDRIDIEType              IEType = 56
 )
 
 type InformationElement interface {
@@ -62,6 +65,12 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeFSEID(uint16(ieType), ieLength, ieValue)
 		case PDRIDIEType:
 			ie, err = DeserializePDRID(uint16(ieType), ieLength, ieValue)
+		case PrecedenceIEType:
+			ie, err = DeserializePrecedence(uint16(ieType), ieLength, ieValue)
+		case SourceInterfaceIEType:
+			ie, err = DeserializeSourceInterface(uint16(ieType), ieLength, ieValue)
+		case PDIIEType:
+			ie, err = DeserializePDI(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}

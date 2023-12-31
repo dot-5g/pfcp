@@ -3,6 +3,7 @@ package ie
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 type PDRID struct {
@@ -39,6 +40,9 @@ func (pdrID PDRID) IsZeroValue() bool {
 }
 
 func DeserializePDRID(ieType uint16, ieLength uint16, ieValue []byte) (PDRID, error) {
+	if len(ieValue) != 2 {
+		return PDRID{}, fmt.Errorf("invalid length for PDRID: got %d bytes, want 2", len(ieValue))
+	}
 	return PDRID{
 		IEType: ieType,
 		Length: ieLength,
