@@ -72,7 +72,7 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) UPFunctionFeatures {
 	}
 
 	return UPFunctionFeatures{
-		IEType:                       43,
+		IEType:                       uint16(UPFunctionFeaturesIEType),
 		Length:                       uint16(len(featureBytes)),
 		SupportedFeatures:            featureBytes,
 		AdditionalSupportedFeatures1: nil,

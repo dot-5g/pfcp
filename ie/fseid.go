@@ -18,7 +18,7 @@ type FSEID struct {
 
 func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error) {
 	fseid := FSEID{
-		IEType: 57,
+		IEType: uint16(FSEIDIEType),
 		SEID:   seid,
 	}
 	var length uint16 = 9
@@ -43,7 +43,7 @@ func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error
 func (fseid FSEID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type (57)
+	// Octets 1 to 2: Type
 	binary.Write(buf, binary.BigEndian, uint16(fseid.IEType))
 
 	// Octets 3 to 4: Length
@@ -75,7 +75,7 @@ func (fseid FSEID) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeFSEID(ieType uint16, ieLength uint16, ieValue []byte) FSEID {
+func DeserializeFSEID(ieType uint16, ieLength uint16, ieValue []byte) (FSEID, error) {
 	v4 := ieValue[0]&0x02 > 0
 	v6 := ieValue[0]&0x01 > 0
 	seid := binary.BigEndian.Uint64(ieValue[1:9])
@@ -90,5 +90,9 @@ func DeserializeFSEID(ieType uint16, ieLength uint16, ieValue []byte) FSEID {
 		SEID:   seid,
 		IPv4:   ipv4,
 		IPv6:   ipv6,
-	}
+	}, nil
+}
+
+func (fseid FSEID) IsZeroValue() bool {
+	return fseid.Length == 0
 }

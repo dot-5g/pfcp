@@ -15,7 +15,7 @@ type RecoveryTimeStamp struct {
 
 func NewRecoveryTimeStamp(value time.Time) RecoveryTimeStamp {
 	return RecoveryTimeStamp{
-		IEtype: 96,
+		IEtype: uint16(RecoveryTimeStampIEType),
 		Length: 4,
 		Value:  value.Unix() + ntpEpochOffset,
 	}

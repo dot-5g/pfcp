@@ -13,7 +13,7 @@ type Cause struct {
 
 func NewCause(value int) Cause {
 	return Cause{
-		IEtype: 19,
+		IEtype: uint16(CauseIEType),
 		Length: 1,
 		Value:  uint8(value),
 	}

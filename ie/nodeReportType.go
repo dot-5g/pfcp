@@ -16,7 +16,7 @@ type NodeReportType struct {
 
 func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) NodeReportType {
 	return NodeReportType{
-		IEtype: 101,
+		IEtype: uint16(NodeReportTypeIEType),
 		Length: 1,
 		GPQR:   gpqr,
 		CKDR:   ckdr,
@@ -28,7 +28,7 @@ func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) NodeReportTyp
 func (nrt NodeReportType) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type (60)
+	// Octets 1 to 2: Type
 	binary.Write(buf, binary.BigEndian, uint16(nrt.IEtype))
 
 	// Octets 3 to 4: Length

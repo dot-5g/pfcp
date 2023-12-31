@@ -1,7 +1,6 @@
 package ie_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/dot-5g/pfcp/ie"
@@ -58,9 +57,11 @@ func TestGivenSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 
 	serialized := fseid.Serialize()
 
-	fmt.Printf("Serialized FSEID: %v\n", serialized)
+	deserialized, err := ie.DeserializeFSEID(57, 12, serialized[4:])
 
-	deserialized := ie.DeserializeFSEID(57, 12, serialized[4:])
+	if err != nil {
+		t.Fatalf("Error deserializing FSEID: %v", err)
+	}
 
 	if deserialized.IEType != 57 {
 		t.Errorf("Expected FSEID IEType 57, got %d", deserialized.IEType)

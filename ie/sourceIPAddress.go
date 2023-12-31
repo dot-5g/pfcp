@@ -17,7 +17,7 @@ type SourceIPAddress struct {
 
 func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress, error) {
 	sourceIPAddress := SourceIPAddress{
-		IEtype: 192,
+		IEtype: uint16(SourceIPAddressIEType),
 	}
 
 	length := 2
