@@ -6,7 +6,7 @@ type PFCPSessionEstablishmentRequest struct {
 	NodeID    ie.NodeID    // Mandatory
 	CPFSEID   ie.FSEID     // Mandatory
 	CreatePDR ie.CreatePDR // Mandatory
-	// CreateFAR ie.CreateFAR // Mandatory
+	CreateFAR ie.CreateFAR // Mandatory
 }
 
 func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishmentRequest, error) {
@@ -27,6 +27,10 @@ func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishment
 			createPDR = createPDRIE
 			continue
 		}
+		// if createFARIE, ok := elem.(ie.CreateFAR); ok {
+		// 	createFAR = createFARIE
+		// 	continue
+		// }
 
 	}
 

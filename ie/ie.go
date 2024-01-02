@@ -21,6 +21,7 @@ const (
 	NodeIDIEType             IEType = 60
 	RecoveryTimeStampIEType  IEType = 96
 	NodeReportTypeIEType     IEType = 101
+	FARIDIEType              IEType = 108
 	SourceIPAddressIEType    IEType = 192
 )
 
@@ -74,6 +75,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializePDI(uint16(ieType), ieLength, ieValue)
 		case CreatePDRIEType:
 			ie, err = DeserializeCreatePDR(uint16(ieType), ieLength, ieValue)
+		case FARIDIEType:
+			ie, err = DeserializeFARID(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}
