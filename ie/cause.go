@@ -3,6 +3,7 @@ package ie
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 type Cause struct {
@@ -38,10 +39,24 @@ func (cause Cause) IsZeroValue() bool {
 	return cause.Length == 0
 }
 
-func DeserializeCause(ieType uint16, ieLength uint16, ieValue []byte) Cause {
+func DeserializeCause(ieType uint16, ieLength uint16, ieValue []byte) (Cause, error) {
+	var cause Cause
+
+	if len(ieValue) != 1 {
+		return cause, fmt.Errorf("invalid length for Cause: got %d bytes, want 1", len(ieValue))
+	}
+
+	if ieType != uint16(CauseIEType) {
+		return cause, fmt.Errorf("invalid IE type: expected %d, got %d", CauseIEType, ieType)
+	}
+
+	if ieLength != 1 {
+		return cause, fmt.Errorf("invalid length field for Cause: expected 1, got %d", ieLength)
+	}
+
 	return Cause{
 		IEtype: ieType,
 		Length: ieLength,
 		Value:  ieValue[0],
-	}
+	}, nil
 }

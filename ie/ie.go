@@ -10,6 +10,7 @@ const IEHeaderLength = 4
 type IEType uint16
 
 const (
+	CreatePDRIEType          IEType = 1
 	PDIIEType                IEType = 17
 	CauseIEType              IEType = 19
 	SourceInterfaceIEType    IEType = 20
@@ -50,13 +51,13 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		var ie InformationElement
 		switch ieType {
 		case CauseIEType:
-			ie = DeserializeCause(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeCause(uint16(ieType), ieLength, ieValue)
 		case NodeIDIEType:
-			ie = DeserializeNodeID(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeNodeID(uint16(ieType), ieLength, ieValue)
 		case RecoveryTimeStampIEType:
-			ie = DeserializeRecoveryTimeStamp(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeRecoveryTimeStamp(uint16(ieType), ieLength, ieValue)
 		case NodeReportTypeIEType:
-			ie = DeserializeNodeReportType(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeNodeReportType(uint16(ieType), ieLength, ieValue)
 		case SourceIPAddressIEType:
 			ie, err = DeserializeSourceIPAddress(uint16(ieType), ieLength, ieValue)
 		case UPFunctionFeaturesIEType:
@@ -71,6 +72,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeSourceInterface(uint16(ieType), ieLength, ieValue)
 		case PDIIEType:
 			ie, err = DeserializePDI(uint16(ieType), ieLength, ieValue)
+		case CreatePDRIEType:
+			ie, err = DeserializeCreatePDR(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}
