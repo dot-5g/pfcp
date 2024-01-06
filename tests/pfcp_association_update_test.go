@@ -151,8 +151,8 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 		t.Errorf("PFCP Association Update Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpAssociationUpdateResponseReceivedCause.Length)
 	}
 
-	if pfcpAssociationUpdateResponseReceivedCause.IEtype != cause.IEtype {
-		t.Errorf("PFCP Association Update Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpAssociationUpdateResponseReceivedCause.IEtype)
+	if pfcpAssociationUpdateResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Association Update Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpAssociationUpdateResponseReceivedCause.IEType)
 	}
 
 	if pfcpAssociationUpdateResponseReceivedCause.Value != cause.Value {

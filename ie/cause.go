@@ -7,14 +7,14 @@ import (
 )
 
 type Cause struct {
-	IEtype uint16
+	IEType uint16
 	Length uint16
 	Value  uint8
 }
 
 func NewCause(value int) Cause {
 	return Cause{
-		IEtype: uint16(CauseIEType),
+		IEType: uint16(CauseIEType),
 		Length: 1,
 		Value:  uint8(value),
 	}
@@ -24,7 +24,7 @@ func (cause Cause) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
 	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(cause.IEtype))
+	binary.Write(buf, binary.BigEndian, uint16(cause.IEType))
 
 	// Octets 3 to 4: Length
 	binary.Write(buf, binary.BigEndian, uint16(cause.Length))
@@ -55,7 +55,7 @@ func DeserializeCause(ieType uint16, ieLength uint16, ieValue []byte) (Cause, er
 	}
 
 	return Cause{
-		IEtype: ieType,
+		IEType: ieType,
 		Length: ieLength,
 		Value:  ieValue[0],
 	}, nil

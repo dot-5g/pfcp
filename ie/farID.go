@@ -44,6 +44,10 @@ func DeserializeFARID(ieType uint16, ieLength uint16, ieValue []byte) (FARID, er
 		return FARID{}, fmt.Errorf("invalid length for FARID: got %d bytes, want 4", len(ieValue))
 	}
 
+	if ieType != uint16(FARIDIEType) {
+		return FARID{}, fmt.Errorf("invalid IE type for FARID: got %d, want %d", ieType, FARIDIEType)
+	}
+
 	return FARID{
 		IEType: ieType,
 		Length: ieLength,

@@ -1,23 +1,24 @@
-package ie
+package ie_test
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/dot-5g/pfcp/ie"
 )
 
 func TestGivenCorrectParametersWhenNewCreatePDRThenFieldsSetCorrectly(t *testing.T) {
-	pdrID := NewPDRID(1)
-	precedence := NewPrecedence(1)
-	sourceInterface, _ := NewSourceInterface(1)
-	pdi := NewPDI(sourceInterface)
-	createPDR := NewCreatePDR(pdrID, precedence, pdi)
+	pdrID := ie.NewPDRID(1)
+	precedence := ie.NewPrecedence(1)
+	sourceInterface, _ := ie.NewSourceInterface(1)
+	pdi := ie.NewPDI(sourceInterface)
+	createPDR := ie.NewCreatePDR(pdrID, precedence, pdi)
 
 	if createPDR.IEType != 1 {
 		t.Errorf("Expected CreatePDR IEType 1, got %d", createPDR.IEType)
 	}
 
-	if createPDR.Length != 17 {
-		t.Errorf("Expected CreatePDR length 17, got %d", createPDR.Length)
+	if createPDR.Length != 23 {
+		t.Errorf("Expected CreatePDR length 23, got %d", createPDR.Length)
 	}
 
 	if createPDR.PDRID != pdrID {
@@ -34,22 +35,19 @@ func TestGivenCorrectParametersWhenNewCreatePDRThenFieldsSetCorrectly(t *testing
 }
 
 func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testing.T) {
-	pdrID := NewPDRID(1)
-	precedence := NewPrecedence(1)
-	sourceInterface, _ := NewSourceInterface(1)
-	pdi := NewPDI(sourceInterface)
-	createPDR := NewCreatePDR(pdrID, precedence, pdi)
+	pdrID := ie.NewPDRID(1)
+	precedence := ie.NewPrecedence(1)
+	sourceInterface, _ := ie.NewSourceInterface(1)
+	pdi := ie.NewPDI(sourceInterface)
+	createPDR := ie.NewCreatePDR(pdrID, precedence, pdi)
 
 	serialized := createPDR.Serialize()
-	fmt.Printf("Serialized: %v\n", serialized)
 
-	deserialized, err := DeserializeCreatePDR(1, 17, serialized[4:])
+	deserialized, err := ie.DeserializeCreatePDR(1, 17, serialized[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing CreatePDR: %v", err)
 	}
-
-	fmt.Printf("Deserialized: %v\n", deserialized)
 
 	if deserialized.IEType != 1 {
 		t.Errorf("Expected CreatePDR IEType 1, got %d", deserialized.IEType)

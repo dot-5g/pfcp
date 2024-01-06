@@ -189,8 +189,8 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		}
 	}
 
-	if pfcpAssociationSetupResponseReceivedCause.IEtype != cause.IEtype {
-		t.Errorf("PFCP Association Setup Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpAssociationSetupResponseReceivedCause.IEtype)
+	if pfcpAssociationSetupResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Association Setup Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpAssociationSetupResponseReceivedCause.IEType)
 	}
 
 	if pfcpAssociationSetupResponseReceivedCause.Length != cause.Length {

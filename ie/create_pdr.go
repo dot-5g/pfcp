@@ -17,7 +17,7 @@ type CreatePDR struct {
 func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) CreatePDR {
 	return CreatePDR{
 		IEType:     uint16(CreatePDRIEType),
-		Length:     pdrID.Length + precedence.Length + pdi.Length + 6,
+		Length:     pdrID.Length + precedence.Length + pdi.Length + 12,
 		PDRID:      pdrID,
 		Precedence: precedence,
 		PDI:        pdi,

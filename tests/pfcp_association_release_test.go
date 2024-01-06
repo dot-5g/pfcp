@@ -152,8 +152,8 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 		t.Errorf("PFCP Association Release Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpAssociationReleaseResponseReceivedCause.Length)
 	}
 
-	if pfcpAssociationReleaseResponseReceivedCause.IEtype != cause.IEtype {
-		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpAssociationReleaseResponseReceivedCause.IEtype)
+	if pfcpAssociationReleaseResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpAssociationReleaseResponseReceivedCause.IEType)
 	}
 
 	if pfcpAssociationReleaseResponseReceivedCause.Value != cause.Value {

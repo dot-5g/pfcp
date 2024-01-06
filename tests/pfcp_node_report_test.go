@@ -184,8 +184,8 @@ func PFCPNodeReportResponse(t *testing.T) {
 		t.Errorf("PFCP Node Report Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpNodeReportResponseReceivedCause.Length)
 	}
 
-	if pfcpNodeReportResponseReceivedCause.IEtype != cause.IEtype {
-		t.Errorf("PFCP Node Report Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpNodeReportResponseReceivedCause.IEtype)
+	if pfcpNodeReportResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Node Report Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpNodeReportResponseReceivedCause.IEType)
 	}
 
 	if pfcpNodeReportResponseReceivedCause.Value != cause.Value {
