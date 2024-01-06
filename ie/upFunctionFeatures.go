@@ -60,7 +60,7 @@ const (
 	NumberOfUPFeatures
 )
 
-func NewUPFunctionFeatures(supportedFeatures []UPFeature) UPFunctionFeatures {
+func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, error) {
 	featureBytes := make([]byte, 2)
 
 	for _, feature := range supportedFeatures {
@@ -77,7 +77,7 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) UPFunctionFeatures {
 		SupportedFeatures:            featureBytes,
 		AdditionalSupportedFeatures1: nil,
 		AdditionalSupportedFeatures2: nil,
-	}
+	}, nil
 }
 
 func (ie UPFunctionFeatures) Serialize() []byte {

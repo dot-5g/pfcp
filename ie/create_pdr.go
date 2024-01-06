@@ -14,14 +14,14 @@ type CreatePDR struct {
 	PDI        PDI
 }
 
-func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) CreatePDR {
+func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) (CreatePDR, error) {
 	return CreatePDR{
 		IEType:     uint16(CreatePDRIEType),
 		Length:     pdrID.Length + precedence.Length + pdi.Length + 12,
 		PDRID:      pdrID,
 		Precedence: precedence,
 		PDI:        pdi,
-	}
+	}, nil
 }
 
 func (createPDR CreatePDR) IsZeroValue() bool {

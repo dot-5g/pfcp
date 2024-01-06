@@ -14,6 +14,8 @@ func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishment
 	var nodeID ie.NodeID
 	var controlPlaneFSEID ie.FSEID
 	var createPDR ie.CreatePDR
+	var createFAR ie.CreateFAR
+
 	for _, elem := range ies {
 		if nodeIDIE, ok := elem.(ie.NodeID); ok {
 			nodeID = nodeIDIE
@@ -27,10 +29,10 @@ func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishment
 			createPDR = createPDRIE
 			continue
 		}
-		// if createFARIE, ok := elem.(ie.CreateFAR); ok {
-		// 	createFAR = createFARIE
-		// 	continue
-		// }
+		if createFARIE, ok := elem.(ie.CreateFAR); ok {
+			createFAR = createFARIE
+			continue
+		}
 
 	}
 
@@ -38,5 +40,6 @@ func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishment
 		NodeID:    nodeID,
 		CPFSEID:   controlPlaneFSEID,
 		CreatePDR: createPDR,
+		CreateFAR: createFAR,
 	}, err
 }

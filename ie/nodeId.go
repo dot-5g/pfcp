@@ -22,7 +22,7 @@ type NodeID struct {
 	NodeIDValue []byte
 }
 
-func NewNodeID(nodeID string) NodeID {
+func NewNodeID(nodeID string) (NodeID, error) {
 	var nodeIDValueBytes []byte
 	var length uint16
 	var nodeIDType NodeIDType
@@ -40,7 +40,7 @@ func NewNodeID(nodeID string) NodeID {
 	} else {
 		fqdn := []byte(nodeID)
 		if len(fqdn) > 255 {
-			panic("FQDN too long")
+			return NodeID{}, fmt.Errorf("invalid length for FQDN NodeID: got %d bytes, want <= 255", len(fqdn))
 		}
 		nodeIDValueBytes = fqdn
 		length = uint16(len(nodeIDValueBytes)) + 1
@@ -52,7 +52,7 @@ func NewNodeID(nodeID string) NodeID {
 		Length:      length,
 		NodeIDType:  nodeIDType,
 		NodeIDValue: nodeIDValueBytes,
-	}
+	}, nil
 }
 
 func (n NodeID) Serialize() []byte {

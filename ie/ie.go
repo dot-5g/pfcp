@@ -81,8 +81,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeFARID(uint16(ieType), ieLength, ieValue)
 		case ApplyActionIEType:
 			ie, err = DeserializeApplyAction(uint16(ieType), ieLength, ieValue)
-		// case CreateFARIEType:
-		// 	ie, err = DeserializeCreateFAR(uint16(ieType), ieLength, ieValue)
+		case CreateFARIEType:
+			ie, err = DeserializeCreateFAR(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}

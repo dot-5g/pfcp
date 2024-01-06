@@ -9,7 +9,11 @@ import (
 func TestGivenCorrectFarIDValueWhenNewFarIDThenFieldsSetCorrectly(t *testing.T) {
 	farIDValue := uint32(123)
 
-	farID := ie.NewFarID(farIDValue)
+	farID, err := ie.NewFarID(farIDValue)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if farID.IEType != 108 {
 		t.Errorf("Expected IEType %d, got %d", 108, farID.IEType)
@@ -26,7 +30,11 @@ func TestGivenCorrectFarIDValueWhenNewFarIDThenFieldsSetCorrectly(t *testing.T) 
 
 func TestGivenFarIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 	farIDValue := uint32(123)
-	farID := ie.NewFarID(farIDValue)
+	farID, err := ie.NewFarID(farIDValue)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	farIDSerialized := farID.Serialize()
 

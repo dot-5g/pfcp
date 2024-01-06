@@ -12,12 +12,12 @@ type Precedence struct {
 	Value  uint32
 }
 
-func NewPrecedence(value uint32) Precedence {
+func NewPrecedence(value uint32) (Precedence, error) {
 	return Precedence{
 		IEType: uint16(PrecedenceIEType),
 		Length: 4,
 		Value:  value,
-	}
+	}, nil
 }
 
 func (precedence Precedence) Serialize() []byte {

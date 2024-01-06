@@ -18,21 +18,23 @@ type HandlePFCPAssociationReleaseRequest func(sequenceNumber uint32, msg message
 type HandlePFCPAssociationReleaseResponse func(sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse)
 type HandlePFCPNodeReportRequest func(sequenceNumber uint32, msg messages.PFCPNodeReportRequest)
 type HandlePFCPNodeReportResponse func(sequenceNumber uint32, msg messages.PFCPNodeReportResponse)
+type HandlePFCPSessionEstablishmentRequest func(sequenceNumber uint32, msg messages.PFCPSessionEstablishmentRequest)
 
 type Server struct {
 	address   string
 	udpServer *network.UdpServer
 
-	heartbeatRequestHandler               HandleHeartbeatRequest
-	heartbeatResponseHandler              HandleHeartbeatResponse
-	pfcpAssociationSetupRequestHandler    HandlePFCPAssociationSetupRequest
-	pfcpAssociationSetupResponseHandler   HandlePFCPAssociationSetupResponse
-	pfcpAssociationUpdateRequestHandler   HandlePFCPAssociationUpdateRequest
-	pfcpAssociationUpdateResponseHandler  HandlePFCPAssociationUpdateResponse
-	pfcpAssociationReleaseRequestHandler  HandlePFCPAssociationReleaseRequest
-	pfcpAssociationReleaseResponseHandler HandlePFCPAssociationReleaseResponse
-	pfcpNodeReportRequestHandler          HandlePFCPNodeReportRequest
-	pfcpNodeReportResponseHandler         HandlePFCPNodeReportResponse
+	heartbeatRequestHandler                HandleHeartbeatRequest
+	heartbeatResponseHandler               HandleHeartbeatResponse
+	pfcpAssociationSetupRequestHandler     HandlePFCPAssociationSetupRequest
+	pfcpAssociationSetupResponseHandler    HandlePFCPAssociationSetupResponse
+	pfcpAssociationUpdateRequestHandler    HandlePFCPAssociationUpdateRequest
+	pfcpAssociationUpdateResponseHandler   HandlePFCPAssociationUpdateResponse
+	pfcpAssociationReleaseRequestHandler   HandlePFCPAssociationReleaseRequest
+	pfcpAssociationReleaseResponseHandler  HandlePFCPAssociationReleaseResponse
+	pfcpNodeReportRequestHandler           HandlePFCPNodeReportRequest
+	pfcpNodeReportResponseHandler          HandlePFCPNodeReportResponse
+	pfcpSessionEstablishmentRequestHandler HandlePFCPSessionEstablishmentRequest
 }
 
 func New(address string) *Server {
@@ -91,6 +93,10 @@ func (server *Server) PFCPNodeReportRequest(handler HandlePFCPNodeReportRequest)
 
 func (server *Server) PFCPNodeReportResponse(handler HandlePFCPNodeReportResponse) {
 	server.pfcpNodeReportResponseHandler = handler
+}
+
+func (server *Server) PFCPSessionEstablishmentRequest(handler HandlePFCPSessionEstablishmentRequest) {
+	server.pfcpSessionEstablishmentRequestHandler = handler
 }
 
 func (server *Server) handleUDPMessage(data []byte) {
@@ -211,6 +217,17 @@ func (server *Server) handleUDPMessage(data []byte) {
 			return
 		}
 		server.pfcpNodeReportResponseHandler(header.SequenceNumber, msg)
+	case messages.PFCPSessionEstablishmentRequestMessageType:
+		if server.pfcpSessionEstablishmentRequestHandler == nil {
+			log.Printf("No handler for PFCP Session Establishment Request")
+			return
+		}
+		msg, err := messages.ParsePFCPSessionEstablishmentRequest(data[headers.HeaderSize:])
+		if err != nil {
+			log.Printf("Error parsing PFCP Session Establishment Request: %v", err)
+			return
+		}
+		server.pfcpSessionEstablishmentRequestHandler(header.SequenceNumber, msg)
 	default:
 		log.Printf("Unknown PFCP message type: %v", header.MessageType)
 	}

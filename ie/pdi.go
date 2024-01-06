@@ -12,12 +12,12 @@ type PDI struct {
 	SourceInterface SourceInterface
 }
 
-func NewPDI(sourceInterface SourceInterface) PDI {
+func NewPDI(sourceInterface SourceInterface) (PDI, error) {
 	return PDI{
 		IEType:          uint16(PDIIEType),
 		Length:          sourceInterface.Length + 4,
 		SourceInterface: sourceInterface,
-	}
+	}, nil
 }
 
 func (pdi PDI) Serialize() []byte {

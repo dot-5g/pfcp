@@ -15,7 +15,7 @@ type NodeReportType struct {
 	UPFR   bool
 }
 
-func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) NodeReportType {
+func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) (NodeReportType, error) {
 	return NodeReportType{
 		IEtype: uint16(NodeReportTypeIEType),
 		Length: 1,
@@ -23,7 +23,7 @@ func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) NodeReportTyp
 		CKDR:   ckdr,
 		UPRR:   uprr,
 		UPFR:   upfr,
-	}
+	}, nil
 }
 
 func (nrt NodeReportType) Serialize() []byte {

@@ -13,7 +13,11 @@ func TestGivenCorrectPDIWhenNewPDIThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	pdi := ie.NewPDI(sourceInterface)
+	pdi, err := ie.NewPDI(sourceInterface)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if pdi.IEType != 17 {
 		t.Errorf("Expected IEType %d, got %d", 17, pdi.IEType)
@@ -36,7 +40,11 @@ func TestGivenPDISerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	pdi := ie.NewPDI(sourceInterface)
+	pdi, err := ie.NewPDI(sourceInterface)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	pdiSerialized := pdi.Serialize()
 

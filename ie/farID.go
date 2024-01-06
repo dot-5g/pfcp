@@ -12,12 +12,12 @@ type FARID struct {
 	Value  uint32
 }
 
-func NewFarID(value uint32) FARID {
+func NewFarID(value uint32) (FARID, error) {
 	return FARID{
 		IEType: uint16(FARIDIEType),
 		Length: 4,
 		Value:  value,
-	}
+	}, nil
 }
 
 func (farID FARID) Serialize() []byte {

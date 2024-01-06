@@ -13,13 +13,13 @@ type CreateFAR struct {
 	ApplyAction ApplyAction
 }
 
-func NewCreateFAR(farid FARID, applyaction ApplyAction) CreateFAR {
+func NewCreateFAR(farid FARID, applyaction ApplyAction) (CreateFAR, error) {
 	return CreateFAR{
 		IEType:      uint16(CreateFARIEType),
 		Length:      farid.Length + applyaction.Length + 8,
 		FARID:       farid,
 		ApplyAction: applyaction,
-	}
+	}, nil
 }
 
 func (createfar CreateFAR) Serialize() []byte {

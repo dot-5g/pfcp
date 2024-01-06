@@ -9,7 +9,11 @@ import (
 func TestGivenCorrectRuleIDWhenNewPdrIDThenFieldsSetCorrectly(t *testing.T) {
 	ruleID := uint16(1234)
 
-	pdrID := ie.NewPDRID(ruleID)
+	pdrID, err := ie.NewPDRID(ruleID)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if pdrID.IEType != 56 {
 		t.Errorf("Expected IEType %d, got %d", 56, pdrID.IEType)
@@ -27,7 +31,11 @@ func TestGivenCorrectRuleIDWhenNewPdrIDThenFieldsSetCorrectly(t *testing.T) {
 
 func TestGivenPDRIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 	ruleID := uint16(1234)
-	pdrID := ie.NewPDRID(ruleID)
+	pdrID, err := ie.NewPDRID(ruleID)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	pdrIDSerialized := pdrID.Serialize()
 

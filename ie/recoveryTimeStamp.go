@@ -14,12 +14,12 @@ type RecoveryTimeStamp struct {
 	Value  int64 // Seconds since 1900
 }
 
-func NewRecoveryTimeStamp(value time.Time) RecoveryTimeStamp {
+func NewRecoveryTimeStamp(value time.Time) (RecoveryTimeStamp, error) {
 	return RecoveryTimeStamp{
 		IEType: uint16(RecoveryTimeStampIEType),
 		Length: 4,
 		Value:  value.Unix() + ntpEpochOffset,
-	}
+	}, nil
 }
 
 func (rt RecoveryTimeStamp) Serialize() []byte {

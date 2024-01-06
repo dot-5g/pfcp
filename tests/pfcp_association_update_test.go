@@ -58,7 +58,12 @@ func PFCPAssociationUpdateRequest(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID("12.23.34.45")
+	nodeID, err := ie.NewNodeID("12.23.34.45")
+
+	if err != nil {
+		t.Fatalf("Error creating node ID IE: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
 	PFCPAssociationUpdateRequestMsg := messages.PFCPAssociationUpdateRequest{
 		NodeID: nodeID,
@@ -108,9 +113,19 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID("3.4.5.6")
+	nodeID, err := ie.NewNodeID("3.4.5.6")
+
+	if err != nil {
+		t.Fatalf("Error creating node ID IE: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
-	cause := ie.NewCause(2)
+	cause, err := ie.NewCause(2)
+
+	if err != nil {
+		t.Fatalf("Error creating cause IE: %v", err)
+	}
+
 	PFCPAssociationUpdateResponseMsg := messages.PFCPAssociationUpdateResponse{
 		NodeID: nodeID,
 		Cause:  cause,

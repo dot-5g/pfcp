@@ -7,19 +7,12 @@ import (
 )
 
 func TestGivenCorrectValuesWhenNewApplyActionThenFieldsSetCorrectly(t *testing.T) {
-	dfrt := true
-	ipmd := false
-	ipma := true
-	dupl := false
-	nocp := false
-	buff := true
-	forw := false
-	drop := true
-	ddpn := true
-	bdpn := true
-	edrt := false
+	flag := ie.FORW
+	applyAction, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{ie.DFRT, ie.EDRT})
 
-	applyAction := ie.NewApplyAction(dfrt, ipmd, ipma, dupl, nocp, buff, forw, drop, ddpn, bdpn, edrt)
+	if err != nil {
+		t.Fatalf("Error creating ApplyAction: %v", err)
+	}
 
 	if applyAction.IEType != 44 {
 		t.Errorf("Expected IEType 44, got %d", applyAction.IEType)
@@ -29,66 +22,95 @@ func TestGivenCorrectValuesWhenNewApplyActionThenFieldsSetCorrectly(t *testing.T
 		t.Errorf("Expected Length 2, got %d", applyAction.Length)
 	}
 
-	if applyAction.DFRT != dfrt {
-		t.Errorf("Expected DFRT %v, got %v", dfrt, applyAction.DFRT)
+	if applyAction.FORW != true {
+		t.Errorf("Expected FORW %v, got %v", flag, applyAction.FORW)
 	}
 
-	if applyAction.IPMD != ipmd {
-		t.Errorf("Expected IPMD %v, got %v", ipmd, applyAction.IPMD)
+	if applyAction.DFRT != true {
+		t.Errorf("Expected DFRT %v, got %v", flag, applyAction.DFRT)
 	}
 
-	if applyAction.IPMA != ipma {
-		t.Errorf("Expected IPMA %v, got %v", ipma, applyAction.IPMA)
+	if applyAction.EDRT != true {
+		t.Errorf("Expected EDRT %v, got %v", flag, applyAction.EDRT)
 	}
 
-	if applyAction.DUPL != dupl {
-		t.Errorf("Expected DUPL %v, got %v", dupl, applyAction.DUPL)
+	if applyAction.DROP != false {
+		t.Errorf("Expected DROP %v, got %v", flag, applyAction.DROP)
 	}
 
-	if applyAction.NOCP != nocp {
-		t.Errorf("Expected NOCP %v, got %v", nocp, applyAction.NOCP)
+	if applyAction.BUFF != false {
+		t.Errorf("Expected BUFF %v, got %v", flag, applyAction.BUFF)
 	}
 
-	if applyAction.BUFF != buff {
-		t.Errorf("Expected BUFF %v, got %v", buff, applyAction.BUFF)
+	if applyAction.IPMA != false {
+		t.Errorf("Expected IPMA %v, got %v", flag, applyAction.IPMA)
 	}
 
-	if applyAction.FORW != forw {
-		t.Errorf("Expected FORW %v, got %v", forw, applyAction.FORW)
+	if applyAction.IPMD != false {
+		t.Errorf("Expected IPMD %v, got %v", flag, applyAction.IPMD)
 	}
 
-	if applyAction.DROP != drop {
-		t.Errorf("Expected DROP %v, got %v", drop, applyAction.DROP)
+	if applyAction.DUPL != false {
+		t.Errorf("Expected DUPL %v, got %v", flag, applyAction.DUPL)
 	}
 
-	if applyAction.DDPN != ddpn {
-		t.Errorf("Expected DDPN %v, got %v", ddpn, applyAction.DDPN)
+	if applyAction.NOCP != false {
+		t.Errorf("Expected NOCP %v, got %v", flag, applyAction.NOCP)
 	}
 
-	if applyAction.BDPN != bdpn {
-		t.Errorf("Expected BDPN %v, got %v", bdpn, applyAction.BDPN)
+	if applyAction.DDPN != false {
+		t.Errorf("Expected DDPN %v, got %v", flag, applyAction.DDPN)
 	}
 
-	if applyAction.EDRT != edrt {
-		t.Errorf("Expected EDRT %v, got %v", edrt, applyAction.EDRT)
+	if applyAction.BDPN != false {
+		t.Errorf("Expected BDPN %v, got %v", flag, applyAction.BDPN)
 	}
+}
 
+func TestGivenNOCPFlagUsedWithFORWWhenNewApplyActionThenErrorReturned(t *testing.T) {
+	flag := ie.FORW
+	_, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{ie.NOCP})
+
+	if err == nil {
+		t.Errorf("Expected error creating ApplyAction, got nil")
+	}
+}
+
+func TestGivenDUPLUsedWithIPMAWhenNewApplyActionThenErrorReturned(t *testing.T) {
+	flag := ie.IPMA
+	_, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{ie.DUPL})
+
+	if err == nil {
+		t.Errorf("Expected error creating ApplyAction, got nil")
+	}
+}
+
+func TestGivenDFRTUsedWithNonFORWWhenNewApplyActionThenErrorReturned(t *testing.T) {
+	flag := ie.BUFF
+	_, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{ie.DFRT})
+
+	if err == nil {
+		t.Errorf("Expected error creating ApplyAction, got nil")
+	}
+}
+
+func TestGivenEDRTUsedWithNonFORWWhenNewApplyActionThenErrorReturned(t *testing.T) {
+	flag := ie.BUFF
+	_, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{ie.EDRT})
+
+	if err == nil {
+		t.Errorf("Expected error creating ApplyAction, got nil")
+	}
 }
 
 func TestGivenApplyActionSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
-	dfrt := true
-	ipmd := false
-	ipma := true
-	dupl := false
-	nocp := false
-	buff := true
-	forw := false
-	drop := true
-	ddpn := true
-	bdpn := true
-	edrt := false
+	flag := ie.FORW
 
-	applyAction := ie.NewApplyAction(dfrt, ipmd, ipma, dupl, nocp, buff, forw, drop, ddpn, bdpn, edrt)
+	applyAction, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{})
+
+	if err != nil {
+		t.Fatalf("Error creating ApplyAction: %v", err)
+	}
 
 	serialized := applyAction.Serialize()
 
@@ -106,48 +128,47 @@ func TestGivenApplyActionSerializedWhenDeserializeThenFieldsSetCorrectly(t *test
 		t.Errorf("Expected Length 2, got %d", deserialized.Length)
 	}
 
-	if deserialized.DFRT != dfrt {
-		t.Errorf("Expected DFRT %v, got %v", dfrt, deserialized.DFRT)
+	if deserialized.DFRT != false {
+		t.Errorf("Expected no DFRT, got %v", deserialized.DFRT)
 	}
 
-	if deserialized.IPMD != ipmd {
-		t.Errorf("Expected IPMD %v, got %v", ipmd, deserialized.IPMD)
+	if deserialized.EDRT != false {
+		t.Errorf("Expected no EDRT, got %v", deserialized.EDRT)
 	}
 
-	if deserialized.IPMA != ipma {
-		t.Errorf("Expected IPMA %v, got %v", ipma, deserialized.IPMA)
+	if deserialized.IPMD != false {
+		t.Errorf("Expected no IPMD, got %v", deserialized.IPMD)
 	}
 
-	if deserialized.DUPL != dupl {
-		t.Errorf("Expected DUPL %v, got %v", dupl, deserialized.DUPL)
+	if deserialized.IPMA != false {
+		t.Errorf("Expected no IPMA, got %v", deserialized.IPMA)
 	}
 
-	if deserialized.NOCP != nocp {
-		t.Errorf("Expected NOCP %v, got %v", nocp, deserialized.NOCP)
+	if deserialized.DUPL != false {
+		t.Errorf("Expected no DUPL, got %v", deserialized.DUPL)
 	}
 
-	if deserialized.BUFF != buff {
-		t.Errorf("Expected BUFF %v, got %v", buff, deserialized.BUFF)
+	if deserialized.NOCP != false {
+		t.Errorf("Expected no NOCP, got %v", deserialized.NOCP)
 	}
 
-	if deserialized.FORW != forw {
-		t.Errorf("Expected FORW %v, got %v", forw, deserialized.FORW)
+	if deserialized.BUFF != false {
+		t.Errorf("Expected no BUFF, got %v", deserialized.BUFF)
 	}
 
-	if deserialized.DROP != drop {
-		t.Errorf("Expected DROP %v, got %v", drop, deserialized.DROP)
+	if deserialized.FORW != true {
+		t.Errorf("Expected FORW %v, got %v", flag, deserialized.FORW)
 	}
 
-	if deserialized.DDPN != ddpn {
-		t.Errorf("Expected DDPN %v, got %v", ddpn, deserialized.DDPN)
+	if deserialized.DROP != false {
+		t.Errorf("Expected no DROP, got %v", deserialized.DROP)
 	}
 
-	if deserialized.BDPN != bdpn {
-		t.Errorf("Expected BDPN %v, got %v", bdpn, deserialized.BDPN)
+	if deserialized.DDPN != false {
+		t.Errorf("Expected no DDPN, got %v", deserialized.DDPN)
 	}
 
-	if deserialized.EDRT != edrt {
-		t.Errorf("Expected EDRT %v, got %v", edrt, deserialized.EDRT)
+	if deserialized.BDPN != false {
+		t.Errorf("Expected no BDPN, got %v", deserialized.BDPN)
 	}
-
 }

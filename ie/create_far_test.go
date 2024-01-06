@@ -1,28 +1,30 @@
 package ie_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/dot-5g/pfcp/ie"
 )
 
 func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
-	farId := ie.NewFarID(1)
-	dfrt := false
-	ipmd := false
-	ipma := true
-	dupl := true
-	nocp := false
-	buff := true
-	forw := false
-	drop := true
-	ddpn := true
-	bdpn := true
-	edrt := false
-	applyAction := ie.NewApplyAction(dfrt, ipmd, ipma, dupl, nocp, buff, forw, drop, ddpn, bdpn, edrt)
+	farId, err := ie.NewFarID(1)
 
-	createFar := ie.NewCreateFAR(farId, applyAction)
+	if err != nil {
+		t.Fatalf("Error creating FARID: %v", err)
+	}
+
+	flag := ie.FORW
+	applyAction, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{})
+
+	if err != nil {
+		t.Fatalf("Error creating ApplyAction: %v", err)
+	}
+
+	createFar, err := ie.NewCreateFAR(farId, applyAction)
+
+	if err != nil {
+		t.Fatalf("Error creating CreateFAR: %v", err)
+	}
 
 	if createFar.IEType != 3 {
 		t.Errorf("Expected IEType 3, got %d", createFar.IEType)
@@ -36,71 +38,80 @@ func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
 		t.Errorf("Expected FARID 1, got %d", createFar.FARID.Value)
 	}
 
-	if createFar.ApplyAction.DFRT != dfrt {
-		t.Errorf("Expected DFRT %v, got %v", dfrt, createFar.ApplyAction.DFRT)
+	if createFar.ApplyAction.FORW != true {
+		t.Errorf("Expected FORW true, got %v", createFar.ApplyAction.FORW)
 	}
 
-	if createFar.ApplyAction.IPMD != ipmd {
-		t.Errorf("Expected IPMD %v, got %v", ipmd, createFar.ApplyAction.IPMD)
+	if createFar.ApplyAction.DFRT != false {
+		t.Errorf("Expected DFRT false, got %v", createFar.ApplyAction.DFRT)
 	}
 
-	if createFar.ApplyAction.IPMA != ipma {
-		t.Errorf("Expected IPMA %v, got %v", ipma, createFar.ApplyAction.IPMA)
+	if createFar.ApplyAction.EDRT != false {
+		t.Errorf("Expected EDRT false, got %v", createFar.ApplyAction.EDRT)
 	}
 
-	if createFar.ApplyAction.DUPL != dupl {
-		t.Errorf("Expected DUPL %v, got %v", dupl, createFar.ApplyAction.DUPL)
+	if createFar.ApplyAction.DROP != false {
+		t.Errorf("Expected DROP false, got %v", createFar.ApplyAction.DROP)
 	}
 
-	if createFar.ApplyAction.NOCP != nocp {
-		t.Errorf("Expected NOCP %v, got %v", nocp, createFar.ApplyAction.NOCP)
+	if createFar.ApplyAction.BUFF != false {
+		t.Errorf("Expected BUFF false, got %v", createFar.ApplyAction.BUFF)
 	}
 
-	if createFar.ApplyAction.BUFF != buff {
-		t.Errorf("Expected BUFF %v, got %v", buff, createFar.ApplyAction.BUFF)
+	if createFar.ApplyAction.IPMA != false {
+		t.Errorf("Expected IPMA false, got %v", createFar.ApplyAction.IPMA)
 	}
 
-	if createFar.ApplyAction.FORW != forw {
-		t.Errorf("Expected FORW %v, got %v", forw, createFar.ApplyAction.FORW)
+	if createFar.ApplyAction.IPMD != false {
+		t.Errorf("Expected IPMD false, got %v", createFar.ApplyAction.IPMD)
 	}
 
-	if createFar.ApplyAction.DROP != drop {
-		t.Errorf("Expected DROP %v, got %v", drop, createFar.ApplyAction.DROP)
+	if createFar.ApplyAction.DUPL != false {
+		t.Errorf("Expected DUPL false, got %v", createFar.ApplyAction.DUPL)
 	}
 
-	if createFar.ApplyAction.DDPN != ddpn {
-		t.Errorf("Expected DDPN %v, got %v", ddpn, createFar.ApplyAction.DDPN)
+	if createFar.ApplyAction.NOCP != false {
+		t.Errorf("Expected NOCP false, got %v", createFar.ApplyAction.NOCP)
 	}
 
-	if createFar.ApplyAction.BDPN != bdpn {
-		t.Errorf("Expected BDPN %v, got %v", bdpn, createFar.ApplyAction.BDPN)
+	if createFar.ApplyAction.DDPN != false {
+		t.Errorf("Expected DDPN false, got %v", createFar.ApplyAction.DDPN)
 	}
 
-	if createFar.ApplyAction.EDRT != edrt {
-		t.Errorf("Expected EDRT %v, got %v", edrt, createFar.ApplyAction.EDRT)
+	if createFar.ApplyAction.BDPN != false {
+		t.Errorf("Expected BDPN false, got %v", createFar.ApplyAction.BDPN)
 	}
+
+	if createFar.ApplyAction.Length != 2 {
+		t.Errorf("Expected Length 2, got %d", createFar.ApplyAction.Length)
+	}
+
+	if createFar.ApplyAction.IEType != 44 {
+		t.Errorf("Expected IEType 44, got %d", createFar.ApplyAction.IEType)
+	}
+
 }
 
 func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testing.T) {
-	farId := ie.NewFarID(1)
-	dfrt := false
-	ipmd := false
-	ipma := true
-	dupl := true
-	nocp := false
-	buff := true
-	forw := false
-	drop := true
-	ddpn := true
-	bdpn := true
-	edrt := false
-	applyAction := ie.NewApplyAction(dfrt, ipmd, ipma, dupl, nocp, buff, forw, drop, ddpn, bdpn, edrt)
-	createFar := ie.NewCreateFAR(farId, applyAction)
+	farId, err := ie.NewFarID(1)
+
+	if err != nil {
+		t.Fatalf("Error creating FARID: %v", err)
+	}
+
+	flag := ie.FORW
+	applyAction, err := ie.NewApplyAction(flag, []ie.ApplyActionExtraFlag{})
+
+	if err != nil {
+		t.Fatalf("Error creating ApplyAction: %v", err)
+	}
+	createFar, err := ie.NewCreateFAR(farId, applyAction)
+
+	if err != nil {
+		t.Fatalf("Error creating CreateFAR: %v", err)
+	}
 
 	serialized := createFar.Serialize()
-
-	fmt.Printf("Serialized: %v\n", serialized)
-	fmt.Printf("Length of serialized %d\n", len(serialized))
 
 	deserialized, err := ie.DeserializeCreateFAR(3, 14, serialized[4:])
 

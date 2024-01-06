@@ -10,7 +10,11 @@ import (
 func TestGivenCorrectTimeWhenNewRecoveryTimeStampThenFieldsSetCorrectly(t *testing.T) {
 	time := time.Now()
 
-	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time)
+	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if recoveryTimeStamp.IEType != 96 {
 		t.Errorf("Expected IEType %d, got %d", 96, recoveryTimeStamp.IEType)
@@ -29,7 +33,11 @@ func TestGivenCorrectTimeWhenNewRecoveryTimeStampThenFieldsSetCorrectly(t *testi
 
 func TestGivenRecoveryTimeStampSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 	time := time.Now()
-	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time)
+	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	recoveryTimeStampSerialized := recoveryTimeStamp.Serialize()
 

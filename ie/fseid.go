@@ -3,6 +3,7 @@ package ie
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"net"
 )
 
@@ -25,15 +26,18 @@ func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error
 
 	ipv4 := net.ParseIP(ipv4Address)
 	ipv6 := net.ParseIP(ipv6Address)
+	fseid.IPv4 = ipv4.To4()
+	fseid.IPv6 = ipv6.To16()
 
-	if ipv4.To4() != nil {
+	fmt.Print("IPv4: ", fseid.IPv4, "\n")
+	fmt.Print("IPv6: ", fseid.IPv6, "\n")
+
+	if fseid.IPv4 != nil {
 		fseid.V4 = true
-		fseid.IPv4 = ipv4.To4()
 		length += 4
 	}
-	if ipv6.To16() != nil {
+	if fseid.IPv6 != nil {
 		fseid.V6 = true
-		fseid.IPv6 = ipv6.To16()
 		length += 16
 	}
 	fseid.Length = length
@@ -76,11 +80,30 @@ func (fseid FSEID) Serialize() []byte {
 }
 
 func DeserializeFSEID(ieType uint16, ieLength uint16, ieValue []byte) (FSEID, error) {
+	fmt.Printf("ieType: %v\n", ieType)
+
+	fmt.Printf("ieValue: %v\n", ieValue)
 	v4 := ieValue[0]&0x02 > 0
 	v6 := ieValue[0]&0x01 > 0
 	seid := binary.BigEndian.Uint64(ieValue[1:9])
-	ipv4 := ieValue[9:13]
-	ipv6 := ieValue[13:29]
+	var ipv4 []byte
+	var ipv6 []byte
+
+	v4StartByte := 9
+	v6StartByte := 9
+
+	if v4 {
+		ipv4 = ieValue[v4StartByte : v4StartByte+4]
+		v6StartByte += 4
+	} else {
+		ipv4 = nil
+	}
+
+	if v6 {
+		ipv6 = ieValue[v6StartByte : v6StartByte+16]
+	} else {
+		ipv6 = nil
+	}
 
 	return FSEID{
 		IEType: ieType,

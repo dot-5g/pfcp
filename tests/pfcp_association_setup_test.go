@@ -64,14 +64,29 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID("12.23.34.45")
-	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	nodeID, err := ie.NewNodeID("12.23.34.45")
+
+	if err != nil {
+		t.Fatalf("Error creating node ID IE: %v", err)
+	}
+
+	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time.Now())
+
+	if err != nil {
+		t.Fatalf("Error creating recovery timestamp IE: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
 	features := [](ie.UPFeature){
 		ie.BUCP,
 		ie.TRACE,
 	}
-	upFeatures := ie.NewUPFunctionFeatures(features)
+	upFeatures, err := ie.NewUPFunctionFeatures(features)
+
+	if err != nil {
+		t.Fatalf("Error creating UP function features IE: %v", err)
+	}
+
 	PFCPAssociationSetupRequestMsg := messages.PFCPAssociationSetupRequest{
 		NodeID:             nodeID,
 		RecoveryTimeStamp:  recoveryTimeStamp,
@@ -143,9 +158,24 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 	time.Sleep(time.Second)
 
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID("1.2.3.4")
-	cause := ie.NewCause(2)
-	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	nodeID, err := ie.NewNodeID("1.2.3.4")
+
+	if err != nil {
+		t.Fatalf("Error creating node ID IE: %v", err)
+	}
+
+	cause, err := ie.NewCause(2)
+
+	if err != nil {
+		t.Fatalf("Error creating cause IE: %v", err)
+	}
+
+	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time.Now())
+
+	if err != nil {
+		t.Fatalf("Error creating recovery timestamp IE: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
 	PFCPAssociationSetupResponseMsg := messages.PFCPAssociationSetupResponse{
 		NodeID:            nodeID,

@@ -47,13 +47,13 @@ func serializeMessage(header headers.PFCPHeader, payload []byte) []byte {
 func (pfcp *Pfcp) SendHeartbeatRequest(msg messages.HeartbeatRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.HeartbeatRequestMessageType, sequenceNumber)
 
-	payload := []ie.InformationElement{msg.RecoveryTimeStamp}
+	ies := []ie.InformationElement{msg.RecoveryTimeStamp}
 
 	if !msg.SourceIPAddress.IsZeroValue() {
-		payload = append(payload, msg.SourceIPAddress)
+		ies = append(ies, msg.SourceIPAddress)
 	}
 
-	err := pfcp.sendPfcpMessage(header, payload)
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Heartbeat Request: %w", err)
 	}
@@ -62,8 +62,8 @@ func (pfcp *Pfcp) SendHeartbeatRequest(msg messages.HeartbeatRequest, sequenceNu
 
 func (pfcp *Pfcp) SendHeartbeatResponse(msg messages.HeartbeatResponse, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.HeartbeatResponseMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.RecoveryTimeStamp}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.RecoveryTimeStamp}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Heartbeat Response: %w", err)
 	}
@@ -72,13 +72,13 @@ func (pfcp *Pfcp) SendHeartbeatResponse(msg messages.HeartbeatResponse, sequence
 
 func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(msg messages.PFCPAssociationSetupRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupRequestMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID, msg.RecoveryTimeStamp}
+	ies := []ie.InformationElement{msg.NodeID, msg.RecoveryTimeStamp}
 
 	if !msg.UPFunctionFeatures.IsZeroValue() {
-		payload = append(payload, msg.UPFunctionFeatures)
+		ies = append(ies, msg.UPFunctionFeatures)
 	}
 
-	err := pfcp.sendPfcpMessage(header, payload)
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Setup Request: %w", err)
 	}
@@ -87,8 +87,8 @@ func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(msg messages.PFCPAssociationSe
 
 func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(msg messages.PFCPAssociationSetupResponse, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationSetupResponseMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID, msg.Cause, msg.RecoveryTimeStamp}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID, msg.Cause, msg.RecoveryTimeStamp}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Setup Response: %w", err)
 	}
@@ -97,8 +97,8 @@ func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(msg messages.PFCPAssociationS
 
 func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(msg messages.PFCPAssociationUpdateRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateRequestMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Update Request: %w", err)
 	}
@@ -107,8 +107,8 @@ func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(msg messages.PFCPAssociationU
 
 func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(msg messages.PFCPAssociationUpdateResponse, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationUpdateResponseMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID, msg.Cause}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID, msg.Cause}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Update Response: %w", err)
 	}
@@ -117,8 +117,8 @@ func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(msg messages.PFCPAssociation
 
 func (pfcp *Pfcp) SendPFCPAssociationReleaseRequest(msg messages.PFCPAssociationReleaseRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationReleaseRequestMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Release Request: %w", err)
 	}
@@ -127,8 +127,8 @@ func (pfcp *Pfcp) SendPFCPAssociationReleaseRequest(msg messages.PFCPAssociation
 
 func (pfcp *Pfcp) SendPFCPAssociationReleaseResponse(msg messages.PFCPAssociationReleaseResponse, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPAssociationReleaseResponseMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID, msg.Cause}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID, msg.Cause}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Association Release Response: %w", err)
 	}
@@ -137,8 +137,8 @@ func (pfcp *Pfcp) SendPFCPAssociationReleaseResponse(msg messages.PFCPAssociatio
 
 func (pfcp *Pfcp) SendPFCPNodeReportRequest(msg messages.PFCPNodeReportRequest, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPNodeReportRequestMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID, msg.NodeReportType}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID, msg.NodeReportType}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Node Report Request: %w", err)
 	}
@@ -147,10 +147,20 @@ func (pfcp *Pfcp) SendPFCPNodeReportRequest(msg messages.PFCPNodeReportRequest, 
 
 func (pfcp *Pfcp) SendPFCPNodeReportResponse(msg messages.PFCPNodeReportResponse, sequenceNumber uint32) error {
 	header := headers.NewPFCPHeader(messages.PFCPNodeReportResponseMessageType, sequenceNumber)
-	payload := []ie.InformationElement{msg.NodeID, msg.Cause}
-	err := pfcp.sendPfcpMessage(header, payload)
+	ies := []ie.InformationElement{msg.NodeID, msg.Cause}
+	err := pfcp.sendPfcpMessage(header, ies)
 	if err != nil {
 		return fmt.Errorf("error sending PFCP Node Report Response: %w", err)
+	}
+	return nil
+}
+
+func (pfcp *Pfcp) SendPFCPSessionEstablishmentRequest(msg messages.PFCPSessionEstablishmentRequest, sequenceNumber uint32) error {
+	header := headers.NewPFCPHeader(messages.PFCPSessionEstablishmentRequestMessageType, sequenceNumber)
+	ies := []ie.InformationElement{msg.NodeID, msg.CPFSEID, msg.CreatePDR, msg.CreateFAR}
+	err := pfcp.sendPfcpMessage(header, ies)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Session Establishment Request: %w", err)
 	}
 	return nil
 }

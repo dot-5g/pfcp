@@ -7,11 +7,35 @@ import (
 )
 
 func TestGivenCorrectParametersWhenNewCreatePDRThenFieldsSetCorrectly(t *testing.T) {
-	pdrID := ie.NewPDRID(1)
-	precedence := ie.NewPrecedence(1)
-	sourceInterface, _ := ie.NewSourceInterface(1)
-	pdi := ie.NewPDI(sourceInterface)
-	createPDR := ie.NewCreatePDR(pdrID, precedence, pdi)
+	pdrID, err := ie.NewPDRID(1)
+
+	if err != nil {
+		t.Fatalf("Error creating PDRID: %v", err)
+	}
+
+	precedence, err := ie.NewPrecedence(1)
+
+	if err != nil {
+		t.Fatalf("Error creating Precedence: %v", err)
+	}
+
+	sourceInterface, err := ie.NewSourceInterface(1)
+
+	if err != nil {
+		t.Fatalf("Error creating SourceInterface: %v", err)
+	}
+
+	pdi, err := ie.NewPDI(sourceInterface)
+
+	if err != nil {
+		t.Fatalf("Error creating PDI: %v", err)
+	}
+
+	createPDR, err := ie.NewCreatePDR(pdrID, precedence, pdi)
+
+	if err != nil {
+		t.Fatalf("Error creating CreatePDR: %v", err)
+	}
 
 	if createPDR.IEType != 1 {
 		t.Errorf("Expected CreatePDR IEType 1, got %d", createPDR.IEType)
@@ -35,11 +59,30 @@ func TestGivenCorrectParametersWhenNewCreatePDRThenFieldsSetCorrectly(t *testing
 }
 
 func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testing.T) {
-	pdrID := ie.NewPDRID(1)
-	precedence := ie.NewPrecedence(1)
+	pdrID, err := ie.NewPDRID(1)
+
+	if err != nil {
+		t.Fatalf("Error creating PDRID: %v", err)
+	}
+
+	precedence, err := ie.NewPrecedence(1)
+
+	if err != nil {
+		t.Fatalf("Error creating Precedence: %v", err)
+	}
+
 	sourceInterface, _ := ie.NewSourceInterface(1)
-	pdi := ie.NewPDI(sourceInterface)
-	createPDR := ie.NewCreatePDR(pdrID, precedence, pdi)
+	pdi, err := ie.NewPDI(sourceInterface)
+
+	if err != nil {
+		t.Fatalf("Error creating PDI: %v", err)
+	}
+
+	createPDR, err := ie.NewCreatePDR(pdrID, precedence, pdi)
+
+	if err != nil {
+		t.Fatalf("Error creating CreatePDR: %v", err)
+	}
 
 	serialized := createPDR.Serialize()
 

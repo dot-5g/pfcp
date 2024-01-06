@@ -12,12 +12,12 @@ type Cause struct {
 	Value  uint8
 }
 
-func NewCause(value int) Cause {
+func NewCause(value int) (Cause, error) {
 	return Cause{
 		IEType: uint16(CauseIEType),
 		Length: 1,
 		Value:  uint8(value),
-	}
+	}, nil
 }
 
 func (cause Cause) Serialize() []byte {

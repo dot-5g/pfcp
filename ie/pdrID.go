@@ -12,12 +12,12 @@ type PDRID struct {
 	RuleID uint16
 }
 
-func NewPDRID(ruleID uint16) PDRID {
+func NewPDRID(ruleID uint16) (PDRID, error) {
 	return PDRID{
 		IEType: uint16(PDRIDIEType),
 		Length: 2,
 		RuleID: ruleID,
-	}
+	}, nil
 }
 
 func (pdrID PDRID) Serialize() []byte {

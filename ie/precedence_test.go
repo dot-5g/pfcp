@@ -9,7 +9,11 @@ import (
 func TestGivenCorrectPrecedenceValueWhenNewPrecedenceThenFieldsSetCorrectly(t *testing.T) {
 	precedenceValue := uint32(123)
 
-	precedence := ie.NewPrecedence(precedenceValue)
+	precedence, err := ie.NewPrecedence(precedenceValue)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if precedence.IEType != 29 {
 		t.Errorf("Expected IEType %d, got %d", 29, precedence.IEType)
@@ -26,7 +30,11 @@ func TestGivenCorrectPrecedenceValueWhenNewPrecedenceThenFieldsSetCorrectly(t *t
 
 func TestGivenPrecedenceSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 	precedenceValue := uint32(123)
-	precedence := ie.NewPrecedence(precedenceValue)
+	precedence, err := ie.NewPrecedence(precedenceValue)
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	precedenceSerialized := precedence.Serialize()
 

@@ -22,7 +22,104 @@ type ApplyAction struct {
 	EDRT   bool
 }
 
-func NewApplyAction(dfrt, ipmd, ipma, dupl, nocp, buff, forw, drop, ddpn, bdpn, edrt bool) ApplyAction {
+type ApplyActionFlag int
+type ApplyActionExtraFlag int
+
+const (
+	DROP ApplyActionFlag = iota
+	FORW
+	BUFF
+	IPMA
+	IPMD
+)
+
+const (
+	NOCP ApplyActionExtraFlag = iota
+	BDPN
+	DDPN
+	DUPL
+	DFRT
+	EDRT
+)
+
+func contains(flags []ApplyActionExtraFlag, flag ApplyActionExtraFlag) bool {
+	for _, f := range flags {
+		if f == flag {
+			return true
+		}
+	}
+	return false
+}
+
+func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (ApplyAction, error) {
+	var dfrt bool
+	var ipmd bool
+	var ipma bool
+	var dupl bool
+	var nocp bool
+	var buff bool
+	var forw bool
+	var drop bool
+	var ddpn bool
+	var bdpn bool
+	var edrt bool
+
+	if (contains(extraFlags, NOCP) || contains(extraFlags, BDPN) || contains(extraFlags, DDPN)) && flag != BUFF {
+		return ApplyAction{}, fmt.Errorf("the NOCP flag, BDPN and DDPN flag may only be set if the BUFF flag is set")
+	}
+
+	if contains(extraFlags, DUPL) && flag == IPMA {
+		return ApplyAction{}, fmt.Errorf("the DUPL flag may be set with any of the DROP, FORW, BUFF and NOCP flags")
+	}
+
+	if contains(extraFlags, DFRT) && flag != FORW {
+		return ApplyAction{}, fmt.Errorf("the DFRT flag may only be set if the FORW flag is set")
+	}
+
+	if contains(extraFlags, EDRT) && flag != FORW {
+		return ApplyAction{}, fmt.Errorf("the EDRT flag may only be set if the FORW flag is set")
+	}
+
+	switch flag {
+	case DROP:
+		drop = true
+		if contains(extraFlags, DUPL) {
+			dupl = true
+		}
+	case FORW:
+		forw = true
+		if contains(extraFlags, DUPL) {
+			dupl = true
+		}
+		if contains(extraFlags, DFRT) {
+			dfrt = true
+		}
+		if contains(extraFlags, EDRT) {
+			edrt = true
+		}
+	case BUFF:
+		buff = true
+		if contains(extraFlags, DUPL) {
+			dupl = true
+		}
+		if contains(extraFlags, NOCP) {
+			nocp = true
+		}
+		if contains(extraFlags, BDPN) {
+			bdpn = true
+		}
+		if contains(extraFlags, DDPN) {
+			ddpn = true
+		}
+	case IPMA:
+		ipma = true
+	case IPMD:
+		ipmd = true
+		if contains(extraFlags, DUPL) {
+			dupl = true
+		}
+	}
+
 	return ApplyAction{
 		IEType: uint16(ApplyActionIEType),
 		Length: 2,
@@ -37,7 +134,7 @@ func NewApplyAction(dfrt, ipmd, ipma, dupl, nocp, buff, forw, drop, ddpn, bdpn, 
 		DDPN:   ddpn,
 		BDPN:   bdpn,
 		EDRT:   edrt,
-	}
+	}, nil
 }
 
 func (applyaction ApplyAction) Serialize() []byte {
