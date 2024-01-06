@@ -9,17 +9,18 @@ import (
 type MessageType byte
 
 const (
-	HeartbeatRequestMessageType                MessageType = 1
-	HeartbeatResponseMessageType               MessageType = 2
-	PFCPAssociationSetupRequestMessageType     MessageType = 5
-	PFCPAssociationSetupResponseMessageType    MessageType = 6
-	PFCPAssociationUpdateRequestMessageType    MessageType = 7
-	PFCPAssociationUpdateResponseMessageType   MessageType = 8
-	PFCPAssociationReleaseRequestMessageType   MessageType = 9
-	PFCPAssociationReleaseResponseMessageType  MessageType = 10
-	PFCPNodeReportRequestMessageType           MessageType = 12
-	PFCPNodeReportResponseMessageType          MessageType = 13
-	PFCPSessionEstablishmentRequestMessageType MessageType = 50
+	HeartbeatRequestMessageType                 MessageType = 1
+	HeartbeatResponseMessageType                MessageType = 2
+	PFCPAssociationSetupRequestMessageType      MessageType = 5
+	PFCPAssociationSetupResponseMessageType     MessageType = 6
+	PFCPAssociationUpdateRequestMessageType     MessageType = 7
+	PFCPAssociationUpdateResponseMessageType    MessageType = 8
+	PFCPAssociationReleaseRequestMessageType    MessageType = 9
+	PFCPAssociationReleaseResponseMessageType   MessageType = 10
+	PFCPNodeReportRequestMessageType            MessageType = 12
+	PFCPNodeReportResponseMessageType           MessageType = 13
+	PFCPSessionEstablishmentRequestMessageType  MessageType = 50
+	PFCPSessionEstablishmentResponseMessageType MessageType = 51
 )
 
 type PFCPMessage interface {
@@ -28,17 +29,18 @@ type PFCPMessage interface {
 type DeserializerFunc func([]byte) (PFCPMessage, error)
 
 var messageTypeDeserializers = map[MessageType]DeserializerFunc{
-	HeartbeatRequestMessageType:                DeserializeHeartbeatRequest,
-	HeartbeatResponseMessageType:               DeserializeHeartbeatResponse,
-	PFCPAssociationSetupRequestMessageType:     DeserializePFCPAssociationSetupRequest,
-	PFCPAssociationSetupResponseMessageType:    DeserializePFCPAssociationSetupResponse,
-	PFCPAssociationUpdateRequestMessageType:    DeserializePFCPAssociationUpdateRequest,
-	PFCPAssociationUpdateResponseMessageType:   DeserializePFCPAssociationUpdateResponse,
-	PFCPAssociationReleaseRequestMessageType:   DeserializePFCPAssociationReleaseRequest,
-	PFCPAssociationReleaseResponseMessageType:  DeserializePFCPAssociationReleaseResponse,
-	PFCPNodeReportRequestMessageType:           DeserializePFCPNodeReportRequest,
-	PFCPNodeReportResponseMessageType:          DeserializePFCPNodeReportResponse,
-	PFCPSessionEstablishmentRequestMessageType: DeserializePFCPSessionEstablishmentRequest,
+	HeartbeatRequestMessageType:                 DeserializeHeartbeatRequest,
+	HeartbeatResponseMessageType:                DeserializeHeartbeatResponse,
+	PFCPAssociationSetupRequestMessageType:      DeserializePFCPAssociationSetupRequest,
+	PFCPAssociationSetupResponseMessageType:     DeserializePFCPAssociationSetupResponse,
+	PFCPAssociationUpdateRequestMessageType:     DeserializePFCPAssociationUpdateRequest,
+	PFCPAssociationUpdateResponseMessageType:    DeserializePFCPAssociationUpdateResponse,
+	PFCPAssociationReleaseRequestMessageType:    DeserializePFCPAssociationReleaseRequest,
+	PFCPAssociationReleaseResponseMessageType:   DeserializePFCPAssociationReleaseResponse,
+	PFCPNodeReportRequestMessageType:            DeserializePFCPNodeReportRequest,
+	PFCPNodeReportResponseMessageType:           DeserializePFCPNodeReportResponse,
+	PFCPSessionEstablishmentRequestMessageType:  DeserializePFCPSessionEstablishmentRequest,
+	PFCPSessionEstablishmentResponseMessageType: DeserializePFCPSessionEstablishmentResponse,
 }
 
 type PFCPHeader struct {

@@ -163,3 +163,13 @@ func (pfcp *Pfcp) SendPFCPSessionEstablishmentRequest(msg messages.PFCPSessionEs
 	}
 	return nil
 }
+
+func (pfcp *Pfcp) SendPFCPSessionEstablishmentResponse(msg messages.PFCPSessionEstablishmentResponse, seid uint64, sequenceNumber uint32) error {
+	header := messages.NewSessionPFCPHeader(messages.PFCPSessionEstablishmentResponseMessageType, seid, sequenceNumber)
+	ies := []ie.InformationElement{msg.NodeID, msg.Cause}
+	err := pfcp.sendPfcpMessage(header, ies)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Session Establishment Response: %w", err)
+	}
+	return nil
+}
