@@ -31,10 +31,7 @@ func main() {
 	heartbeatRequestMsg := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
-	err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
-	if err != nil {
-		log.Fatalf("SendHeartbeatRequest failed: %v", err)
-	}
+	pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
 }
 ```
 
@@ -78,7 +75,7 @@ func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest
 
 ### Session
 
-- [ ] PFCP Session Establishment
+- [x] PFCP Session Establishment
 - [ ] PFCP Session Modification
 - [ ] PFCP Session Deletion
 - [ ] PFCP Session Report

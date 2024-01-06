@@ -9,6 +9,14 @@
 
 ## Running Tests
 
+### Unit tests
+
 ```bash
 go test -p 1 -cover ./...
+```
+
+### Static checks
+
+```bash
+staticcheck ./...
 ```

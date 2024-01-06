@@ -22,6 +22,14 @@ var (
 	pfcpSessionEstablishmentRequestReceivedCreateFAR      ie.CreateFAR
 )
 
+var (
+	pfcpSessionEstablishmentResponseMu                     sync.Mutex
+	pfcpSessionEstablishmentResponsehandlerCalled          bool
+	pfcpSessionEstablishmentResponseReceivedSequenceNumber uint32
+	pfcpSessionEstablishmentResponseReceivedNodeID         ie.NodeID
+	pfcpSessionEstablishmentResponseReceivedCause          ie.Cause
+)
+
 func HandlePFCPSessionEstablishmentRequest(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest) {
 	pfcpSessionEstablishmentRequestMu.Lock()
 	defer pfcpSessionEstablishmentRequestMu.Unlock()
@@ -34,16 +42,24 @@ func HandlePFCPSessionEstablishmentRequest(sequenceNumber uint32, seid uint64, m
 	pfcpSessionEstablishmentRequestReceivedCreateFAR = msg.CreateFAR
 }
 
+func HandlePFCPSessionEstablishmentResponse(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse) {
+	pfcpSessionEstablishmentResponseMu.Lock()
+	defer pfcpSessionEstablishmentResponseMu.Unlock()
+	pfcpSessionEstablishmentResponsehandlerCalled = true
+	pfcpSessionEstablishmentResponseReceivedSequenceNumber = sequenceNumber
+	pfcpSessionEstablishmentResponseReceivedNodeID = msg.NodeID
+	pfcpSessionEstablishmentResponseReceivedCause = msg.Cause
+}
+
 func TestPFCPSessionEstablishment(t *testing.T) {
 	t.Run("TestPFCPSessionEstablishmentRequest", PFCPSessionEstablishmentRequest)
+	t.Run("TestPFCPSessionEstablishmentResponse", PFCPSessionEstablishmentResponse)
 }
 
 func PFCPSessionEstablishmentRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionEstablishmentRequest(HandlePFCPSessionEstablishmentRequest)
-
 	pfcpServer.Run()
-
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
@@ -114,7 +130,10 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 	}
 	sequenceNumber := uint32(32)
 
-	pfcpClient.SendPFCPSessionEstablishmentRequest(PFCPSessionEstablishmentRequestMsg, seid, sequenceNumber)
+	err = pfcpClient.SendPFCPSessionEstablishmentRequest(PFCPSessionEstablishmentRequestMsg, seid, sequenceNumber)
+	if err != nil {
+		t.Fatalf("Error sending PFCP Session Establishment Request: %v", err)
+	}
 
 	time.Sleep(time.Second)
 
@@ -250,4 +269,82 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 	}
 
 	pfcpSessionEstablishmentRequestMu.Unlock()
+}
+
+func PFCPSessionEstablishmentResponse(t *testing.T) {
+	pfcpServer := server.New("127.0.0.1:8805")
+	pfcpServer.PFCPSessionEstablishmentResponse(HandlePFCPSessionEstablishmentResponse)
+	pfcpServer.Run()
+	defer pfcpServer.Close()
+
+	time.Sleep(time.Second)
+	pfcpClient := client.New("127.0.0.1:8805")
+
+	nodeID, err := ie.NewNodeID("")
+	if err != nil {
+		t.Fatalf("Error creating Node ID: %v", err)
+	}
+
+	cause, err := ie.NewCause(3)
+	if err != nil {
+		t.Fatalf("Error creating Cause: %v", err)
+	}
+
+	PFCPSessionEstablishmentResponseMsg := messages.PFCPSessionEstablishmentResponse{
+		NodeID: nodeID,
+		Cause:  cause,
+	}
+
+	sequenceNumber := uint32(32)
+	seid := uint64(1234567890)
+
+	err = pfcpClient.SendPFCPSessionEstablishmentResponse(PFCPSessionEstablishmentResponseMsg, seid, sequenceNumber)
+	if err != nil {
+		t.Fatalf("Error sending PFCP Session Establishment Response: %v", err)
+	}
+
+	time.Sleep(time.Second)
+
+	pfcpSessionEstablishmentResponseMu.Lock()
+
+	if !pfcpSessionEstablishmentResponsehandlerCalled {
+		t.Fatalf("PFCP Session Establishment Response handler was not called")
+	}
+
+	if pfcpSessionEstablishmentResponseReceivedSequenceNumber != sequenceNumber {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpSessionEstablishmentResponseReceivedSequenceNumber)
+	}
+
+	if pfcpSessionEstablishmentResponseReceivedNodeID.Length != nodeID.Length {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpSessionEstablishmentResponseReceivedNodeID.Length)
+	}
+
+	if pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDType != nodeID.NodeIDType {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDType)
+	}
+
+	if len(pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue))
+	}
+
+	for i := range nodeID.NodeIDValue {
+		if pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
+			t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue)
+		}
+	}
+
+	if pfcpSessionEstablishmentResponseReceivedCause.Length != cause.Length {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpSessionEstablishmentResponseReceivedCause.Length)
+	}
+
+	if pfcpSessionEstablishmentResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpSessionEstablishmentResponseReceivedCause.IEType)
+	}
+
+	if pfcpSessionEstablishmentResponseReceivedCause.Value != cause.Value {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause value.\n- Sent cause value: %v\n- Received cause value %v\n", cause.Value, pfcpSessionEstablishmentResponseReceivedCause.Value)
+	}
+
+	pfcpSessionEstablishmentResponseMu.Unlock()
+
 }

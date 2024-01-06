@@ -9,6 +9,11 @@ type PFCPSessionEstablishmentRequest struct {
 	CreateFAR ie.CreateFAR // Mandatory
 }
 
+type PFCPSessionEstablishmentResponse struct {
+	NodeID ie.NodeID // Mandatory
+	Cause  ie.Cause  // Mandatory
+}
+
 func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
@@ -41,5 +46,27 @@ func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPMessage, error
 		CPFSEID:   controlPlaneFSEID,
 		CreatePDR: createPDR,
 		CreateFAR: createFAR,
+	}, err
+}
+
+func DeserializePFCPSessionEstablishmentResponse(data []byte) (PFCPMessage, error) {
+	ies, err := ie.ParseInformationElements(data)
+	var nodeID ie.NodeID
+	var cause ie.Cause
+
+	for _, elem := range ies {
+		if nodeIDIE, ok := elem.(ie.NodeID); ok {
+			nodeID = nodeIDIE
+			continue
+		}
+		if causeIE, ok := elem.(ie.Cause); ok {
+			cause = causeIE
+			continue
+		}
+	}
+
+	return PFCPSessionEstablishmentResponse{
+		NodeID: nodeID,
+		Cause:  cause,
 	}, err
 }
