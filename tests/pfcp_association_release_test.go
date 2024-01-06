@@ -58,7 +58,12 @@ func PFCPAssociationReleaseRequest(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID(ie.IPv4, "12.23.34.45")
+	nodeID, err := ie.NewNodeID("12.23.34.45")
+
+	if err != nil {
+		t.Fatalf("Error creating node ID IE: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
 	PFCPAssociationReleaseRequestMsg := messages.PFCPAssociationReleaseRequest{
 		NodeID: nodeID,
@@ -108,10 +113,19 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID(ie.IPv4, "3.4.5.6")
+	nodeID, err := ie.NewNodeID("3.4.5.6")
+
+	if err != nil {
+		t.Fatalf("Error creating node ID IE: %v", err)
+	}
 
 	sequenceNumber := uint32(32)
-	cause := ie.NewCause(2)
+	cause, err := ie.NewCause(2)
+
+	if err != nil {
+		t.Fatalf("Error creating cause IE: %v", err)
+	}
+
 	PFCPAssociationReleaseResponseMsg := messages.PFCPAssociationReleaseResponse{
 		NodeID: nodeID,
 		Cause:  cause,
@@ -152,8 +166,8 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 		t.Errorf("PFCP Association Release Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpAssociationReleaseResponseReceivedCause.Length)
 	}
 
-	if pfcpAssociationReleaseResponseReceivedCause.IEtype != cause.IEtype {
-		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpAssociationReleaseResponseReceivedCause.IEtype)
+	if pfcpAssociationReleaseResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpAssociationReleaseResponseReceivedCause.IEType)
 	}
 
 	if pfcpAssociationReleaseResponseReceivedCause.Value != cause.Value {

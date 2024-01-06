@@ -12,7 +12,12 @@ func TestGivenSerializedWhenDeserializedThenDeserializedCorrectly(t *testing.T) 
 		ie.TRACE,
 	}
 
-	upFunctionFeatures := ie.NewUPFunctionFeatures(features)
+	upFunctionFeatures, err := ie.NewUPFunctionFeatures(features)
+
+	if err != nil {
+		t.Fatalf("Error creating UPFunctionFeatures: %v", err)
+	}
+
 	serializedUPFunctionFeatures := upFunctionFeatures.Serialize()
 
 	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(43, 2, serializedUPFunctionFeatures[4:])

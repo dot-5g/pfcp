@@ -10,12 +10,21 @@ const IEHeaderLength = 4
 type IEType uint16
 
 const (
+	CreatePDRIEType          IEType = 1
+	CreateFARIEType          IEType = 3
+	PDIIEType                IEType = 17
 	CauseIEType              IEType = 19
+	SourceInterfaceIEType    IEType = 20
+	PrecedenceIEType         IEType = 29
+	UPFunctionFeaturesIEType IEType = 43
+	ApplyActionIEType        IEType = 44
+	PDRIDIEType              IEType = 56
+	FSEIDIEType              IEType = 57
 	NodeIDIEType             IEType = 60
 	RecoveryTimeStampIEType  IEType = 96
 	NodeReportTypeIEType     IEType = 101
+	FARIDIEType              IEType = 108
 	SourceIPAddressIEType    IEType = 192
-	UPFunctionFeaturesIEType IEType = 43
 )
 
 type InformationElement interface {
@@ -45,17 +54,35 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		var ie InformationElement
 		switch ieType {
 		case CauseIEType:
-			ie = DeserializeCause(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeCause(uint16(ieType), ieLength, ieValue)
 		case NodeIDIEType:
-			ie = DeserializeNodeID(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeNodeID(uint16(ieType), ieLength, ieValue)
 		case RecoveryTimeStampIEType:
-			ie = DeserializeRecoveryTimeStamp(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeRecoveryTimeStamp(uint16(ieType), ieLength, ieValue)
 		case NodeReportTypeIEType:
-			ie = DeserializeNodeReportType(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeNodeReportType(uint16(ieType), ieLength, ieValue)
 		case SourceIPAddressIEType:
 			ie, err = DeserializeSourceIPAddress(uint16(ieType), ieLength, ieValue)
 		case UPFunctionFeaturesIEType:
 			ie, err = DeserializeUPFunctionFeatures(uint16(ieType), ieLength, ieValue)
+		case FSEIDIEType:
+			ie, err = DeserializeFSEID(uint16(ieType), ieLength, ieValue)
+		case PDRIDIEType:
+			ie, err = DeserializePDRID(uint16(ieType), ieLength, ieValue)
+		case PrecedenceIEType:
+			ie, err = DeserializePrecedence(uint16(ieType), ieLength, ieValue)
+		case SourceInterfaceIEType:
+			ie, err = DeserializeSourceInterface(uint16(ieType), ieLength, ieValue)
+		case PDIIEType:
+			ie, err = DeserializePDI(uint16(ieType), ieLength, ieValue)
+		case CreatePDRIEType:
+			ie, err = DeserializeCreatePDR(uint16(ieType), ieLength, ieValue)
+		case FARIDIEType:
+			ie, err = DeserializeFARID(uint16(ieType), ieLength, ieValue)
+		case ApplyActionIEType:
+			ie, err = DeserializeApplyAction(uint16(ieType), ieLength, ieValue)
+		case CreateFARIEType:
+			ie, err = DeserializeCreateFAR(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}

@@ -25,13 +25,18 @@ func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
 	}
 	pfcpClient := client.New("127.0.0.1:8805")
 	pfcpClient.Udp = mockSender
-	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time.Now())
+
+	if err != nil {
+		t.Fatalf("Error creating Recovery TimeStamp: %v", err)
+	}
+
 	sequenceNumber := uint32(21)
 	heartbeatRequestMsg := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
+	err = pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
 
 	if err != nil {
 		t.Errorf("SendHeartbeatRequest failed: %v", err)

@@ -11,7 +11,7 @@ type PFCPAssociationReleaseResponse struct {
 	Cause  ie.Cause  // Mandatory
 }
 
-func ParsePFCPAssociationReleaseRequest(data []byte) (PFCPAssociationReleaseRequest, error) {
+func DeserializePFCPAssociationReleaseRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	for _, elem := range ies {
@@ -26,7 +26,7 @@ func ParsePFCPAssociationReleaseRequest(data []byte) (PFCPAssociationReleaseRequ
 	}, err
 }
 
-func ParsePFCPAssociationReleaseResponse(data []byte) (PFCPAssociationReleaseResponse, error) {
+func DeserializePFCPAssociationReleaseResponse(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause

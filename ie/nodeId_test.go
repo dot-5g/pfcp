@@ -7,7 +7,11 @@ import (
 )
 
 func TestNewNodeIDIPv4(t *testing.T) {
-	nodeID := ie.NewNodeID(ie.IPv4, "1.2.3.4")
+	nodeID, err := ie.NewNodeID("1.2.3.4")
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if nodeID.IEtype != 60 {
 		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
@@ -35,7 +39,11 @@ func TestNewNodeIDIPv4(t *testing.T) {
 }
 
 func TestNewNodeIDIPv6(t *testing.T) {
-	nodeID := ie.NewNodeID(ie.IPv6, "2001:db8::68")
+	nodeID, err := ie.NewNodeID("2001:db8::68")
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if nodeID.IEtype != 60 {
 		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)
@@ -63,7 +71,11 @@ func TestNewNodeIDIPv6(t *testing.T) {
 }
 
 func TestNewNodeIDFQDN(t *testing.T) {
-	nodeID := ie.NewNodeID(ie.FQDN, "www.example.com")
+	nodeID, err := ie.NewNodeID("www.example.com")
+
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if nodeID.IEtype != 60 {
 		t.Errorf("Expected NodeID, got %d", nodeID.IEtype)

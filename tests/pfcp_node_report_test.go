@@ -60,13 +60,23 @@ func PFCPNodeReportRequest(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID(ie.IPv4, "12.23.34.45")
+	nodeID, err := ie.NewNodeID("12.23.34.45")
+
+	if err != nil {
+		t.Fatalf("Error creating NodeID: %v", err)
+	}
+
 	gpqr := false
 	ckdr := false
 	uprr := true
 	upfr := false
 
-	nodeReportType := ie.NewNodeReportType(gpqr, ckdr, uprr, upfr)
+	nodeReportType, err := ie.NewNodeReportType(gpqr, ckdr, uprr, upfr)
+
+	if err != nil {
+		t.Fatalf("Error creating NodeReportType: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
 	PFCPNodeReportRequestMsg := messages.PFCPNodeReportRequest{
 		NodeID:         nodeID,
@@ -141,9 +151,19 @@ func PFCPNodeReportResponse(t *testing.T) {
 
 	time.Sleep(time.Second)
 	pfcpClient := client.New("127.0.0.1:8805")
-	nodeID := ie.NewNodeID(ie.IPv4, "3.4.5.6")
+	nodeID, err := ie.NewNodeID("3.4.5.6")
+
+	if err != nil {
+		t.Fatalf("Error creating NodeID: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
-	cause := ie.NewCause(2)
+	cause, err := ie.NewCause(2)
+
+	if err != nil {
+		t.Fatalf("Error creating cause IE: %v", err)
+	}
+
 	PFCPNodeReportResponseMsg := messages.PFCPNodeReportResponse{
 		NodeID: nodeID,
 		Cause:  cause,
@@ -184,8 +204,8 @@ func PFCPNodeReportResponse(t *testing.T) {
 		t.Errorf("PFCP Node Report Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpNodeReportResponseReceivedCause.Length)
 	}
 
-	if pfcpNodeReportResponseReceivedCause.IEtype != cause.IEtype {
-		t.Errorf("PFCP Node Report Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEtype, pfcpNodeReportResponseReceivedCause.IEtype)
+	if pfcpNodeReportResponseReceivedCause.IEType != cause.IEType {
+		t.Errorf("PFCP Node Report Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpNodeReportResponseReceivedCause.IEType)
 	}
 
 	if pfcpNodeReportResponseReceivedCause.Value != cause.Value {

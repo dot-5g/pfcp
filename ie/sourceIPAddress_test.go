@@ -8,7 +8,7 @@ import (
 
 func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *testing.T) {
 
-	sourceIPAddress, err := ie.NewSourceIPAddress("1.2.3.4/24")
+	sourceIPAddress, err := ie.NewSourceIPAddress("1.2.3.4/24", "")
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
@@ -41,7 +41,7 @@ func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 
 func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *testing.T) {
 
-	sourceIPAddress, err := ie.NewSourceIPAddress("2001:db8::/32")
+	sourceIPAddress, err := ie.NewSourceIPAddress("", "2001:db8::/32")
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
@@ -72,9 +72,9 @@ func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 	}
 }
 
-func TestGivenSerializedIPV4AddressWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
+func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 
-	sourceIPAddress, err := ie.NewSourceIPAddress("2.2.3.1/24")
+	sourceIPAddress, err := ie.NewSourceIPAddress("2.2.3.1/24", "")
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
@@ -106,6 +106,22 @@ func TestGivenSerializedIPV4AddressWhenDeserializeThenFieldsSetCorrectly(t *test
 
 	if deserializedSourceIPAddress.V6 != false {
 		t.Errorf("Expected NodeID V6 false, got %v", deserializedSourceIPAddress.V6)
+	}
+
+	if deserializedSourceIPAddress.MaskPrefixLength != 24 {
+		t.Errorf("Expected NodeID MaskPrefixLength 24, got %d", deserializedSourceIPAddress.MaskPrefixLength)
+	}
+
+	deserializedIPv4Address := deserializedSourceIPAddress.IPv4Address
+	if len(deserializedIPv4Address) != 4 {
+		t.Errorf("Expected IPv4 address length 4, got %d", len(deserializedIPv4Address))
+	}
+
+	expectedIPv4Address := []byte{2, 2, 3, 1}
+	for i := range deserializedIPv4Address {
+		if deserializedIPv4Address[i] != expectedIPv4Address[i] {
+			t.Errorf("Expected IPv4 address %v, got %v", expectedIPv4Address, deserializedIPv4Address)
+		}
 	}
 
 }

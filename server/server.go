@@ -3,7 +3,6 @@ package server
 import (
 	"log"
 
-	"github.com/dot-5g/pfcp/headers"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/network"
 )
@@ -18,21 +17,23 @@ type HandlePFCPAssociationReleaseRequest func(sequenceNumber uint32, msg message
 type HandlePFCPAssociationReleaseResponse func(sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse)
 type HandlePFCPNodeReportRequest func(sequenceNumber uint32, msg messages.PFCPNodeReportRequest)
 type HandlePFCPNodeReportResponse func(sequenceNumber uint32, msg messages.PFCPNodeReportResponse)
+type HandlePFCPSessionEstablishmentRequest func(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest)
 
 type Server struct {
 	address   string
 	udpServer *network.UdpServer
 
-	heartbeatRequestHandler               HandleHeartbeatRequest
-	heartbeatResponseHandler              HandleHeartbeatResponse
-	pfcpAssociationSetupRequestHandler    HandlePFCPAssociationSetupRequest
-	pfcpAssociationSetupResponseHandler   HandlePFCPAssociationSetupResponse
-	pfcpAssociationUpdateRequestHandler   HandlePFCPAssociationUpdateRequest
-	pfcpAssociationUpdateResponseHandler  HandlePFCPAssociationUpdateResponse
-	pfcpAssociationReleaseRequestHandler  HandlePFCPAssociationReleaseRequest
-	pfcpAssociationReleaseResponseHandler HandlePFCPAssociationReleaseResponse
-	pfcpNodeReportRequestHandler          HandlePFCPNodeReportRequest
-	pfcpNodeReportResponseHandler         HandlePFCPNodeReportResponse
+	heartbeatRequestHandler                HandleHeartbeatRequest
+	heartbeatResponseHandler               HandleHeartbeatResponse
+	pfcpAssociationSetupRequestHandler     HandlePFCPAssociationSetupRequest
+	pfcpAssociationSetupResponseHandler    HandlePFCPAssociationSetupResponse
+	pfcpAssociationUpdateRequestHandler    HandlePFCPAssociationUpdateRequest
+	pfcpAssociationUpdateResponseHandler   HandlePFCPAssociationUpdateResponse
+	pfcpAssociationReleaseRequestHandler   HandlePFCPAssociationReleaseRequest
+	pfcpAssociationReleaseResponseHandler  HandlePFCPAssociationReleaseResponse
+	pfcpNodeReportRequestHandler           HandlePFCPNodeReportRequest
+	pfcpNodeReportResponseHandler          HandlePFCPNodeReportResponse
+	pfcpSessionEstablishmentRequestHandler HandlePFCPSessionEstablishmentRequest
 }
 
 func New(address string) *Server {
@@ -93,10 +94,15 @@ func (server *Server) PFCPNodeReportResponse(handler HandlePFCPNodeReportRespons
 	server.pfcpNodeReportResponseHandler = handler
 }
 
-func (server *Server) handleUDPMessage(data []byte) {
-	header, err := headers.ParsePFCPHeader(data[:headers.HeaderSize])
+func (server *Server) PFCPSessionEstablishmentRequest(handler HandlePFCPSessionEstablishmentRequest) {
+	server.pfcpSessionEstablishmentRequestHandler = handler
+}
+
+func (server *Server) handleUDPMessage(payload []byte) {
+	header, genericMessage, err := messages.DeserializePFCPMessage(payload)
+
 	if err != nil {
-		log.Printf("Error parsing PFCP header: %v", err)
+		log.Printf("Error deserializing PFCP message: %v", err)
 		return
 	}
 
@@ -106,9 +112,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for Heartbeat Request")
 			return
 		}
-		msg, err := messages.ParseHeartbeatRequest(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing Heartbeat Request: %v", err)
+		msg, ok := genericMessage.(messages.HeartbeatRequest)
+		if !ok {
+			log.Printf("Error asserting Heartbeat Request type")
 			return
 		}
 		server.heartbeatRequestHandler(header.SequenceNumber, msg)
@@ -117,9 +123,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for Heartbeat Response")
 			return
 		}
-		msg, err := messages.ParseHeartbeatResponse(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing Heartbeat Response: %v", err)
+		msg, ok := genericMessage.(messages.HeartbeatResponse)
+		if !ok {
+			log.Printf("Error asserting Heartbeat Response type")
 			return
 		}
 		server.heartbeatResponseHandler(header.SequenceNumber, msg)
@@ -128,9 +134,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Association Setup Request")
 			return
 		}
-		msg, err := messages.ParsePFCPAssociationSetupRequest(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Association Setup Request: %v", err)
+		msg, ok := genericMessage.(messages.PFCPAssociationSetupRequest)
+		if !ok {
+			log.Printf("Error asserting PFCP Association Setup Request type")
 			return
 		}
 		server.pfcpAssociationSetupRequestHandler(header.SequenceNumber, msg)
@@ -139,9 +145,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Association Setup Response")
 			return
 		}
-		msg, err := messages.ParsePFCPAssociationSetupResponse(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Association Setup Response: %v", err)
+		msg, ok := genericMessage.(messages.PFCPAssociationSetupResponse)
+		if !ok {
+			log.Printf("Error asserting PFCP Association Setup Response type")
 			return
 		}
 		server.pfcpAssociationSetupResponseHandler(header.SequenceNumber, msg)
@@ -150,9 +156,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Association Update Request")
 			return
 		}
-		msg, err := messages.ParsePFCPAssociationUpdateRequest(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Association Update Request: %v", err)
+		msg, ok := genericMessage.(messages.PFCPAssociationUpdateRequest)
+		if !ok {
+			log.Printf("Error asserting PFCP Association Update Request type")
 			return
 		}
 		server.pfcpAssociationUpdateRequestHandler(header.SequenceNumber, msg)
@@ -161,9 +167,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Association Update Response")
 			return
 		}
-		msg, err := messages.ParsePFCPAssociationUpdateResponse(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Association Update Response: %v", err)
+		msg, ok := genericMessage.(messages.PFCPAssociationUpdateResponse)
+		if !ok {
+			log.Printf("Error asserting PFCP Association Update Response type")
 			return
 		}
 		server.pfcpAssociationUpdateResponseHandler(header.SequenceNumber, msg)
@@ -172,9 +178,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Association Release Request")
 			return
 		}
-		msg, err := messages.ParsePFCPAssociationReleaseRequest(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Association Release Request: %v", err)
+		msg, ok := genericMessage.(messages.PFCPAssociationReleaseRequest)
+		if !ok {
+			log.Printf("Error asserting PFCP Association Release Request type")
 			return
 		}
 		server.pfcpAssociationReleaseRequestHandler(header.SequenceNumber, msg)
@@ -183,9 +189,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Association Release Response")
 			return
 		}
-		msg, err := messages.ParsePFCPAssociationReleaseResponse(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Association Release Response: %v", err)
+		msg, ok := genericMessage.(messages.PFCPAssociationReleaseResponse)
+		if !ok {
+			log.Printf("Error asserting PFCP Association Release Response type")
 			return
 		}
 		server.pfcpAssociationReleaseResponseHandler(header.SequenceNumber, msg)
@@ -194,9 +200,9 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Node Report Request")
 			return
 		}
-		msg, err := messages.ParsePFCPNodeReportRequest(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Node Report Request: %v", err)
+		msg, ok := genericMessage.(messages.PFCPNodeReportRequest)
+		if !ok {
+			log.Printf("Error asserting PFCP Node Report Request type")
 			return
 		}
 		server.pfcpNodeReportRequestHandler(header.SequenceNumber, msg)
@@ -205,12 +211,23 @@ func (server *Server) handleUDPMessage(data []byte) {
 			log.Printf("No handler for PFCP Node Report Response")
 			return
 		}
-		msg, err := messages.ParsePFCPNodeReportResponse(data[headers.HeaderSize:])
-		if err != nil {
-			log.Printf("Error parsing PFCP Node Report Response: %v", err)
+		msg, ok := genericMessage.(messages.PFCPNodeReportResponse)
+		if !ok {
+			log.Printf("Error asserting PFCP Node Report Response type")
 			return
 		}
 		server.pfcpNodeReportResponseHandler(header.SequenceNumber, msg)
+	case messages.PFCPSessionEstablishmentRequestMessageType:
+		if server.pfcpSessionEstablishmentRequestHandler == nil {
+			log.Printf("No handler for PFCP Session Establishment Request")
+			return
+		}
+		msg, ok := genericMessage.(messages.PFCPSessionEstablishmentRequest)
+		if !ok {
+			log.Printf("Error asserting PFCP Session Establishment Request type")
+			return
+		}
+		server.pfcpSessionEstablishmentRequestHandler(header.SequenceNumber, header.SEID, msg)
 	default:
 		log.Printf("Unknown PFCP message type: %v", header.MessageType)
 	}

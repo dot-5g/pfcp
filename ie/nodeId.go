@@ -22,56 +22,43 @@ type NodeID struct {
 	NodeIDValue []byte
 }
 
-func NewNodeID(nodeIDType NodeIDType, nodeIDValue string) NodeID {
+func NewNodeID(nodeID string) (NodeID, error) {
 	var nodeIDValueBytes []byte
 	var length uint16
+	var nodeIDType NodeIDType
 
-	switch nodeIDType {
-	case IPv4:
-		ip := net.ParseIP(nodeIDValue)
-		if ip == nil {
-			panic("invalid IPv4 address")
-		}
-		ipv4 := ip.To4()
-		if ipv4 == nil {
-			panic("invalid IPv4 address")
-		}
-		nodeIDValueBytes = ipv4
+	ip := net.ParseIP(nodeID)
+
+	if ip.To4() != nil {
+		nodeIDValueBytes = ip.To4()
 		length = uint16(len(nodeIDValueBytes)) + 1
-	case IPv6:
-		ip := net.ParseIP(nodeIDValue)
-		if ip == nil {
-			panic("invalid IPv6 address")
-		}
-		ipv6 := ip.To16()
-		if ipv6 == nil {
-			panic("invalid IPv6 address")
-		}
-		nodeIDValueBytes = ipv6
+		nodeIDType = IPv4
+	} else if ip.To16() != nil {
+		nodeIDValueBytes = ip.To16()
 		length = uint16(len(nodeIDValueBytes)) + 1
-	case FQDN:
-		fqdn := []byte(nodeIDValue)
+		nodeIDType = IPv6
+	} else {
+		fqdn := []byte(nodeID)
 		if len(fqdn) > 255 {
-			panic("FQDN too long")
+			return NodeID{}, fmt.Errorf("invalid length for FQDN NodeID: got %d bytes, want <= 255", len(fqdn))
 		}
 		nodeIDValueBytes = fqdn
 		length = uint16(len(nodeIDValueBytes)) + 1
-
-	default:
-		panic(fmt.Sprintf("invalid NodeIDType %d", nodeIDType))
+		nodeIDType = FQDN
 	}
+
 	return NodeID{
-		IEtype:      60,
+		IEtype:      uint16(NodeIDIEType),
 		Length:      length,
 		NodeIDType:  nodeIDType,
 		NodeIDValue: nodeIDValueBytes,
-	}
+	}, nil
 }
 
 func (n NodeID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type (60)
+	// Octets 1 to 2: Type
 	binary.Write(buf, binary.BigEndian, uint16(n.IEtype))
 
 	// Octets 3 to 4: Length
@@ -91,14 +78,39 @@ func (n NodeID) IsZeroValue() bool {
 	return n.Length == 0
 }
 
-func DeserializeNodeID(ieType uint16, ieLength uint16, ieValue []byte) NodeID {
-	nodeIDType := NodeIDType(ieValue[0] & 0x0F) // Ensure NodeIDType is only 4 bits
-	nodeIDValue := ieValue[1:]
+func DeserializeNodeID(ieType uint16, ieLength uint16, ieValue []byte) (NodeID, error) {
+	var nodeID NodeID
 
-	return NodeID{
+	if len(ieValue) < 1 {
+		return nodeID, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
+	}
+
+	if ieType != uint16(NodeIDIEType) {
+		return nodeID, fmt.Errorf("invalid IE type: expected %d, got %d", NodeIDIEType, ieType)
+	}
+
+	nodeIDType := NodeIDType(ieValue[0] & 0x0F)
+	if nodeIDType != IPv4 && nodeIDType != IPv6 && nodeIDType != FQDN {
+		return nodeID, fmt.Errorf("invalid NodeIDType: %d", nodeIDType)
+	}
+
+	switch nodeIDType {
+	case IPv4:
+		if len(ieValue[1:]) != net.IPv4len {
+			return nodeID, fmt.Errorf("invalid length for IPv4 NodeID: expected %d, got %d", net.IPv4len, len(ieValue[1:]))
+		}
+	case IPv6:
+		if len(ieValue[1:]) != net.IPv6len {
+			return nodeID, fmt.Errorf("invalid length for IPv6 NodeID: expected %d, got %d", net.IPv6len, len(ieValue[1:]))
+		}
+	}
+
+	nodeID = NodeID{
 		IEtype:      ieType,
 		Length:      ieLength,
 		NodeIDType:  nodeIDType,
-		NodeIDValue: nodeIDValue,
+		NodeIDValue: ieValue[1:],
 	}
+
+	return nodeID, nil
 }

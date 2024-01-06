@@ -13,13 +13,18 @@ import (
 
 func main() {
 	pfcpClient := client.New("1.2.3.4:8805")
-	recoveryTimeStamp := ie.NewRecoveryTimeStamp(time.Now())
+	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time.Now())
+
+	if err != nil {
+		log.Fatalf("Error creating Recovery TimeStamp: %v", err)
+	}
+
 	sequenceNumber := uint32(21)
 	heartbeatRequestMsg := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	err := pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
+	err = pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
 	if err != nil {
 		log.Fatalf("SendHeartbeatRequest failed: %v", err)
 	}

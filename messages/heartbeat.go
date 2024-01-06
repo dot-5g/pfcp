@@ -13,7 +13,7 @@ type HeartbeatResponse struct {
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
-func ParseHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
+func DeserializeHeartbeatRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	var sourceIPAddress ie.SourceIPAddress
@@ -34,7 +34,7 @@ func ParseHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
 	}, err
 }
 
-func ParseHeartbeatResponse(data []byte) (HeartbeatResponse, error) {
+func DeserializeHeartbeatResponse(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	for _, elem := range ies {
