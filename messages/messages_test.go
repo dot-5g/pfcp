@@ -1,22 +1,22 @@
-package headers_test
+package messages_test
 
 import (
 	"bytes"
 	"encoding/binary"
 	"testing"
 
-	"github.com/dot-5g/pfcp/headers"
+	"github.com/dot-5g/pfcp/messages"
 )
 
 func TestGivenPfcpHeaderWhenSerializePFCPHeaderThenSerializedCorrectly(t *testing.T) {
-	pfcpHeader := headers.PFCPHeader{
+	pfcpHeader := messages.PFCPHeader{
 		Version:        1,
 		MessageType:    2,
 		MessageLength:  3,
 		SequenceNumber: 4,
 	}
 
-	headerBytes := headers.SerializePFCPHeader(pfcpHeader)
+	headerBytes := pfcpHeader.Serialize()
 
 	if len(headerBytes) != 8 {
 		t.Errorf("Expected 8 bytes, got %d", len(headerBytes))

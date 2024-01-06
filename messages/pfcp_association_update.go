@@ -11,7 +11,7 @@ type PFCPAssociationUpdateResponse struct {
 	Cause  ie.Cause  // Mandatory
 }
 
-func ParsePFCPAssociationUpdateRequest(data []byte) (PFCPAssociationUpdateRequest, error) {
+func DeserializePFCPAssociationUpdateRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	for _, elem := range ies {
@@ -26,7 +26,7 @@ func ParsePFCPAssociationUpdateRequest(data []byte) (PFCPAssociationUpdateReques
 	}, err
 }
 
-func ParsePFCPAssociationUpdateResponse(data []byte) (PFCPAssociationUpdateResponse, error) {
+func DeserializePFCPAssociationUpdateResponse(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause

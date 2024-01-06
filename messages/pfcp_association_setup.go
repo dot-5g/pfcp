@@ -16,7 +16,7 @@ type PFCPAssociationSetupResponse struct {
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
-func ParsePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest, error) {
+func DeserializePFCPAssociationSetupRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var recoveryTimeStamp ie.RecoveryTimeStamp
@@ -43,7 +43,7 @@ func ParsePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest,
 	}, err
 }
 
-func ParsePFCPAssociationSetupResponse(data []byte) (PFCPAssociationSetupResponse, error) {
+func DeserializePFCPAssociationSetupResponse(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause

@@ -72,6 +72,11 @@ func PFCPNodeReportRequest(t *testing.T) {
 	upfr := false
 
 	nodeReportType, err := ie.NewNodeReportType(gpqr, ckdr, uprr, upfr)
+
+	if err != nil {
+		t.Fatalf("Error creating NodeReportType: %v", err)
+	}
+
 	sequenceNumber := uint32(32)
 	PFCPNodeReportRequestMsg := messages.PFCPNodeReportRequest{
 		NodeID:         nodeID,

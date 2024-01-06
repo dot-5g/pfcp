@@ -9,7 +9,7 @@ type PFCPSessionEstablishmentRequest struct {
 	CreateFAR ie.CreateFAR // Mandatory
 }
 
-func ParsePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishmentRequest, error) {
+func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var controlPlaneFSEID ie.FSEID

@@ -15,17 +15,19 @@ var (
 	pfcpSessionEstablishmentRequestMu                     sync.Mutex
 	pfcpSessionEstablishmentRequesthandlerCalled          bool
 	pfcpSessionEstablishmentRequestReceivedSequenceNumber uint32
+	pfcpSessionEstablishmentRequestReceivedSEID           uint64
 	pfcpSessionEstablishmentRequestReceivedNodeID         ie.NodeID
 	pfcpSessionEstablishmentRequestReceivedCPFSEID        ie.FSEID
 	pfcpSessionEstablishmentRequestReceivedCreatePDR      ie.CreatePDR
 	pfcpSessionEstablishmentRequestReceivedCreateFAR      ie.CreateFAR
 )
 
-func HandlePFCPSessionEstablishmentRequest(sequenceNumber uint32, msg messages.PFCPSessionEstablishmentRequest) {
+func HandlePFCPSessionEstablishmentRequest(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest) {
 	pfcpSessionEstablishmentRequestMu.Lock()
 	defer pfcpSessionEstablishmentRequestMu.Unlock()
 	pfcpSessionEstablishmentRequesthandlerCalled = true
 	pfcpSessionEstablishmentRequestReceivedSequenceNumber = sequenceNumber
+	pfcpSessionEstablishmentRequestReceivedSEID = seid
 	pfcpSessionEstablishmentRequestReceivedNodeID = msg.NodeID
 	pfcpSessionEstablishmentRequestReceivedCPFSEID = msg.CPFSEID
 	pfcpSessionEstablishmentRequestReceivedCreatePDR = msg.CreatePDR
@@ -53,7 +55,9 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 		t.Fatalf("Error creating Node ID: %v", err)
 	}
 
-	fseid, err := ie.NewFSEID(uint64(1234567890), "1.2.3.4", "")
+	seid := uint64(1234567890)
+
+	fseid, err := ie.NewFSEID(seid, "1.2.3.4", "")
 	if err != nil {
 		t.Fatalf("Error creating FSEID: %v", err)
 	}
@@ -110,7 +114,7 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 	}
 	sequenceNumber := uint32(32)
 
-	pfcpClient.SendPFCPSessionEstablishmentRequest(PFCPSessionEstablishmentRequestMsg, sequenceNumber)
+	pfcpClient.SendPFCPSessionEstablishmentRequest(PFCPSessionEstablishmentRequestMsg, seid, sequenceNumber)
 
 	time.Sleep(time.Second)
 
@@ -121,6 +125,10 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 
 	if pfcpSessionEstablishmentRequestReceivedSequenceNumber != sequenceNumber {
 		t.Errorf("PFCP Session Establishment Request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpSessionEstablishmentRequestReceivedSequenceNumber)
+	}
+
+	if pfcpSessionEstablishmentRequestReceivedSEID != seid {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong SEID.\n- Sent SEID: %v\n- Received SEID %v\n", seid, pfcpSessionEstablishmentRequestReceivedSEID)
 	}
 
 	if pfcpSessionEstablishmentRequestReceivedNodeID.Length != nodeID.Length {

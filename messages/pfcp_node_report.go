@@ -14,7 +14,7 @@ type PFCPNodeReportResponse struct {
 	Cause  ie.Cause  // Mandatory
 }
 
-func ParsePFCPNodeReportRequest(data []byte) (PFCPNodeReportRequest, error) {
+func DeserializePFCPNodeReportRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var nodeReportType ie.NodeReportType
@@ -35,7 +35,7 @@ func ParsePFCPNodeReportRequest(data []byte) (PFCPNodeReportRequest, error) {
 	}, err
 }
 
-func ParsePFCPNodeReportResponse(data []byte) (PFCPNodeReportResponse, error) {
+func DeserializePFCPNodeReportResponse(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause
