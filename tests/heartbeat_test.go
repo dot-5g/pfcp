@@ -78,7 +78,7 @@ func HeartbeatRequest(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -126,7 +126,7 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 		SourceIPAddress:   sourceIPAddress,
 	}
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -187,7 +187,7 @@ func HeartbeatResponse(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 

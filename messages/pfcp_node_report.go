@@ -14,6 +14,30 @@ type PFCPNodeReportResponse struct {
 	Cause  ie.Cause  // Mandatory
 }
 
+func (msg PFCPNodeReportRequest) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID, msg.NodeReportType}
+}
+
+func (msg PFCPNodeReportResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID, msg.Cause}
+}
+
+func (msg PFCPNodeReportRequest) GetMessageType() MessageType {
+	return PFCPNodeReportRequestMessageType
+}
+
+func (msg PFCPNodeReportResponse) GetMessageType() MessageType {
+	return PFCPNodeReportResponseMessageType
+}
+
+func (msg PFCPNodeReportRequest) GetMessageTypeString() string {
+	return "PFCP Node Report Request"
+}
+
+func (msg PFCPNodeReportResponse) GetMessageTypeString() string {
+	return "PFCP Node Report Response"
+}
+
 func DeserializePFCPNodeReportRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID

@@ -2,39 +2,20 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"time"
 
-	"github.com/dot-5g/pfcp/client"
-	"github.com/dot-5g/pfcp/ie"
 	"github.com/dot-5g/pfcp/messages"
 	"github.com/dot-5g/pfcp/server"
 )
 
 func main() {
-	pfcpClient := client.New("1.2.3.4:8805")
-	recoveryTimeStamp, err := ie.NewRecoveryTimeStamp(time.Now())
-
-	if err != nil {
-		log.Fatalf("Error creating Recovery TimeStamp: %v", err)
-	}
-
-	sequenceNumber := uint32(21)
-	heartbeatRequestMsg := messages.HeartbeatRequest{
-		RecoveryTimeStamp: recoveryTimeStamp,
-	}
-
-	err = pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
-	if err != nil {
-		log.Fatalf("SendHeartbeatRequest failed: %v", err)
-	}
+	RunServer()
 }
 
 func RunServer() {
 	pfcpServer := server.New("localhost:8805")
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
 	pfcpServer.HeartbeatResponse(HandleHeartbeatResponse)
-	pfcpServer.Run()
+	go pfcpServer.Run()
 }
 
 func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest) {

@@ -13,6 +13,34 @@ type HeartbeatResponse struct {
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
+func (msg HeartbeatRequest) GetIEs() []ie.InformationElement {
+	ies := []ie.InformationElement{msg.RecoveryTimeStamp}
+	if !msg.SourceIPAddress.IsZeroValue() {
+		ies = append(ies, msg.SourceIPAddress)
+	}
+	return ies
+}
+
+func (msg HeartbeatResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.RecoveryTimeStamp}
+}
+
+func (msg HeartbeatRequest) GetMessageType() MessageType {
+	return HeartbeatRequestMessageType
+}
+
+func (msg HeartbeatResponse) GetMessageType() MessageType {
+	return HeartbeatResponseMessageType
+}
+
+func (msg HeartbeatRequest) GetMessageTypeString() string {
+	return "Heartbeat Request"
+}
+
+func (msg HeartbeatResponse) GetMessageTypeString() string {
+	return "Heartbeat Response"
+}
+
 func DeserializeHeartbeatRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp

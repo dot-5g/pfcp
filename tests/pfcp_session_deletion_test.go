@@ -45,12 +45,13 @@ func HandlePFCPSessionDeletionResponse(sequenceNumber uint32, seid uint64, msg m
 
 func TestPFCPSessionDeletion(t *testing.T) {
 	t.Run("TestPFCPSessionDeletionRequest", PFCPSessionDeletionRequest)
+	// t.Run("TestPFCPSessionDeletionResponse", PFCPSessionDeletionResponse)
 }
 
 func PFCPSessionDeletionRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionDeletionRequest(HandlePFCPSessionDeletionRequest)
-	pfcpServer.Run()
+	go pfcpServer.Run()
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
@@ -86,7 +87,7 @@ func PFCPSessionDeletionRequest(t *testing.T) {
 func PFCPSessionDeletionResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionDeletionResponse(HandlePFCPSessionDeletionResponse)
-	pfcpServer.Run()
+	go pfcpServer.Run()
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
