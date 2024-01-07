@@ -110,16 +110,16 @@ func PFCPSessionDeletionResponse(t *testing.T) {
 		t.Fatalf("PFCP Session Deletion Response handler was not called")
 	}
 
-	// if pfcpSessionDeletionResponseReceivedSequenceNumber != sequenceNumber {
-	// 	t.Errorf("PFCP Session Deletion Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpSessionDeletionResponseReceivedSequenceNumber)
-	// }
+	if pfcpSessionDeletionResponseReceivedSequenceNumber != sequenceNumber {
+		t.Errorf("PFCP Session Deletion Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpSessionDeletionResponseReceivedSequenceNumber)
+	}
 
-	// if pfcpSessionDeletionResponseReceivedSEID != seid {
-	// 	t.Errorf("PFCP Session Deletion Response handler was called with wrong SEID.\n- Sent SEID: %v\n- Received SEID %v\n", seid, pfcpSessionDeletionResponseReceivedSEID)
-	// }
+	if pfcpSessionDeletionResponseReceivedSEID != seid {
+		t.Errorf("PFCP Session Deletion Response handler was called with wrong SEID.\n- Sent SEID: %v\n- Received SEID %v\n", seid, pfcpSessionDeletionResponseReceivedSEID)
+	}
 
-	// if pfcpSessionDeletionResponseReceivedCause != PFCPSessionDeletionResponseMsg.Cause {
-	// 	t.Errorf("PFCP Session Deletion Response handler was called with wrong cause.\n- Sent cause: %v\n- Received cause %v\n", PFCPSessionDeletionResponseMsg.Cause, pfcpSessionDeletionResponseReceivedCause)
-	// }
+	if pfcpSessionDeletionResponseReceivedCause != PFCPSessionDeletionResponseMsg.Cause {
+		t.Errorf("PFCP Session Deletion Response handler was called with wrong cause.\n- Sent cause: %v\n- Received cause %v\n", PFCPSessionDeletionResponseMsg.Cause, pfcpSessionDeletionResponseReceivedCause)
+	}
 
 }

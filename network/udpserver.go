@@ -10,7 +10,6 @@ import (
 type UdpServer struct {
 	conn    *net.UDPConn
 	closeCh chan struct{}
-	// wg      sync.WaitGroup
 	Handler func([]byte)
 }
 
