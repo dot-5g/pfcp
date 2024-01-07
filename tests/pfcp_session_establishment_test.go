@@ -59,7 +59,7 @@ func TestPFCPSessionEstablishment(t *testing.T) {
 func PFCPSessionEstablishmentRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionEstablishmentRequest(HandlePFCPSessionEstablishmentRequest)
-	pfcpServer.Run()
+	go pfcpServer.Run()
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
@@ -274,7 +274,7 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 func PFCPSessionEstablishmentResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionEstablishmentResponse(HandlePFCPSessionEstablishmentResponse)
-	pfcpServer.Run()
+	go pfcpServer.Run()
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)

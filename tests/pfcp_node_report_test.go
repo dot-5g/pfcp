@@ -54,7 +54,7 @@ func PFCPNodeReportRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPNodeReportRequest(HandlePFCPNodeReportRequest)
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -145,7 +145,7 @@ func PFCPNodeReportResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPNodeReportResponse(HandlePFCPNodeReportResponse)
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 

@@ -5,14 +5,12 @@ import (
 	"log"
 	"net"
 	"strings"
-	"sync"
-	"time"
 )
 
 type UdpServer struct {
 	conn    *net.UDPConn
 	closeCh chan struct{}
-	wg      sync.WaitGroup
+	// wg      sync.WaitGroup
 	Handler func([]byte)
 }
 
@@ -38,33 +36,29 @@ func (udpServer *UdpServer) Run(address string) error {
 		return fmt.Errorf("failed to listen on UDP address: %w", err)
 	}
 
-	udpServer.wg.Add(1)
-	go udpServer.listen()
-	log.Printf("Listening on %s\n", addr)
-	return nil
+	log.Printf("Running PFCP server on on %s\n", addr)
+
+	err = udpServer.listen()
+
+	return err
 }
 
-func (udpServer *UdpServer) listen() {
-	defer udpServer.wg.Done()
-
+func (udpServer *UdpServer) listen() error {
 	for {
 		select {
 		case <-udpServer.closeCh:
-			return
+			return nil
 		default:
 			buffer := make([]byte, 1024)
-			udpServer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 500)) // Set a short deadline
 			length, _, err := udpServer.conn.ReadFrom(buffer)
-
 			if err != nil {
 				if !strings.Contains(err.Error(), "use of closed network connection") {
-					log.Printf("Error reading from UDP: %v", err)
+					return fmt.Errorf("failed to read from UDP connection: %w", err)
 				}
 				continue
 			}
-
 			if udpServer.Handler != nil {
-				go udpServer.Handler(buffer[:length])
+				udpServer.Handler(buffer[:length])
 			}
 		}
 	}
@@ -80,8 +74,8 @@ func (udpServer *UdpServer) Close() error {
 
 	if udpServer.conn != nil {
 		err = udpServer.conn.Close()
+		log.Printf("Closed PFCP server\n")
 	}
 
-	udpServer.wg.Wait()
 	return err
 }

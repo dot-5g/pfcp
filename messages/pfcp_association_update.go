@@ -11,6 +11,30 @@ type PFCPAssociationUpdateResponse struct {
 	Cause  ie.Cause  // Mandatory
 }
 
+func (msg PFCPAssociationUpdateRequest) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID}
+}
+
+func (msg PFCPAssociationUpdateResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID, msg.Cause}
+}
+
+func (msg PFCPAssociationUpdateRequest) GetMessageType() MessageType {
+	return PFCPAssociationUpdateRequestMessageType
+}
+
+func (msg PFCPAssociationUpdateResponse) GetMessageType() MessageType {
+	return PFCPAssociationUpdateResponseMessageType
+}
+
+func (msg PFCPAssociationUpdateRequest) GetMessageTypeString() string {
+	return "PFCP Association Update Request"
+}
+
+func (msg PFCPAssociationUpdateResponse) GetMessageTypeString() string {
+	return "PFCP Association Update Response"
+}
+
 func DeserializePFCPAssociationUpdateRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID

@@ -8,6 +8,30 @@ type PFCPSessionDeletionResponse struct {
 	Cause ie.Cause // Mandatory
 }
 
+func (msg PFCPSessionDeletionRequest) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{}
+}
+
+func (msg PFCPSessionDeletionResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.Cause}
+}
+
+func (msg PFCPSessionDeletionRequest) GetMessageType() MessageType {
+	return PFCPSessionDeletionRequestMessageType
+}
+
+func (msg PFCPSessionDeletionResponse) GetMessageType() MessageType {
+	return PFCPSessionDeletionResponseMessageType
+}
+
+func (msg PFCPSessionDeletionRequest) GetMessageTypeString() string {
+	return "PFCP Session Deletion Request"
+}
+
+func (msg PFCPSessionDeletionResponse) GetMessageTypeString() string {
+	return "PFCP Session Deletion Response"
+}
+
 func DeserializePFCPSessionDeletionRequest(data []byte) (PFCPMessage, error) {
 	return PFCPSessionDeletionRequest{}, nil
 }

@@ -1,6 +1,7 @@
 package ie
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 )
@@ -27,6 +28,23 @@ const (
 	FARIDIEType              IEType = 108
 	SourceIPAddressIEType    IEType = 192
 )
+
+type IEHeader struct {
+	Type   IEType
+	Length uint16
+}
+
+func (ieHeader *IEHeader) Serialize() []byte {
+	buf := new(bytes.Buffer)
+
+	// Octets 1 to 2: Type
+	binary.Write(buf, binary.BigEndian, uint16(ieHeader.Type))
+
+	// Octets 3 to 4: Length
+	binary.Write(buf, binary.BigEndian, uint16(ieHeader.Length))
+
+	return buf.Bytes()
+}
 
 type InformationElement interface {
 	Serialize() []byte

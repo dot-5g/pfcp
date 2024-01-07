@@ -10,6 +10,30 @@ type PFCPSessionReportResponse struct {
 	Cause ie.Cause // Mandatory
 }
 
+func (msg PFCPSessionReportRequest) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.ReportType}
+}
+
+func (msg PFCPSessionReportResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.Cause}
+}
+
+func (msg PFCPSessionReportRequest) GetMessageType() MessageType {
+	return PFCPSessionReportRequestMessageType
+}
+
+func (msg PFCPSessionReportResponse) GetMessageType() MessageType {
+	return PFCPSessionReportResponseMessageType
+}
+
+func (msg PFCPSessionReportRequest) GetMessageTypeString() string {
+	return "PFCP Session Report Request"
+}
+
+func (msg PFCPSessionReportResponse) GetMessageTypeString() string {
+	return "PFCP Session Report Response"
+}
+
 func DeserializePFCPSessionReportRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var reportType ie.ReportType

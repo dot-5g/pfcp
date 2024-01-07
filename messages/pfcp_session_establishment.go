@@ -14,6 +14,30 @@ type PFCPSessionEstablishmentResponse struct {
 	Cause  ie.Cause  // Mandatory
 }
 
+func (msg PFCPSessionEstablishmentRequest) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID, msg.CPFSEID, msg.CreatePDR, msg.CreateFAR}
+}
+
+func (msg PFCPSessionEstablishmentResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID, msg.Cause}
+}
+
+func (msg PFCPSessionEstablishmentRequest) GetMessageType() MessageType {
+	return PFCPSessionEstablishmentRequestMessageType
+}
+
+func (msg PFCPSessionEstablishmentResponse) GetMessageType() MessageType {
+	return PFCPSessionEstablishmentResponseMessageType
+}
+
+func (msg PFCPSessionEstablishmentRequest) GetMessageTypeString() string {
+	return "PFCP Session Establishment Request"
+}
+
+func (msg PFCPSessionEstablishmentResponse) GetMessageTypeString() string {
+	return "PFCP Session Establishment Response"
+}
+
 func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID

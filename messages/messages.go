@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
+	"github.com/dot-5g/pfcp/ie"
 )
 
 type MessageType byte
@@ -28,6 +30,9 @@ const (
 )
 
 type PFCPMessage interface {
+	GetIEs() []ie.InformationElement
+	GetMessageType() MessageType
+	GetMessageTypeString() string
 }
 
 type DeserializerFunc func([]byte) (PFCPMessage, error)
@@ -137,6 +142,20 @@ func (header PFCPHeader) Serialize() []byte {
 	buf.WriteByte(0)
 
 	return buf.Bytes()
+}
+
+func Serialize(message PFCPMessage, header PFCPHeader) []byte {
+	var payload []byte
+	ies := message.GetIEs()
+	fmt.Printf("ies: %v\n", ies)
+	for _, element := range ies {
+		fmt.Printf("IE: %v\n", element)
+		// fmt.Printf("IE type: %v\n", element.Type)
+		payload = append(payload, element.Serialize()...)
+	}
+	header.MessageLength = uint16(len(payload))
+	headerBytes := header.Serialize()
+	return append(headerBytes, payload...)
 }
 
 func DeserializePFCPHeader(data []byte) (PFCPHeader, error) {

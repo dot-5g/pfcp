@@ -52,7 +52,7 @@ func PFCPAssociationUpdateRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPAssociationUpdateRequest(HandlePFCPAssociationUpdateRequest)
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -107,7 +107,7 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPAssociationUpdateResponse(HandlePFCPAssociationUpdateResponse)
 
-	pfcpServer.Run()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 

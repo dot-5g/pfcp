@@ -16,6 +16,36 @@ type PFCPAssociationSetupResponse struct {
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
+func (msg PFCPAssociationSetupRequest) GetIEs() []ie.InformationElement {
+	ies := []ie.InformationElement{msg.NodeID, msg.RecoveryTimeStamp}
+
+	if !msg.UPFunctionFeatures.IsZeroValue() {
+		ies = append(ies, msg.UPFunctionFeatures)
+	}
+
+	return ies
+}
+
+func (msg PFCPAssociationSetupResponse) GetIEs() []ie.InformationElement {
+	return []ie.InformationElement{msg.NodeID, msg.Cause, msg.RecoveryTimeStamp}
+}
+
+func (msg PFCPAssociationSetupRequest) GetMessageType() MessageType {
+	return PFCPAssociationSetupRequestMessageType
+}
+
+func (msg PFCPAssociationSetupResponse) GetMessageType() MessageType {
+	return PFCPAssociationSetupResponseMessageType
+}
+
+func (msg PFCPAssociationSetupRequest) GetMessageTypeString() string {
+	return "PFCP Association Setup Request"
+}
+
+func (msg PFCPAssociationSetupResponse) GetMessageTypeString() string {
+	return "PFCP Association Setup Response"
+}
+
 func DeserializePFCPAssociationSetupRequest(data []byte) (PFCPMessage, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID

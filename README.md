@@ -51,7 +51,7 @@ import (
 func main() {
 	pfcpServer := server.New("localhost:8805")
 	pfcpServer.HeartbeatRequest(HandleHeartbeatRequest)
-	pfcpServer.Run()
+	go pfcpServer.Run()
 }
 
 func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest) {
