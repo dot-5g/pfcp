@@ -77,5 +77,5 @@ func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest
 
 - [x] PFCP Session Establishment
 - [ ] PFCP Session Modification
-- [ ] PFCP Session Deletion
+- [x] PFCP Session Deletion
 - [ ] PFCP Session Report
