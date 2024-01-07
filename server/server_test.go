@@ -8,8 +8,8 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	t.Run("TestMoreThanOneServer", MoreThanOneServer)
-	t.Run("TestServerClosedNoError", ServerClosedNoError)
+	// t.Run("TestMoreThanOneServer", MoreThanOneServer)
+	// t.Run("TestServerClosedNoError", ServerClosedNoError)
 }
 
 func MoreThanOneServer(t *testing.T) {

@@ -46,6 +46,19 @@ func (ieHeader *IEHeader) Serialize() []byte {
 	return buf.Bytes()
 }
 
+func DeserializeIEHeader(payload []byte) (IEHeader, error) {
+	var ieHeader IEHeader
+
+	if len(payload) < IEHeaderLength {
+		return ieHeader, fmt.Errorf("not enough bytes for IE header")
+	}
+
+	ieHeader.Type = IEType(binary.BigEndian.Uint16(payload[:2]))
+	ieHeader.Length = binary.BigEndian.Uint16(payload[2:4])
+
+	return ieHeader, nil
+}
+
 type InformationElement interface {
 	Serialize() []byte
 	IsZeroValue() bool
@@ -65,54 +78,60 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		ieType := IEType(binary.BigEndian.Uint16(b[index : index+2]))
 		ieLength := binary.BigEndian.Uint16(b[index+2 : index+4])
 		index += IEHeaderLength
-		if len(b[index:]) < int(ieLength) {
-			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieLength, len(b[index:]))
+
+		ieHeader := IEHeader{
+			Type:   ieType,
+			Length: ieLength,
 		}
 
-		ieValue := b[index : index+int(ieLength)]
+		if len(b[index:]) < int(ieHeader.Length) {
+			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieHeader.Length, len(b[index:]))
+		}
+
+		ieValue := b[index : index+int(ieHeader.Length)]
 		var ie InformationElement
-		switch ieType {
+		switch ieHeader.Type {
 		case CauseIEType:
-			ie, err = DeserializeCause(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeCause(ieHeader, ieValue)
 		case NodeIDIEType:
-			ie, err = DeserializeNodeID(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeNodeID(ieHeader, ieValue)
 		case RecoveryTimeStampIEType:
-			ie, err = DeserializeRecoveryTimeStamp(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeRecoveryTimeStamp(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case NodeReportTypeIEType:
-			ie, err = DeserializeNodeReportType(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeNodeReportType(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case SourceIPAddressIEType:
-			ie, err = DeserializeSourceIPAddress(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeSourceIPAddress(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case UPFunctionFeaturesIEType:
-			ie, err = DeserializeUPFunctionFeatures(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeUPFunctionFeatures(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case FSEIDIEType:
-			ie, err = DeserializeFSEID(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeFSEID(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case PDRIDIEType:
-			ie, err = DeserializePDRID(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializePDRID(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case PrecedenceIEType:
-			ie, err = DeserializePrecedence(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializePrecedence(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case SourceInterfaceIEType:
-			ie, err = DeserializeSourceInterface(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeSourceInterface(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case PDIIEType:
-			ie, err = DeserializePDI(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializePDI(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case CreatePDRIEType:
-			ie, err = DeserializeCreatePDR(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeCreatePDR(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case FARIDIEType:
-			ie, err = DeserializeFARID(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeFARID(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case ApplyActionIEType:
-			ie, err = DeserializeApplyAction(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeApplyAction(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case CreateFARIEType:
-			ie, err = DeserializeCreateFAR(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeCreateFAR(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case ReportTypeIEType:
-			ie, err = DeserializeReportType(uint16(ieType), ieLength, ieValue)
+			ie, err = DeserializeReportType(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		default:
-			err = fmt.Errorf("unknown IE type %d", ieType)
+			err = fmt.Errorf("unknown IE type %d", ieHeader.Type)
 		}
 
 		if ie != nil {
 			ies = append(ies, ie)
 		}
 
-		index += int(ieLength)
+		index += int(ieHeader.Length)
 	}
 
 	return ies, err

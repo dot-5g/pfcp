@@ -96,21 +96,21 @@ func PFCPNodeReportRequest(t *testing.T) {
 		t.Errorf("PFCP Node Report Request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpNodeReportRequestReceivedSequenceNumber)
 	}
 
-	if pfcpNodeReportRequestReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Node Report Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpNodeReportRequestReceivedNodeID.Length)
+	if pfcpNodeReportRequestReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Node Report Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpNodeReportRequestReceivedNodeID.Header.Length)
 	}
 
-	if pfcpNodeReportRequestReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Node Report Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpNodeReportRequestReceivedNodeID.NodeIDType)
+	if pfcpNodeReportRequestReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Node Report Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpNodeReportRequestReceivedNodeID.Type)
 	}
 
-	if len(pfcpNodeReportRequestReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Node Report Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpNodeReportRequestReceivedNodeID.NodeIDValue))
+	if len(pfcpNodeReportRequestReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Node Report Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpNodeReportRequestReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpNodeReportRequestReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Node Report Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpNodeReportRequestReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpNodeReportRequestReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Node Report Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpNodeReportRequestReceivedNodeID.Value)
 		}
 	}
 
@@ -182,30 +182,30 @@ func PFCPNodeReportResponse(t *testing.T) {
 		t.Errorf("PFCP Node Report Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpNodeReportResponseReceivedSequenceNumber)
 	}
 
-	if pfcpNodeReportResponseReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Node Report Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpNodeReportResponseReceivedNodeID.Length)
+	if pfcpNodeReportResponseReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Node Report Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpNodeReportResponseReceivedNodeID.Header.Length)
 	}
 
-	if pfcpNodeReportResponseReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Node Report Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpNodeReportResponseReceivedNodeID.NodeIDType)
+	if pfcpNodeReportResponseReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Node Report Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpNodeReportResponseReceivedNodeID.Type)
 	}
 
-	if len(pfcpNodeReportResponseReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Node Report Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpNodeReportResponseReceivedNodeID.NodeIDValue))
+	if len(pfcpNodeReportResponseReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Node Report Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpNodeReportResponseReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpNodeReportResponseReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Node Report Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpNodeReportResponseReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpNodeReportResponseReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Node Report Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpNodeReportResponseReceivedNodeID.Value)
 		}
 	}
 
-	if pfcpNodeReportResponseReceivedCause.Length != cause.Length {
-		t.Errorf("PFCP Node Report Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpNodeReportResponseReceivedCause.Length)
+	if pfcpNodeReportResponseReceivedCause.Header.Length != cause.Header.Length {
+		t.Errorf("PFCP Node Report Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Header.Length, pfcpNodeReportResponseReceivedCause.Header.Length)
 	}
 
-	if pfcpNodeReportResponseReceivedCause.IEType != cause.IEType {
-		t.Errorf("PFCP Node Report Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpNodeReportResponseReceivedCause.IEType)
+	if pfcpNodeReportResponseReceivedCause.Header.Type != cause.Header.Type {
+		t.Errorf("PFCP Node Report Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Header.Type, pfcpNodeReportResponseReceivedCause.Header.Type)
 	}
 
 	if pfcpNodeReportResponseReceivedCause.Value != cause.Value {

@@ -147,10 +147,7 @@ func (header PFCPHeader) Serialize() []byte {
 func Serialize(message PFCPMessage, header PFCPHeader) []byte {
 	var payload []byte
 	ies := message.GetIEs()
-	fmt.Printf("ies: %v\n", ies)
 	for _, element := range ies {
-		fmt.Printf("IE: %v\n", element)
-		// fmt.Printf("IE type: %v\n", element.Type)
 		payload = append(payload, element.Serialize()...)
 	}
 	header.MessageLength = uint16(len(payload))

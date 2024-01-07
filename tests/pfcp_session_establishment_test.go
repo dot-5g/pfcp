@@ -150,21 +150,21 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 		t.Errorf("PFCP Session Establishment Request handler was called with wrong SEID.\n- Sent SEID: %v\n- Received SEID %v\n", seid, pfcpSessionEstablishmentRequestReceivedSEID)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpSessionEstablishmentRequestReceivedNodeID.Length)
+	if pfcpSessionEstablishmentRequestReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpSessionEstablishmentRequestReceivedNodeID.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpSessionEstablishmentRequestReceivedNodeID.NodeIDType)
+	if pfcpSessionEstablishmentRequestReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpSessionEstablishmentRequestReceivedNodeID.Type)
 	}
 
-	if len(pfcpSessionEstablishmentRequestReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpSessionEstablishmentRequestReceivedNodeID.NodeIDValue))
+	if len(pfcpSessionEstablishmentRequestReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpSessionEstablishmentRequestReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpSessionEstablishmentRequestReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpSessionEstablishmentRequestReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpSessionEstablishmentRequestReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Session Establishment Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpSessionEstablishmentRequestReceivedNodeID.Value)
 		}
 	}
 
@@ -315,30 +315,30 @@ func PFCPSessionEstablishmentResponse(t *testing.T) {
 		t.Errorf("PFCP Session Establishment Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpSessionEstablishmentResponseReceivedSequenceNumber)
 	}
 
-	if pfcpSessionEstablishmentResponseReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpSessionEstablishmentResponseReceivedNodeID.Length)
+	if pfcpSessionEstablishmentResponseReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpSessionEstablishmentResponseReceivedNodeID.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDType)
+	if pfcpSessionEstablishmentResponseReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpSessionEstablishmentResponseReceivedNodeID.Type)
 	}
 
-	if len(pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue))
+	if len(pfcpSessionEstablishmentResponseReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpSessionEstablishmentResponseReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpSessionEstablishmentResponseReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpSessionEstablishmentResponseReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Session Establishment Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpSessionEstablishmentResponseReceivedNodeID.Value)
 		}
 	}
 
-	if pfcpSessionEstablishmentResponseReceivedCause.Length != cause.Length {
-		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpSessionEstablishmentResponseReceivedCause.Length)
+	if pfcpSessionEstablishmentResponseReceivedCause.Header.Length != cause.Header.Length {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Header.Length, pfcpSessionEstablishmentResponseReceivedCause.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentResponseReceivedCause.IEType != cause.IEType {
-		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpSessionEstablishmentResponseReceivedCause.IEType)
+	if pfcpSessionEstablishmentResponseReceivedCause.Header.Type != cause.Header.Type {
+		t.Errorf("PFCP Session Establishment Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Header.Type, pfcpSessionEstablishmentResponseReceivedCause.Header.Type)
 	}
 
 	if pfcpSessionEstablishmentResponseReceivedCause.Value != cause.Value {
