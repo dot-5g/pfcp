@@ -158,7 +158,7 @@ func PFCPNodeReportResponse(t *testing.T) {
 	}
 
 	sequenceNumber := uint32(32)
-	cause, err := ie.NewCause(2)
+	cause, err := ie.NewCause(ie.RequestAccepted)
 
 	if err != nil {
 		t.Fatalf("Error creating cause IE: %v", err)

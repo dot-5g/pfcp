@@ -285,7 +285,7 @@ func PFCPSessionEstablishmentResponse(t *testing.T) {
 		t.Fatalf("Error creating Node ID: %v", err)
 	}
 
-	cause, err := ie.NewCause(3)
+	cause, err := ie.NewCause(ie.RequestAccepted)
 	if err != nil {
 		t.Fatalf("Error creating Cause: %v", err)
 	}

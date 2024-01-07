@@ -21,6 +21,8 @@ type HandlePFCPSessionEstablishmentRequest func(sequenceNumber uint32, seid uint
 type HandlePFCPSessionEstablishmentResponse func(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse)
 type HandlePFCPSessionDeletionRequest func(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest)
 type HandlePFCPSessionDeletionResponse func(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse)
+type HandlePFCPSessionReportRequest func(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportRequest)
+type HandlePFCPSessionReportResponse func(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportResponse)
 
 type Server struct {
 	address   string
@@ -40,6 +42,8 @@ type Server struct {
 	pfcpSessionEstablishmentResponseHandler HandlePFCPSessionEstablishmentResponse
 	pfcpSessionDeletionRequestHandler       HandlePFCPSessionDeletionRequest
 	pfcpSessionDeletionResponseHandler      HandlePFCPSessionDeletionResponse
+	pfcpSessionReportRequestHandler         HandlePFCPSessionReportRequest
+	pfcpSessionReportResponseHandler        HandlePFCPSessionReportResponse
 }
 
 func New(address string) *Server {
@@ -114,6 +118,14 @@ func (server *Server) PFCPSessionDeletionRequest(handler HandlePFCPSessionDeleti
 
 func (server *Server) PFCPSessionDeletionResponse(handler HandlePFCPSessionDeletionResponse) {
 	server.pfcpSessionDeletionResponseHandler = handler
+}
+
+func (server *Server) PFCPSessionReportRequest(handler HandlePFCPSessionReportRequest) {
+	server.pfcpSessionReportRequestHandler = handler
+}
+
+func (server *Server) PFCPSessionReportResponse(handler HandlePFCPSessionReportResponse) {
+	server.pfcpSessionReportResponseHandler = handler
 }
 
 func (server *Server) handleUDPMessage(payload []byte) {
@@ -279,6 +291,28 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			return
 		}
 		server.pfcpSessionDeletionResponseHandler(header.SequenceNumber, header.SEID, msg)
+	case messages.PFCPSessionReportRequestMessageType:
+		if server.pfcpSessionReportRequestHandler == nil {
+			log.Printf("No handler for PFCP Session Report Request")
+			return
+		}
+		msg, ok := genericMessage.(messages.PFCPSessionReportRequest)
+		if !ok {
+			log.Printf("Error asserting PFCP Session Report Request type")
+			return
+		}
+		server.pfcpSessionReportRequestHandler(header.SequenceNumber, header.SEID, msg)
+	case messages.PFCPSessionReportResponseMessageType:
+		if server.pfcpSessionReportResponseHandler == nil {
+			log.Printf("No handler for PFCP Session Report Response")
+			return
+		}
+		msg, ok := genericMessage.(messages.PFCPSessionReportResponse)
+		if !ok {
+			log.Printf("Error asserting PFCP Session Report Response type")
+			return
+		}
+		server.pfcpSessionReportResponseHandler(header.SequenceNumber, header.SEID, msg)
 	default:
 		log.Printf("Unknown PFCP message type: %v", header.MessageType)
 	}
