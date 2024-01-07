@@ -164,7 +164,7 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		t.Fatalf("Error creating node ID IE: %v", err)
 	}
 
-	cause, err := ie.NewCause(2)
+	cause, err := ie.NewCause(ie.RequestAccepted)
 
 	if err != nil {
 		t.Fatalf("Error creating cause IE: %v", err)

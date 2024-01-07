@@ -16,6 +16,7 @@ const (
 	CauseIEType              IEType = 19
 	SourceInterfaceIEType    IEType = 20
 	PrecedenceIEType         IEType = 29
+	ReportTypeIEType         IEType = 39
 	UPFunctionFeaturesIEType IEType = 43
 	ApplyActionIEType        IEType = 44
 	PDRIDIEType              IEType = 56
@@ -83,6 +84,8 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeApplyAction(uint16(ieType), ieLength, ieValue)
 		case CreateFARIEType:
 			ie, err = DeserializeCreateFAR(uint16(ieType), ieLength, ieValue)
+		case ReportTypeIEType:
+			ie, err = DeserializeReportType(uint16(ieType), ieLength, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieType)
 		}
