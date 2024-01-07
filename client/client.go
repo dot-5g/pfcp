@@ -173,3 +173,23 @@ func (pfcp *Pfcp) SendPFCPSessionEstablishmentResponse(msg messages.PFCPSessionE
 	}
 	return nil
 }
+
+func (pfcp *Pfcp) SendPFCPSessionDeletionRequest(msg messages.PFCPSessionDeletionRequest, seid uint64, sequenceNumber uint32) error {
+	header := messages.NewSessionPFCPHeader(messages.PFCPSessionDeletionRequestMessageType, seid, sequenceNumber)
+	ies := []ie.InformationElement{}
+	err := pfcp.sendPfcpMessage(header, ies)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Session Deletion Request: %w", err)
+	}
+	return nil
+}
+
+func (pfcp *Pfcp) SendPFCPSessionDeletionResponse(msg messages.PFCPSessionDeletionResponse, seid uint64, sequenceNumber uint32) error {
+	header := messages.NewSessionPFCPHeader(messages.PFCPSessionDeletionResponseMessageType, seid, sequenceNumber)
+	ies := []ie.InformationElement{msg.Cause}
+	err := pfcp.sendPfcpMessage(header, ies)
+	if err != nil {
+		return fmt.Errorf("error sending PFCP Session Deletion Response: %w", err)
+	}
+	return nil
+}

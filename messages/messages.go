@@ -21,6 +21,8 @@ const (
 	PFCPNodeReportResponseMessageType           MessageType = 13
 	PFCPSessionEstablishmentRequestMessageType  MessageType = 50
 	PFCPSessionEstablishmentResponseMessageType MessageType = 51
+	PFCPSessionDeletionRequestMessageType       MessageType = 54
+	PFCPSessionDeletionResponseMessageType      MessageType = 55
 )
 
 type PFCPMessage interface {
@@ -41,6 +43,8 @@ var messageTypeDeserializers = map[MessageType]DeserializerFunc{
 	PFCPNodeReportResponseMessageType:           DeserializePFCPNodeReportResponse,
 	PFCPSessionEstablishmentRequestMessageType:  DeserializePFCPSessionEstablishmentRequest,
 	PFCPSessionEstablishmentResponseMessageType: DeserializePFCPSessionEstablishmentResponse,
+	PFCPSessionDeletionRequestMessageType:       DeserializePFCPSessionDeletionRequest,
+	PFCPSessionDeletionResponseMessageType:      DeserializePFCPSessionDeletionResponse,
 }
 
 type PFCPHeader struct {
