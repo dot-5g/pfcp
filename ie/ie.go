@@ -31,7 +31,7 @@ type InformationElement interface {
 	IsZeroValue() bool
 }
 
-func ParseInformationElements(b []byte) ([]InformationElement, error) {
+func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 	var ies []InformationElement
 	var err error
 

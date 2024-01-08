@@ -38,8 +38,8 @@ func (msg PFCPSessionEstablishmentResponse) GetMessageTypeString() string {
 	return "PFCP Session Establishment Response"
 }
 
-func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPMessage, error) {
-	ies, err := ie.ParseInformationElements(data)
+func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishmentRequest, error) {
+	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var controlPlaneFSEID ie.FSEID
 	var createPDR ie.CreatePDR
@@ -73,8 +73,8 @@ func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPMessage, error
 	}, err
 }
 
-func DeserializePFCPSessionEstablishmentResponse(data []byte) (PFCPMessage, error) {
-	ies, err := ie.ParseInformationElements(data)
+func DeserializePFCPSessionEstablishmentResponse(data []byte) (PFCPSessionEstablishmentResponse, error) {
+	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause
 

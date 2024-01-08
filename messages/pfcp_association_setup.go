@@ -46,8 +46,8 @@ func (msg PFCPAssociationSetupResponse) GetMessageTypeString() string {
 	return "PFCP Association Setup Response"
 }
 
-func DeserializePFCPAssociationSetupRequest(data []byte) (PFCPMessage, error) {
-	ies, err := ie.ParseInformationElements(data)
+func DeserializePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest, error) {
+	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	var upfeatures ie.UPFunctionFeatures
@@ -73,8 +73,8 @@ func DeserializePFCPAssociationSetupRequest(data []byte) (PFCPMessage, error) {
 	}, err
 }
 
-func DeserializePFCPAssociationSetupResponse(data []byte) (PFCPMessage, error) {
-	ies, err := ie.ParseInformationElements(data)
+func DeserializePFCPAssociationSetupResponse(data []byte) (PFCPAssociationSetupResponse, error) {
+	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause
 	var recoveryTimeStamp ie.RecoveryTimeStamp
