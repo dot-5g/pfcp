@@ -41,7 +41,7 @@ func (msg HeartbeatResponse) GetMessageTypeString() string {
 	return "Heartbeat Response"
 }
 
-func DeserializeHeartbeatRequest(data []byte) (PFCPMessage, error) {
+func DeserializeHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	var sourceIPAddress ie.SourceIPAddress
@@ -62,7 +62,7 @@ func DeserializeHeartbeatRequest(data []byte) (PFCPMessage, error) {
 	}, err
 }
 
-func DeserializeHeartbeatResponse(data []byte) (PFCPMessage, error) {
+func DeserializeHeartbeatResponse(data []byte) (HeartbeatResponse, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	for _, elem := range ies {

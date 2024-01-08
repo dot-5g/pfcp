@@ -32,12 +32,16 @@ func (msg PFCPSessionDeletionResponse) GetMessageTypeString() string {
 	return "PFCP Session Deletion Response"
 }
 
-func DeserializePFCPSessionDeletionRequest(data []byte) (PFCPMessage, error) {
+func DeserializePFCPSessionDeletionRequest(data []byte) (PFCPSessionDeletionRequest, error) {
 	return PFCPSessionDeletionRequest{}, nil
 }
 
-func DeserializePFCPSessionDeletionResponse(data []byte) (PFCPMessage, error) {
+func DeserializePFCPSessionDeletionResponse(data []byte) (PFCPSessionDeletionResponse, error) {
 	ies, err := ie.ParseInformationElements(data)
+	if err != nil {
+		return PFCPSessionDeletionResponse{}, err
+	}
+
 	var cause ie.Cause
 	for _, elem := range ies {
 		if causeIE, ok := elem.(ie.Cause); ok {
@@ -48,5 +52,5 @@ func DeserializePFCPSessionDeletionResponse(data []byte) (PFCPMessage, error) {
 
 	return PFCPSessionDeletionResponse{
 		Cause: cause,
-	}, err
+	}, nil
 }

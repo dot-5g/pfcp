@@ -55,7 +55,7 @@ func New(address string) *Server {
 }
 
 func (server *Server) Run() error {
-	server.udpServer.SetHandler(server.handleUDPMessage)
+	server.udpServer.SetHandler(server.handlePFCPMessage)
 	err := server.udpServer.Run(server.address)
 	return err
 }
@@ -128,13 +128,23 @@ func (server *Server) PFCPSessionReportResponse(handler HandlePFCPSessionReportR
 	server.pfcpSessionReportResponseHandler = handler
 }
 
-func (server *Server) handleUDPMessage(payload []byte) {
-	header, genericMessage, err := messages.DeserializePFCPMessage(payload)
-
+func (server *Server) handlePFCPMessage(payload []byte) {
+	header, err := messages.DeserializeHeader(payload)
 	if err != nil {
-		log.Printf("Error deserializing PFCP message: %v", err)
+		log.Fatalf("Error deserializing header: %v", err)
 		return
 	}
+
+	payloadOffset := 8
+	if header.S {
+		payloadOffset = 16
+	}
+
+	if len(payload) < payloadOffset {
+		log.Fatalf("Error: payload length is less than payload offset")
+		return
+	}
+	payloadMessage := payload[payloadOffset:]
 
 	switch header.MessageType {
 	case messages.HeartbeatRequestMessageType:
@@ -142,9 +152,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for Heartbeat Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.HeartbeatRequest)
-		if !ok {
-			log.Printf("Error asserting Heartbeat Request type")
+		msg, err := messages.DeserializeHeartbeatRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing Heartbeat Request: %v", err)
 			return
 		}
 		server.heartbeatRequestHandler(header.SequenceNumber, msg)
@@ -153,9 +163,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for Heartbeat Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.HeartbeatResponse)
-		if !ok {
-			log.Printf("Error asserting Heartbeat Response type")
+		msg, err := messages.DeserializeHeartbeatResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing Heartbeat Response: %v", err)
 			return
 		}
 		server.heartbeatResponseHandler(header.SequenceNumber, msg)
@@ -164,9 +174,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Association Setup Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPAssociationSetupRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Association Setup Request type")
+		msg, err := messages.DeserializePFCPAssociationSetupRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Association Setup Request: %v", err)
 			return
 		}
 		server.pfcpAssociationSetupRequestHandler(header.SequenceNumber, msg)
@@ -175,9 +185,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Association Setup Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPAssociationSetupResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Association Setup Response type")
+		msg, err := messages.DeserializePFCPAssociationSetupResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Association Setup Response: %v", err)
 			return
 		}
 		server.pfcpAssociationSetupResponseHandler(header.SequenceNumber, msg)
@@ -186,9 +196,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Association Update Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPAssociationUpdateRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Association Update Request type")
+		msg, err := messages.DeserializePFCPAssociationUpdateRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Association Update Request: %v", err)
 			return
 		}
 		server.pfcpAssociationUpdateRequestHandler(header.SequenceNumber, msg)
@@ -197,9 +207,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Association Update Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPAssociationUpdateResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Association Update Response type")
+		msg, err := messages.DeserializePFCPAssociationUpdateResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Association Update Response: %v", err)
 			return
 		}
 		server.pfcpAssociationUpdateResponseHandler(header.SequenceNumber, msg)
@@ -208,9 +218,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Association Release Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPAssociationReleaseRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Association Release Request type")
+		msg, err := messages.DeserializePFCPAssociationReleaseRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Association Release Request: %v", err)
 			return
 		}
 		server.pfcpAssociationReleaseRequestHandler(header.SequenceNumber, msg)
@@ -219,9 +229,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Association Release Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPAssociationReleaseResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Association Release Response type")
+		msg, err := messages.DeserializePFCPAssociationReleaseResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Association Release Response: %v", err)
 			return
 		}
 		server.pfcpAssociationReleaseResponseHandler(header.SequenceNumber, msg)
@@ -230,9 +240,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Node Report Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPNodeReportRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Node Report Request type")
+		msg, err := messages.DeserializePFCPNodeReportRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Node Report Request: %v", err)
 			return
 		}
 		server.pfcpNodeReportRequestHandler(header.SequenceNumber, msg)
@@ -241,9 +251,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Node Report Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPNodeReportResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Node Report Response type")
+		msg, err := messages.DeserializePFCPNodeReportResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Node Report Response: %v", err)
 			return
 		}
 		server.pfcpNodeReportResponseHandler(header.SequenceNumber, msg)
@@ -252,9 +262,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Session Establishment Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPSessionEstablishmentRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Session Establishment Request type")
+		msg, err := messages.DeserializePFCPSessionEstablishmentRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Session Establishment Request: %v", err)
 			return
 		}
 		server.pfcpSessionEstablishmentRequestHandler(header.SequenceNumber, header.SEID, msg)
@@ -263,9 +273,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Session Establishment Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPSessionEstablishmentResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Session Establishment Response type")
+		msg, err := messages.DeserializePFCPSessionEstablishmentResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Session Establishment Response: %v", err)
 			return
 		}
 		server.pfcpSessionEstablishmentResponseHandler(header.SequenceNumber, header.SEID, msg)
@@ -274,9 +284,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Session Deletion Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPSessionDeletionRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Session Deletion Request type")
+		msg, err := messages.DeserializePFCPSessionDeletionRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Session Deletion Request: %v", err)
 			return
 		}
 		server.pfcpSessionDeletionRequestHandler(header.SequenceNumber, header.SEID, msg)
@@ -285,9 +295,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Session Deletion Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPSessionDeletionResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Session Deletion Response type")
+		msg, err := messages.DeserializePFCPSessionDeletionResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Session Deletion Response: %v", err)
 			return
 		}
 		server.pfcpSessionDeletionResponseHandler(header.SequenceNumber, header.SEID, msg)
@@ -296,9 +306,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Session Report Request")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPSessionReportRequest)
-		if !ok {
-			log.Printf("Error asserting PFCP Session Report Request type")
+		msg, err := messages.DeserializePFCPSessionReportRequest(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Session Report Request: %v", err)
 			return
 		}
 		server.pfcpSessionReportRequestHandler(header.SequenceNumber, header.SEID, msg)
@@ -307,9 +317,9 @@ func (server *Server) handleUDPMessage(payload []byte) {
 			log.Printf("No handler for PFCP Session Report Response")
 			return
 		}
-		msg, ok := genericMessage.(messages.PFCPSessionReportResponse)
-		if !ok {
-			log.Printf("Error asserting PFCP Session Report Response type")
+		msg, err := messages.DeserializePFCPSessionReportResponse(payloadMessage)
+		if err != nil {
+			log.Printf("Error deserializing PFCP Session Report Response: %v", err)
 			return
 		}
 		server.pfcpSessionReportResponseHandler(header.SequenceNumber, header.SEID, msg)

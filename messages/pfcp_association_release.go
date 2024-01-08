@@ -35,7 +35,7 @@ func (msg PFCPAssociationReleaseResponse) GetMessageTypeString() string {
 	return "PFCP Association Release Response"
 }
 
-func DeserializePFCPAssociationReleaseRequest(data []byte) (PFCPMessage, error) {
+func DeserializePFCPAssociationReleaseRequest(data []byte) (PFCPAssociationReleaseRequest, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	for _, elem := range ies {
@@ -50,7 +50,7 @@ func DeserializePFCPAssociationReleaseRequest(data []byte) (PFCPMessage, error) 
 	}, err
 }
 
-func DeserializePFCPAssociationReleaseResponse(data []byte) (PFCPMessage, error) {
+func DeserializePFCPAssociationReleaseResponse(data []byte) (PFCPAssociationReleaseResponse, error) {
 	ies, err := ie.ParseInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause

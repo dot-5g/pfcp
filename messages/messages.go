@@ -1,8 +1,6 @@
 package messages
 
 import (
-	"fmt"
-
 	"github.com/dot-5g/pfcp/ie"
 )
 
@@ -31,51 +29,4 @@ type PFCPMessage interface {
 	GetIEs() []ie.InformationElement
 	GetMessageType() MessageType
 	GetMessageTypeString() string
-}
-
-type DeserializerFunc func([]byte) (PFCPMessage, error)
-
-var messageTypeDeserializers = map[MessageType]DeserializerFunc{
-	HeartbeatRequestMessageType:                 DeserializeHeartbeatRequest,
-	HeartbeatResponseMessageType:                DeserializeHeartbeatResponse,
-	PFCPAssociationSetupRequestMessageType:      DeserializePFCPAssociationSetupRequest,
-	PFCPAssociationSetupResponseMessageType:     DeserializePFCPAssociationSetupResponse,
-	PFCPAssociationUpdateRequestMessageType:     DeserializePFCPAssociationUpdateRequest,
-	PFCPAssociationUpdateResponseMessageType:    DeserializePFCPAssociationUpdateResponse,
-	PFCPAssociationReleaseRequestMessageType:    DeserializePFCPAssociationReleaseRequest,
-	PFCPAssociationReleaseResponseMessageType:   DeserializePFCPAssociationReleaseResponse,
-	PFCPNodeReportRequestMessageType:            DeserializePFCPNodeReportRequest,
-	PFCPNodeReportResponseMessageType:           DeserializePFCPNodeReportResponse,
-	PFCPSessionEstablishmentRequestMessageType:  DeserializePFCPSessionEstablishmentRequest,
-	PFCPSessionEstablishmentResponseMessageType: DeserializePFCPSessionEstablishmentResponse,
-	PFCPSessionDeletionRequestMessageType:       DeserializePFCPSessionDeletionRequest,
-	PFCPSessionDeletionResponseMessageType:      DeserializePFCPSessionDeletionResponse,
-	PFCPSessionReportRequestMessageType:         DeserializePFCPSessionReportRequest,
-	PFCPSessionReportResponseMessageType:        DeserializePFCPSessionReportResponse,
-}
-
-func DeserializePFCPMessage(payload []byte) (Header, PFCPMessage, error) {
-	header, err := DeserializeHeader(payload)
-	if err != nil {
-		return header, nil, err
-	}
-
-	payloadOffset := 8
-	if header.S {
-		payloadOffset = 16
-	}
-
-	if len(payload) < payloadOffset {
-		return header, nil, fmt.Errorf("insufficient data for payload message")
-	}
-	payloadMessage := payload[payloadOffset:]
-	if deserializer, exists := messageTypeDeserializers[header.MessageType]; exists {
-		msg, err := deserializer(payloadMessage)
-		if err != nil {
-			return header, nil, fmt.Errorf("error deserializing payload message: %v", err)
-		}
-		return header, msg, nil
-	}
-
-	return header, nil, fmt.Errorf("unsupported message type: %d", header.MessageType)
 }
