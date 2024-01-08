@@ -42,7 +42,7 @@ func (msg HeartbeatResponse) GetMessageTypeString() string {
 }
 
 func DeserializeHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	var sourceIPAddress ie.SourceIPAddress
 	for _, elem := range ies {
@@ -63,7 +63,7 @@ func DeserializeHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
 }
 
 func DeserializeHeartbeatResponse(data []byte) (HeartbeatResponse, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	var recoveryTimeStamp ie.RecoveryTimeStamp
 	for _, elem := range ies {
 		if tsIE, ok := elem.(ie.RecoveryTimeStamp); ok {

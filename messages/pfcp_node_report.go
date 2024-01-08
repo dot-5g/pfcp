@@ -39,7 +39,7 @@ func (msg PFCPNodeReportResponse) GetMessageTypeString() string {
 }
 
 func DeserializePFCPNodeReportRequest(data []byte) (PFCPNodeReportRequest, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var nodeReportType ie.NodeReportType
 	for _, elem := range ies {
@@ -60,7 +60,7 @@ func DeserializePFCPNodeReportRequest(data []byte) (PFCPNodeReportRequest, error
 }
 
 func DeserializePFCPNodeReportResponse(data []byte) (PFCPNodeReportResponse, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var cause ie.Cause
 	for _, elem := range ies {

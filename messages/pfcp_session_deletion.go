@@ -37,7 +37,7 @@ func DeserializePFCPSessionDeletionRequest(data []byte) (PFCPSessionDeletionRequ
 }
 
 func DeserializePFCPSessionDeletionResponse(data []byte) (PFCPSessionDeletionResponse, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	if err != nil {
 		return PFCPSessionDeletionResponse{}, err
 	}

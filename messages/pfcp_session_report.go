@@ -35,7 +35,7 @@ func (msg PFCPSessionReportResponse) GetMessageTypeString() string {
 }
 
 func DeserializePFCPSessionReportRequest(data []byte) (PFCPSessionReportRequest, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	var reportType ie.ReportType
 
 	for _, elem := range ies {
@@ -52,7 +52,7 @@ func DeserializePFCPSessionReportRequest(data []byte) (PFCPSessionReportRequest,
 }
 
 func DeserializePFCPSessionReportResponse(data []byte) (PFCPSessionReportResponse, error) {
-	ies, err := ie.ParseInformationElements(data)
+	ies, err := ie.DeserializeInformationElements(data)
 	var cause ie.Cause
 
 	for _, elem := range ies {
