@@ -108,3 +108,7 @@ func DeserializeNodeID(ieHeader Header, ieValue []byte) (NodeID, error) {
 
 	return nodeID, nil
 }
+
+func (n NodeID) GetHeader() Header {
+	return n.Header
+}

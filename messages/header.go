@@ -94,14 +94,14 @@ func (header Header) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func Serialize(message PFCPMessage, header Header) []byte {
+func Serialize(message PFCPMessage, messageHeader Header) []byte {
 	var payload []byte
 	ies := message.GetIEs()
 	for _, element := range ies {
 		payload = append(payload, element.Serialize()...)
 	}
-	header.MessageLength = uint16(len(payload))
-	headerBytes := header.Serialize()
+	messageHeader.MessageLength = uint16(len(payload))
+	headerBytes := messageHeader.Serialize()
 	return append(headerBytes, payload...)
 }
 

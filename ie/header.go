@@ -3,7 +3,6 @@ package ie
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 )
 
 const HeaderLength = 4
@@ -23,17 +22,4 @@ func (ieHeader *Header) Serialize() []byte {
 	binary.Write(buf, binary.BigEndian, uint16(ieHeader.Length))
 
 	return buf.Bytes()
-}
-
-func DeserializeHeader(payload []byte) (Header, error) {
-	var ieHeader Header
-
-	if len(payload) < HeaderLength {
-		return ieHeader, fmt.Errorf("not enough bytes for IE header")
-	}
-
-	ieHeader.Type = IEType(binary.BigEndian.Uint16(payload[:2]))
-	ieHeader.Length = binary.BigEndian.Uint16(payload[2:4])
-
-	return ieHeader, nil
 }
