@@ -7,15 +7,18 @@ import (
 )
 
 type PDRID struct {
-	IEType uint16
-	Length uint16
+	Header Header
 	RuleID uint16
 }
 
 func NewPDRID(ruleID uint16) (PDRID, error) {
-	return PDRID{
-		IEType: uint16(PDRIDIEType),
+	ieHeader := Header{
+		Type:   PDRIDIEType,
 		Length: 2,
+	}
+
+	return PDRID{
+		Header: ieHeader,
 		RuleID: ruleID,
 	}, nil
 }
@@ -23,11 +26,8 @@ func NewPDRID(ruleID uint16) (PDRID, error) {
 func (pdrID PDRID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(pdrID.IEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(pdrID.Length))
+	// Octets 1 to 4: Header
+	buf.Write(pdrID.Header.Serialize())
 
 	// Octets 5 to 6: RuleID
 	binary.Write(buf, binary.BigEndian, pdrID.RuleID)
@@ -36,16 +36,15 @@ func (pdrID PDRID) Serialize() []byte {
 }
 
 func (pdrID PDRID) IsZeroValue() bool {
-	return pdrID.Length == 0
+	return pdrID.Header.Length == 0
 }
 
-func DeserializePDRID(ieType uint16, ieLength uint16, ieValue []byte) (PDRID, error) {
+func DeserializePDRID(ieHeader Header, ieValue []byte) (PDRID, error) {
 	if len(ieValue) != 2 {
 		return PDRID{}, fmt.Errorf("invalid length for PDRID: got %d bytes, want 2", len(ieValue))
 	}
 	return PDRID{
-		IEType: ieType,
-		Length: ieLength,
+		Header: ieHeader,
 		RuleID: binary.BigEndian.Uint16(ieValue),
 	}, nil
 }

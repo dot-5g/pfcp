@@ -82,21 +82,21 @@ func PFCPAssociationReleaseRequest(t *testing.T) {
 		t.Errorf("PFCP Association Release Request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpAssociationReleaseRequestReceivedSequenceNumber)
 	}
 
-	if pfcpAssociationReleaseRequestReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Association Release Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpAssociationReleaseRequestReceivedNodeID.Length)
+	if pfcpAssociationReleaseRequestReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Association Release Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationReleaseRequestReceivedNodeID.Header.Length)
 	}
 
-	if pfcpAssociationReleaseRequestReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Association Release Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpAssociationReleaseRequestReceivedNodeID.NodeIDType)
+	if pfcpAssociationReleaseRequestReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Association Release Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpAssociationReleaseRequestReceivedNodeID.Type)
 	}
 
-	if len(pfcpAssociationReleaseRequestReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Association Release Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpAssociationReleaseRequestReceivedNodeID.NodeIDValue))
+	if len(pfcpAssociationReleaseRequestReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Association Release Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpAssociationReleaseRequestReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpAssociationReleaseRequestReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Association Release Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpAssociationReleaseRequestReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpAssociationReleaseRequestReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Association Release Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationReleaseRequestReceivedNodeID.Value)
 		}
 	}
 
@@ -144,30 +144,30 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 		t.Errorf("PFCP Association Release Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpAssociationReleaseResponseReceivedSequenceNumber)
 	}
 
-	if pfcpAssociationReleaseResponseReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Association Release Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpAssociationReleaseResponseReceivedNodeID.Length)
+	if pfcpAssociationReleaseResponseReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Association Release Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationReleaseResponseReceivedNodeID.Header.Length)
 	}
 
-	if pfcpAssociationReleaseResponseReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Association Release Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpAssociationReleaseResponseReceivedNodeID.NodeIDType)
+	if pfcpAssociationReleaseResponseReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Association Release Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpAssociationReleaseResponseReceivedNodeID.Type)
 	}
 
-	if len(pfcpAssociationReleaseResponseReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Association Release Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpAssociationReleaseResponseReceivedNodeID.NodeIDValue))
+	if len(pfcpAssociationReleaseResponseReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Association Release Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpAssociationReleaseResponseReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpAssociationReleaseResponseReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Association Release Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpAssociationReleaseResponseReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpAssociationReleaseResponseReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Association Release Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationReleaseResponseReceivedNodeID.Value)
 		}
 	}
 
-	if pfcpAssociationReleaseResponseReceivedCause.Length != cause.Length {
-		t.Errorf("PFCP Association Release Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpAssociationReleaseResponseReceivedCause.Length)
+	if pfcpAssociationReleaseResponseReceivedCause.Header.Length != cause.Header.Length {
+		t.Errorf("PFCP Association Release Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Header.Length, pfcpAssociationReleaseResponseReceivedCause.Header.Length)
 	}
 
-	if pfcpAssociationReleaseResponseReceivedCause.IEType != cause.IEType {
-		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpAssociationReleaseResponseReceivedCause.IEType)
+	if pfcpAssociationReleaseResponseReceivedCause.Header.Type != cause.Header.Type {
+		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Header.Type, pfcpAssociationReleaseResponseReceivedCause.Header.Type)
 	}
 
 	if pfcpAssociationReleaseResponseReceivedCause.Value != cause.Value {

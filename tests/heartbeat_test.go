@@ -148,12 +148,12 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 		t.Errorf("Heartbeat request handler was called with wrong timestamp.\n- Sent timestamp: %v\n- Received timestamp %v\n", recoveryTimeStamp, heartbeatRequestWithSourceIPreceivedRecoveryTimestamp)
 	}
 
-	if heartbeatRequestWithSourceIPreceivedSourceIPAddress.IEtype != sourceIPAddress.IEtype {
-		t.Errorf("Heartbeat request handler was called with wrong source IP address type.\n- Sent source IP address type: %v\n- Received source IP address type %v\n", sourceIPAddress.IEtype, heartbeatRequestWithSourceIPreceivedSourceIPAddress.IEtype)
+	if heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Type != sourceIPAddress.Header.Type {
+		t.Errorf("Heartbeat request handler was called with wrong source IP address type.\n- Sent source IP address type: %v\n- Received source IP address type %v\n", sourceIPAddress.Header.Type, heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Type)
 	}
 
-	if heartbeatRequestWithSourceIPreceivedSourceIPAddress.Length != sourceIPAddress.Length {
-		t.Errorf("Heartbeat request handler was called with wrong source IP address length.\n- Sent source IP address length: %v\n- Received source IP address length %v\n", sourceIPAddress.Length, heartbeatRequestWithSourceIPreceivedSourceIPAddress.Length)
+	if heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Length != sourceIPAddress.Header.Length {
+		t.Errorf("Heartbeat request handler was called with wrong source IP address length.\n- Sent source IP address length: %v\n- Received source IP address length %v\n", sourceIPAddress.Header.Length, heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Length)
 	}
 
 	if len(heartbeatRequestWithSourceIPreceivedSourceIPAddress.IPv4Address) != len(sourceIPAddress.IPv4Address) {

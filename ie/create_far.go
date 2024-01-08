@@ -7,30 +7,29 @@ import (
 )
 
 type CreateFAR struct {
-	IEType      uint16
-	Length      uint16
+	Header      Header
 	FARID       FARID
 	ApplyAction ApplyAction
 }
 
 func NewCreateFAR(farid FARID, applyaction ApplyAction) (CreateFAR, error) {
+	ieHeader := Header{
+		Type:   IEType(CreateFARIEType),
+		Length: farid.Header.Length + applyaction.Header.Length + 8,
+	}
+
 	return CreateFAR{
-		IEType:      uint16(CreateFARIEType),
-		Length:      farid.Length + applyaction.Length + 8,
+		Header:      ieHeader,
 		FARID:       farid,
 		ApplyAction: applyaction,
 	}, nil
 }
 
 func (createfar CreateFAR) Serialize() []byte {
-
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(createfar.IEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(createfar.Length))
+	// Octets 1 to 4: Header
+	buf.Write(createfar.Header.Serialize())
 
 	// Octets 5 to n: FAR ID
 	serializedFARID := createfar.FARID.Serialize()
@@ -45,18 +44,17 @@ func (createfar CreateFAR) Serialize() []byte {
 }
 
 func (createfar CreateFAR) IsZeroValue() bool {
-	return createfar.Length == 0
+	return createfar.Header.Length == 0
 }
 
-func DeserializeCreateFAR(ieType uint16, length uint16, value []byte) (CreateFAR, error) {
+func DeserializeCreateFAR(ieHeader Header, value []byte) (CreateFAR, error) {
 	var createfar CreateFAR
 
-	if len(value) < IEHeaderLength {
-		return createfar, fmt.Errorf("invalid length for CreateFAR: got %d bytes, want at least %d", len(value), IEHeaderLength)
+	if len(value) < HeaderLength {
+		return createfar, fmt.Errorf("invalid length for CreateFAR: got %d bytes, want at least %d", len(value), HeaderLength)
 	}
 
-	createfar.IEType = ieType
-	createfar.Length = length
+	createfar.Header = ieHeader
 
 	buffer := bytes.NewBuffer(value)
 
@@ -73,7 +71,12 @@ func DeserializeCreateFAR(ieType uint16, length uint16, value []byte) (CreateFAR
 	faridIELength := binary.BigEndian.Uint16(buffer.Next(2))
 	faridIEValue := buffer.Next(int(faridIELength))
 
-	farid, err := DeserializeFARID(faridIEType, faridIELength, faridIEValue)
+	faridIEHEader := Header{
+		Type:   IEType(faridIEType),
+		Length: faridIELength,
+	}
+
+	farid, err := DeserializeFARID(faridIEHEader, faridIEValue)
 	if err != nil {
 		return createfar, fmt.Errorf("failed to deserialize FARID: %v", err)
 	}
@@ -94,7 +97,12 @@ func DeserializeCreateFAR(ieType uint16, length uint16, value []byte) (CreateFAR
 	}
 	applyactionIEValue := buffer.Next(int(applyactionIELength))
 
-	applyaction, err := DeserializeApplyAction(applyactionIEType, applyactionIELength, applyactionIEValue)
+	applyActionHeader := Header{
+		Type:   IEType(applyactionIEType),
+		Length: applyactionIELength,
+	}
+
+	applyaction, err := DeserializeApplyAction(applyActionHeader, applyactionIEValue)
 	if err != nil {
 		return createfar, fmt.Errorf("failed to deserialize ApplyAction: %v", err)
 	}

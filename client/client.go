@@ -23,17 +23,17 @@ func New(ServerAddress string) *Pfcp {
 
 func (pfcp *Pfcp) sendNodePfcpMessage(message messages.PFCPMessage, sequenceNumber uint32) error {
 	messageType := message.GetMessageType()
-	header := messages.NewNodePFCPHeader(messageType, sequenceNumber)
+	header := messages.NewNodeHeader(messageType, sequenceNumber)
 	return pfcp.sendPfcpMessage(message, header)
 }
 
 func (pfcp *Pfcp) sendSessionPfcpMessage(message messages.PFCPMessage, seid uint64, sequenceNumber uint32) error {
 	messageType := message.GetMessageType()
-	header := messages.NewSessionPFCPHeader(messageType, seid, sequenceNumber)
+	header := messages.NewSessionHeader(messageType, seid, sequenceNumber)
 	return pfcp.sendPfcpMessage(message, header)
 }
 
-func (pfcp *Pfcp) sendPfcpMessage(message messages.PFCPMessage, header messages.PFCPHeader) error {
+func (pfcp *Pfcp) sendPfcpMessage(message messages.PFCPMessage, header messages.Header) error {
 	payload := messages.Serialize(message, header)
 	if err := pfcp.Udp.Send(payload); err != nil {
 		log.Printf("Failed to send PFCP: %v\n", err)

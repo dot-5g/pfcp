@@ -2,7 +2,6 @@ package ie
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 	"net"
 )
@@ -16,10 +15,9 @@ const (
 type NodeIDType int
 
 type NodeID struct {
-	IEtype      uint16
-	Length      uint16
-	NodeIDType  NodeIDType
-	NodeIDValue []byte
+	Header Header
+	Type   NodeIDType
+	Value  []byte
 }
 
 func NewNodeID(nodeID string) (NodeID, error) {
@@ -46,70 +44,66 @@ func NewNodeID(nodeID string) (NodeID, error) {
 		length = uint16(len(nodeIDValueBytes)) + 1
 		nodeIDType = FQDN
 	}
-
+	header := Header{
+		Type:   NodeIDIEType,
+		Length: length,
+	}
 	return NodeID{
-		IEtype:      uint16(NodeIDIEType),
-		Length:      length,
-		NodeIDType:  nodeIDType,
-		NodeIDValue: nodeIDValueBytes,
+		Header: header,
+		Type:   nodeIDType,
+		Value:  nodeIDValueBytes,
 	}, nil
 }
 
 func (n NodeID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(n.IEtype))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(n.Length))
+	// Octets 1 to 4: Header
+	buf.Write(n.Header.Serialize())
 
 	// Octet 5: Spare (4 bits) + Node ID Type (4 bits)
-	spareAndType := byte(n.NodeIDType & 0x0F) // Ensure NodeIDType is only 4 bits
+	spareAndType := byte(n.Type & 0x0F) // Ensure NodeIDType is only 4 bits
 	buf.WriteByte(spareAndType)
 
 	// Octets 6 to n+5: Node ID Value
-	buf.Write(n.NodeIDValue)
+	buf.Write(n.Value)
 
 	return buf.Bytes()
 }
 
 func (n NodeID) IsZeroValue() bool {
-	return n.Length == 0
+	return n.Header.Length == 0
 }
 
-func DeserializeNodeID(ieType uint16, ieLength uint16, ieValue []byte) (NodeID, error) {
-	var nodeID NodeID
+func DeserializeNodeID(ieHeader Header, ieValue []byte) (NodeID, error) {
 
 	if len(ieValue) < 1 {
-		return nodeID, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
+		return NodeID{}, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
 	}
 
-	if ieType != uint16(NodeIDIEType) {
-		return nodeID, fmt.Errorf("invalid IE type: expected %d, got %d", NodeIDIEType, ieType)
+	if uint16(ieHeader.Type) != uint16(NodeIDIEType) {
+		return NodeID{}, fmt.Errorf("invalid IE type: expected %d, got %d", NodeIDIEType, ieHeader.Type)
 	}
 
 	nodeIDType := NodeIDType(ieValue[0] & 0x0F)
 	if nodeIDType != IPv4 && nodeIDType != IPv6 && nodeIDType != FQDN {
-		return nodeID, fmt.Errorf("invalid NodeIDType: %d", nodeIDType)
+		return NodeID{}, fmt.Errorf("invalid NodeIDType: %d", nodeIDType)
 	}
-
 	switch nodeIDType {
 	case IPv4:
 		if len(ieValue[1:]) != net.IPv4len {
-			return nodeID, fmt.Errorf("invalid length for IPv4 NodeID: expected %d, got %d", net.IPv4len, len(ieValue[1:]))
+			return NodeID{}, fmt.Errorf("invalid length for IPv4 NodeID: expected %d, got %d", net.IPv4len, len(ieValue[1:]))
 		}
 	case IPv6:
 		if len(ieValue[1:]) != net.IPv6len {
-			return nodeID, fmt.Errorf("invalid length for IPv6 NodeID: expected %d, got %d", net.IPv6len, len(ieValue[1:]))
+			return NodeID{}, fmt.Errorf("invalid length for IPv6 NodeID: expected %d, got %d", net.IPv6len, len(ieValue[1:]))
 		}
 	}
 
-	nodeID = NodeID{
-		IEtype:      ieType,
-		Length:      ieLength,
-		NodeIDType:  nodeIDType,
-		NodeIDValue: ieValue[1:],
+	nodeID := NodeID{
+		Header: ieHeader,
+		Type:   nodeIDType,
+		Value:  ieValue[1:],
 	}
 
 	return nodeID, nil

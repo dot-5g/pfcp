@@ -7,15 +7,18 @@ import (
 )
 
 type Precedence struct {
-	IEType uint16
-	Length uint16
+	Header Header
 	Value  uint32
 }
 
 func NewPrecedence(value uint32) (Precedence, error) {
-	return Precedence{
-		IEType: uint16(PrecedenceIEType),
+	ieHeader := Header{
+		Type:   PrecedenceIEType,
 		Length: 4,
+	}
+
+	return Precedence{
+		Header: ieHeader,
 		Value:  value,
 	}, nil
 }
@@ -23,11 +26,8 @@ func NewPrecedence(value uint32) (Precedence, error) {
 func (precedence Precedence) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(precedence.IEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(precedence.Length))
+	// Octets 1 to 4: Header
+	buf.Write(precedence.Header.Serialize())
 
 	// Octets 5 to 8: Value
 	binary.Write(buf, binary.BigEndian, precedence.Value)
@@ -36,16 +36,15 @@ func (precedence Precedence) Serialize() []byte {
 }
 
 func (precedence Precedence) IsZeroValue() bool {
-	return precedence.Length == 0
+	return precedence.Header.Length == 0
 }
 
-func DeserializePrecedence(ieType uint16, ieLength uint16, ieValue []byte) (Precedence, error) {
+func DeserializePrecedence(ieHeader Header, ieValue []byte) (Precedence, error) {
 	if len(ieValue) != 4 {
 		return Precedence{}, fmt.Errorf("invalid length for Precedence: got %d bytes, want 4", len(ieValue))
 	}
 	return Precedence{
-		IEType: ieType,
-		Length: ieLength,
+		Header: ieHeader,
 		Value:  binary.BigEndian.Uint32(ieValue),
 	}, nil
 }

@@ -82,21 +82,21 @@ func PFCPAssociationUpdateRequest(t *testing.T) {
 		t.Errorf("PFCP Association Update Request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpAssociationUpdateRequestReceivedSequenceNumber)
 	}
 
-	if pfcpAssociationUpdateRequestReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Association Update Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpAssociationUpdateRequestReceivedNodeID.Length)
+	if pfcpAssociationUpdateRequestReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Association Update Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationUpdateRequestReceivedNodeID.Header.Length)
 	}
 
-	if pfcpAssociationUpdateRequestReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Association Update Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpAssociationUpdateRequestReceivedNodeID.NodeIDType)
+	if pfcpAssociationUpdateRequestReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Association Update Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpAssociationUpdateRequestReceivedNodeID.Type)
 	}
 
-	if len(pfcpAssociationUpdateRequestReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Association Update Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpAssociationUpdateRequestReceivedNodeID.NodeIDValue))
+	if len(pfcpAssociationUpdateRequestReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Association Update Request handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpAssociationUpdateRequestReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpAssociationUpdateRequestReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Association Update Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpAssociationUpdateRequestReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpAssociationUpdateRequestReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Association Update Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationUpdateRequestReceivedNodeID.Value)
 		}
 	}
 
@@ -144,30 +144,30 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 		t.Errorf("PFCP Association Update Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpAssociationUpdateResponseReceivedSequenceNumber)
 	}
 
-	if pfcpAssociationUpdateResponseReceivedNodeID.Length != nodeID.Length {
-		t.Errorf("PFCP Association Update Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Length, pfcpAssociationUpdateResponseReceivedNodeID.Length)
+	if pfcpAssociationUpdateResponseReceivedNodeID.Header.Length != nodeID.Header.Length {
+		t.Errorf("PFCP Association Update Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationUpdateResponseReceivedNodeID.Header.Length)
 	}
 
-	if pfcpAssociationUpdateResponseReceivedNodeID.NodeIDType != nodeID.NodeIDType {
-		t.Errorf("PFCP Association Update Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.NodeIDType, pfcpAssociationUpdateResponseReceivedNodeID.NodeIDType)
+	if pfcpAssociationUpdateResponseReceivedNodeID.Type != nodeID.Type {
+		t.Errorf("PFCP Association Update Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpAssociationUpdateResponseReceivedNodeID.Type)
 	}
 
-	if len(pfcpAssociationUpdateResponseReceivedNodeID.NodeIDValue) != len(nodeID.NodeIDValue) {
-		t.Errorf("PFCP Association Update Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.NodeIDValue), len(pfcpAssociationUpdateResponseReceivedNodeID.NodeIDValue))
+	if len(pfcpAssociationUpdateResponseReceivedNodeID.Value) != len(nodeID.Value) {
+		t.Errorf("PFCP Association Update Response handler was called with wrong node ID value length.\n- Sent node ID value length: %v\n- Received node ID value length %v\n", len(nodeID.Value), len(pfcpAssociationUpdateResponseReceivedNodeID.Value))
 	}
 
-	for i := range nodeID.NodeIDValue {
-		if pfcpAssociationUpdateResponseReceivedNodeID.NodeIDValue[i] != nodeID.NodeIDValue[i] {
-			t.Errorf("PFCP Association Update Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.NodeIDValue, pfcpAssociationUpdateResponseReceivedNodeID.NodeIDValue)
+	for i := range nodeID.Value {
+		if pfcpAssociationUpdateResponseReceivedNodeID.Value[i] != nodeID.Value[i] {
+			t.Errorf("PFCP Association Update Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationUpdateResponseReceivedNodeID.Value)
 		}
 	}
 
-	if pfcpAssociationUpdateResponseReceivedCause.Length != cause.Length {
-		t.Errorf("PFCP Association Update Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Length, pfcpAssociationUpdateResponseReceivedCause.Length)
+	if pfcpAssociationUpdateResponseReceivedCause.Header.Length != cause.Header.Length {
+		t.Errorf("PFCP Association Update Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Header.Length, pfcpAssociationUpdateResponseReceivedCause.Header.Length)
 	}
 
-	if pfcpAssociationUpdateResponseReceivedCause.IEType != cause.IEType {
-		t.Errorf("PFCP Association Update Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.IEType, pfcpAssociationUpdateResponseReceivedCause.IEType)
+	if pfcpAssociationUpdateResponseReceivedCause.Header.Type != cause.Header.Type {
+		t.Errorf("PFCP Association Update Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Header.Type, pfcpAssociationUpdateResponseReceivedCause.Header.Type)
 	}
 
 	if pfcpAssociationUpdateResponseReceivedCause.Value != cause.Value {

@@ -2,13 +2,11 @@ package ie
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 )
 
 type Cause struct {
-	IEType uint16
-	Length uint16
+	Header Header
 	Value  CauseValue
 }
 
@@ -40,9 +38,13 @@ func NewCause(value CauseValue) (Cause, error) {
 		return Cause{}, fmt.Errorf("invalid value for Cause: %d", value)
 	}
 
-	return Cause{
-		IEType: uint16(CauseIEType),
+	header := Header{
+		Type:   CauseIEType,
 		Length: 1,
+	}
+
+	return Cause{
+		Header: header,
 		Value:  value,
 	}, nil
 }
@@ -50,11 +52,8 @@ func NewCause(value CauseValue) (Cause, error) {
 func (cause Cause) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(cause.IEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(cause.Length))
+	// Octets 1 to 4: Header
+	buf.Write(cause.Header.Serialize())
 
 	// Octet 5: Value (1 byte)
 	buf.WriteByte(uint8(cause.Value))
@@ -63,27 +62,18 @@ func (cause Cause) Serialize() []byte {
 }
 
 func (cause Cause) IsZeroValue() bool {
-	return cause.Length == 0
+	return cause.Value == 0
 }
 
-func DeserializeCause(ieType uint16, ieLength uint16, ieValue []byte) (Cause, error) {
+func DeserializeCause(ieHeader Header, ieValue []byte) (Cause, error) {
 	var cause Cause
 
 	if len(ieValue) != 1 {
 		return cause, fmt.Errorf("invalid length for Cause: got %d bytes, want 1", len(ieValue))
 	}
 
-	if ieType != uint16(CauseIEType) {
-		return cause, fmt.Errorf("invalid IE type: expected %d, got %d", CauseIEType, ieType)
-	}
-
-	if ieLength != 1 {
-		return cause, fmt.Errorf("invalid length field for Cause: expected 1, got %d", ieLength)
-	}
-
 	return Cause{
-		IEType: ieType,
-		Length: ieLength,
+		Header: ieHeader,
 		Value:  CauseValue(ieValue[0]),
 	}, nil
 }

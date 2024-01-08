@@ -16,12 +16,12 @@ func TestGivenCorrectTimeWhenNewRecoveryTimeStampThenFieldsSetCorrectly(t *testi
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if recoveryTimeStamp.IEType != 96 {
-		t.Errorf("Expected IEType %d, got %d", 96, recoveryTimeStamp.IEType)
+	if recoveryTimeStamp.Header.Type != 96 {
+		t.Errorf("Expected IEType %d, got %d", 96, recoveryTimeStamp.Header.Type)
 	}
 
-	if recoveryTimeStamp.Length != 4 {
-		t.Errorf("Expected Length %d, got %d", 4, recoveryTimeStamp.Length)
+	if recoveryTimeStamp.Header.Length != 4 {
+		t.Errorf("Expected Length %d, got %d", 4, recoveryTimeStamp.Header.Length)
 	}
 
 	// Validate that secodns match num of seconds since 1900
@@ -40,19 +40,23 @@ func TestGivenRecoveryTimeStampSerializedWhenDeserializeThenFieldsSetCorrectly(t
 	}
 
 	recoveryTimeStampSerialized := recoveryTimeStamp.Serialize()
+	ieHeader := ie.Header{
+		Type:   96,
+		Length: 4,
+	}
 
-	deserializedRecoveryTimeStamp, err := ie.DeserializeRecoveryTimeStamp(96, 4, recoveryTimeStampSerialized[4:])
+	deserializedRecoveryTimeStamp, err := ie.DeserializeRecoveryTimeStamp(ieHeader, recoveryTimeStampSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if deserializedRecoveryTimeStamp.IEType != 96 {
-		t.Errorf("Expected IEType %d, got %d", 96, deserializedRecoveryTimeStamp.IEType)
+	if deserializedRecoveryTimeStamp.Header.Type != 96 {
+		t.Errorf("Expected IEType %d, got %d", 96, deserializedRecoveryTimeStamp.Header.Type)
 	}
 
-	if deserializedRecoveryTimeStamp.Length != 4 {
-		t.Errorf("Expected Length %d, got %d", 4, deserializedRecoveryTimeStamp.Length)
+	if deserializedRecoveryTimeStamp.Header.Length != 4 {
+		t.Errorf("Expected Length %d, got %d", 4, deserializedRecoveryTimeStamp.Header.Length)
 	}
 
 	// Validate that secodns match num of seconds since 1900

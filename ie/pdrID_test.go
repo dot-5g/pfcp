@@ -15,12 +15,12 @@ func TestGivenCorrectRuleIDWhenNewPdrIDThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if pdrID.IEType != 56 {
-		t.Errorf("Expected IEType %d, got %d", 56, pdrID.IEType)
+	if pdrID.Header.Type != 56 {
+		t.Errorf("Expected IEType %d, got %d", 56, pdrID.Header.Type)
 	}
 
-	if pdrID.Length != 2 {
-		t.Errorf("Expected Length %d, got %d", 2, pdrID.Length)
+	if pdrID.Header.Length != 2 {
+		t.Errorf("Expected Length %d, got %d", 2, pdrID.Header.Length)
 	}
 
 	if pdrID.RuleID != ruleID {
@@ -39,18 +39,22 @@ func TestGivenPDRIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T)
 
 	pdrIDSerialized := pdrID.Serialize()
 
-	deserializedPDRID, err := ie.DeserializePDRID(56, 2, pdrIDSerialized[4:])
+	ieHeader := ie.Header{
+		Type:   56,
+		Length: 2,
+	}
+	deserializedPDRID, err := ie.DeserializePDRID(ieHeader, pdrIDSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if deserializedPDRID.IEType != 56 {
-		t.Errorf("Expected IEType %d, got %d", 56, deserializedPDRID.IEType)
+	if deserializedPDRID.Header.Type != 56 {
+		t.Errorf("Expected IEType %d, got %d", 56, deserializedPDRID.Header.Type)
 	}
 
-	if deserializedPDRID.Length != 2 {
-		t.Errorf("Expected Length %d, got %d", 2, deserializedPDRID.Length)
+	if deserializedPDRID.Header.Length != 2 {
+		t.Errorf("Expected Length %d, got %d", 2, deserializedPDRID.Header.Length)
 	}
 
 	if deserializedPDRID.RuleID != ruleID {

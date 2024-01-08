@@ -7,28 +7,27 @@ import (
 )
 
 type PDI struct {
-	IEType          uint16
-	Length          uint16
+	Header          Header
 	SourceInterface SourceInterface
 }
 
 func NewPDI(sourceInterface SourceInterface) (PDI, error) {
+	ieHeader := Header{
+		Type:   PDIIEType,
+		Length: sourceInterface.Header.Length + 4,
+	}
+
 	return PDI{
-		IEType:          uint16(PDIIEType),
-		Length:          sourceInterface.Length + 4,
+		Header:          ieHeader,
 		SourceInterface: sourceInterface,
 	}, nil
 }
 
 func (pdi PDI) Serialize() []byte {
-
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(pdi.IEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(pdi.Length))
+	// Octets 1 to 4: Header
+	buf.Write(pdi.Header.Serialize())
 
 	// Octets 5 to n: Source Interface
 	serializedSourceInterface := pdi.SourceInterface.Serialize()
@@ -39,26 +38,29 @@ func (pdi PDI) Serialize() []byte {
 }
 
 func (pdi PDI) IsZeroValue() bool {
-	return pdi.Length == 0
+	return pdi.Header.Length == 0
 }
 
-func DeserializePDI(ieType uint16, ieLength uint16, ieValue []byte) (PDI, error) {
+func DeserializePDI(ieHeader Header, ieValue []byte) (PDI, error) {
 	if len(ieValue) < 1 {
 		return PDI{}, fmt.Errorf("invalid length for PDI: got %d bytes, want at least 1", len(ieValue))
 	}
 
-	sourceInterfaceIELength := ieLength - IEHeaderLength
+	sourceInterfaceIELength := ieHeader.Length - HeaderLength
 	sourceInterfaceIEValue := ieValue[4 : 4+sourceInterfaceIELength]
 	sourceInterfaceIEType := binary.BigEndian.Uint16(ieValue[:2])
 
-	sourceInterface, err := DeserializeSourceInterface(sourceInterfaceIEType, sourceInterfaceIELength, sourceInterfaceIEValue)
+	sourceInterfaceHeader := Header{
+		Type:   IEType(sourceInterfaceIEType),
+		Length: sourceInterfaceIELength,
+	}
+	sourceInterface, err := DeserializeSourceInterface(sourceInterfaceHeader, sourceInterfaceIEValue)
 	if err != nil {
 		return PDI{}, err
 	}
 
 	return PDI{
-		IEType:          ieType,
-		Length:          ieLength,
+		Header:          ieHeader,
 		SourceInterface: sourceInterface,
 	}, nil
 }

@@ -89,12 +89,12 @@ func PFCPSessionReportRequest(t *testing.T) {
 		t.Errorf("Expected SEID %d, got %d", seid, pfcpSessionReportRequestReceivedSEID)
 	}
 
-	if pfcpSessionReportRequestReceivedReportType.IEType != uint16(ie.ReportTypeIEType) {
-		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, pfcpSessionReportRequestReceivedReportType.IEType)
+	if pfcpSessionReportRequestReceivedReportType.Header.Type != ie.ReportTypeIEType {
+		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, pfcpSessionReportRequestReceivedReportType.Header.Type)
 	}
 
-	if pfcpSessionReportRequestReceivedReportType.Length != 1 {
-		t.Errorf("Expected length 1, got %d", pfcpSessionReportRequestReceivedReportType.Length)
+	if pfcpSessionReportRequestReceivedReportType.Header.Length != 1 {
+		t.Errorf("Expected length 1, got %d", pfcpSessionReportRequestReceivedReportType.Header.Length)
 	}
 
 	if len(pfcpSessionReportRequestReceivedReportType.Reports) != 2 {
@@ -150,12 +150,12 @@ func PFCPSessionReportResponse(t *testing.T) {
 		t.Errorf("Expected SEID %d, got %d", seid, pfcpSessionReportResponseReceivedSEID)
 	}
 
-	if pfcpSessionReportResponseReceivedCause.IEType != uint16(ie.CauseIEType) {
-		t.Errorf("Expected IE type %d, got %d", ie.CauseIEType, pfcpSessionReportResponseReceivedCause.IEType)
+	if pfcpSessionReportResponseReceivedCause.Header.Type != ie.CauseIEType {
+		t.Errorf("Expected IE type %d, got %d", ie.CauseIEType, pfcpSessionReportResponseReceivedCause.Header.Type)
 	}
 
-	if pfcpSessionReportResponseReceivedCause.Length != 1 {
-		t.Errorf("Expected length 1, got %d", pfcpSessionReportResponseReceivedCause.Length)
+	if pfcpSessionReportResponseReceivedCause.Header.Length != 1 {
+		t.Errorf("Expected length 1, got %d", pfcpSessionReportResponseReceivedCause.Header.Length)
 	}
 
 	if pfcpSessionReportResponseReceivedCause.Value != ie.RequestAccepted {
