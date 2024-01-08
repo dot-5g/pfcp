@@ -76,32 +76,31 @@ func (n NodeID) IsZeroValue() bool {
 }
 
 func DeserializeNodeID(ieHeader IEHeader, ieValue []byte) (NodeID, error) {
-	var nodeID NodeID
 
 	if len(ieValue) < 1 {
-		return nodeID, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
+		return NodeID{}, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
 	}
 
 	if uint16(ieHeader.Type) != uint16(NodeIDIEType) {
-		return nodeID, fmt.Errorf("invalid IE type: expected %d, got %d", NodeIDIEType, ieHeader.Type)
+		return NodeID{}, fmt.Errorf("invalid IE type: expected %d, got %d", NodeIDIEType, ieHeader.Type)
 	}
 
 	nodeIDType := NodeIDType(ieValue[0] & 0x0F)
 	if nodeIDType != IPv4 && nodeIDType != IPv6 && nodeIDType != FQDN {
-		return nodeID, fmt.Errorf("invalid NodeIDType: %d", nodeIDType)
+		return NodeID{}, fmt.Errorf("invalid NodeIDType: %d", nodeIDType)
 	}
 	switch nodeIDType {
 	case IPv4:
 		if len(ieValue[1:]) != net.IPv4len {
-			return nodeID, fmt.Errorf("invalid length for IPv4 NodeID: expected %d, got %d", net.IPv4len, len(ieValue[1:]))
+			return NodeID{}, fmt.Errorf("invalid length for IPv4 NodeID: expected %d, got %d", net.IPv4len, len(ieValue[1:]))
 		}
 	case IPv6:
 		if len(ieValue[1:]) != net.IPv6len {
-			return nodeID, fmt.Errorf("invalid length for IPv6 NodeID: expected %d, got %d", net.IPv6len, len(ieValue[1:]))
+			return NodeID{}, fmt.Errorf("invalid length for IPv6 NodeID: expected %d, got %d", net.IPv6len, len(ieValue[1:]))
 		}
 	}
 
-	nodeID = NodeID{
+	nodeID := NodeID{
 		Header: ieHeader,
 		Type:   nodeIDType,
 		Value:  ieValue[1:],

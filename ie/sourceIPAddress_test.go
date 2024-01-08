@@ -14,12 +14,12 @@ func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
 	}
 
-	if sourceIPAddress.IEtype != 192 {
-		t.Errorf("Expected NodeID, got %d", sourceIPAddress.IEtype)
+	if sourceIPAddress.Header.Type != 192 {
+		t.Errorf("Expected NodeID, got %d", sourceIPAddress.Header.Type)
 	}
 
-	if sourceIPAddress.Length != 6 {
-		t.Errorf("Expected NodeID length 5, got %d", sourceIPAddress.Length)
+	if sourceIPAddress.Header.Length != 6 {
+		t.Errorf("Expected NodeID length 5, got %d", sourceIPAddress.Header.Length)
 	}
 
 	if sourceIPAddress.MPL != true {
@@ -47,12 +47,12 @@ func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
 	}
 
-	if sourceIPAddress.IEtype != 192 {
-		t.Errorf("Expected NodeID, got %d", sourceIPAddress.IEtype)
+	if sourceIPAddress.Header.Type != 192 {
+		t.Errorf("Expected NodeID, got %d", sourceIPAddress.Header.Type)
 	}
 
-	if sourceIPAddress.Length != 18 {
-		t.Errorf("Expected NodeID length 17, got %d", sourceIPAddress.Length)
+	if sourceIPAddress.Header.Length != 18 {
+		t.Errorf("Expected NodeID length 18, got %d", sourceIPAddress.Header.Length)
 	}
 
 	if sourceIPAddress.MPL != true {
@@ -82,18 +82,23 @@ func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.
 
 	serializedSourceIPAddress := sourceIPAddress.Serialize()
 
-	deserializedSourceIPAddress, err := ie.DeserializeSourceIPAddress(192, 6, serializedSourceIPAddress[4:])
+	ieHeader := ie.IEHeader{
+		Type:   192,
+		Length: 6,
+	}
+
+	deserializedSourceIPAddress, err := ie.DeserializeSourceIPAddress(ieHeader, serializedSourceIPAddress[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing SourceIPAddress: %v", err)
 	}
 
-	if deserializedSourceIPAddress.IEtype != 192 {
-		t.Errorf("Expected NodeID, got %d", deserializedSourceIPAddress.IEtype)
+	if deserializedSourceIPAddress.Header.Type != 192 {
+		t.Errorf("Expected NodeID, got %d", deserializedSourceIPAddress.Header.Type)
 	}
 
-	if deserializedSourceIPAddress.Length != 6 {
-		t.Errorf("Expected NodeID length 5, got %d", deserializedSourceIPAddress.Length)
+	if deserializedSourceIPAddress.Header.Length != 6 {
+		t.Errorf("Expected NodeID length 5, got %d", deserializedSourceIPAddress.Header.Length)
 	}
 
 	if deserializedSourceIPAddress.MPL != true {

@@ -1,12 +1,12 @@
 package ie
 
 import (
+	"bytes"
 	"net"
 )
 
 type SourceIPAddress struct {
-	IEtype           uint16
-	Length           uint16
+	Header           IEHeader
 	MPL              bool
 	V4               bool
 	V6               bool
@@ -16,90 +16,126 @@ type SourceIPAddress struct {
 }
 
 func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress, error) {
-	sourceIPAddress := SourceIPAddress{
-		IEtype: uint16(SourceIPAddressIEType),
-	}
-
-	length := 2
-
+	var v4 bool
+	var v6 bool
+	var length uint16
+	var mpl bool
+	var maskPrefixLength uint8
+	var ipv4Addr []byte
+	var ipv6Addr []byte
+	length = 2
 	ipv4, ipv4net, _ := net.ParseCIDR(ipv4Address)
 	ipv6, ipv6net, _ := net.ParseCIDR(ipv6Address)
 
 	if ipv4.To4() != nil {
-		sourceIPAddress.V4 = true
-		sourceIPAddress.IPv4Address = ipv4.To4()
+		v4 = true
+		ipv4Addr = ipv4.To4()
 		length += 4
-		sourceIPAddress.MPL = true
+		mpl = true
 		ones, _ := ipv4net.Mask.Size()
-		sourceIPAddress.MaskPrefixLength = uint8(ones)
+		maskPrefixLength = uint8(ones)
 	}
 
 	if ipv6.To16() != nil {
-		sourceIPAddress.V6 = true
-		sourceIPAddress.IPv6Address = ipv6.To16()
-		sourceIPAddress.Length = 18
+		v6 = true
+		ipv6Addr = ipv6.To16()
 		length += 16
-		sourceIPAddress.MPL = true
+		mpl = true
 		ones, _ := ipv6net.Mask.Size()
-		sourceIPAddress.MaskPrefixLength = uint8(ones)
+		maskPrefixLength = uint8(ones)
 	}
-	sourceIPAddress.Length = uint16(length)
+
+	ieHeader := IEHeader{
+		Type:   SourceIPAddressIEType,
+		Length: length,
+	}
+
+	sourceIPAddress := SourceIPAddress{
+		Header:           ieHeader,
+		MPL:              mpl,
+		V4:               v4,
+		V6:               v6,
+		IPv4Address:      ipv4Addr,
+		IPv6Address:      ipv6Addr,
+		MaskPrefixLength: maskPrefixLength,
+	}
 
 	return sourceIPAddress, nil
 }
 
 func (sourceIPAddress SourceIPAddress) IsZeroValue() bool {
-	return sourceIPAddress.Length == 0
+	return sourceIPAddress.Header.Length == 0
 }
 
 func (sourceIPAddress SourceIPAddress) Serialize() []byte {
-	bytes := make([]byte, 4+sourceIPAddress.Length)
-	bytes[0] = byte(sourceIPAddress.IEtype >> 8)
-	bytes[1] = byte(sourceIPAddress.IEtype)
-	bytes[2] = byte(sourceIPAddress.Length >> 8)
-	bytes[3] = byte(sourceIPAddress.Length)
+	buf := new(bytes.Buffer)
+
+	// Octets 1 to 4: Header
+	buf.Write(sourceIPAddress.Header.Serialize())
+
+	// Octet 5: Spare, Spare, Spare, MPL, V4, V6
+	var octet5 byte
 	if sourceIPAddress.MPL {
-		bytes[4] = 0x80
+		octet5 |= 1 << 7
 	}
 	if sourceIPAddress.V4 {
-		bytes[4] |= 0x40
+		octet5 |= 1 << 6
 	}
 	if sourceIPAddress.V6 {
-		bytes[4] |= 0x20
+		octet5 |= 1 << 5
 	}
+	buf.WriteByte(octet5)
+
+	// Octets 6 to 9: IPv4 Address
 	if sourceIPAddress.V4 {
-		copy(bytes[5:9], sourceIPAddress.IPv4Address)
-		bytes[9] = sourceIPAddress.MaskPrefixLength
+		buf.Write(sourceIPAddress.IPv4Address)
+		buf.WriteByte(sourceIPAddress.MaskPrefixLength)
 	}
+
+	// Octets 6 to 21: IPv6 Address
 	if sourceIPAddress.V6 {
-		copy(bytes[5:21], sourceIPAddress.IPv6Address)
-		bytes[21] = sourceIPAddress.MaskPrefixLength
+		buf.Write(sourceIPAddress.IPv6Address)
+		buf.WriteByte(sourceIPAddress.MaskPrefixLength)
 	}
-	return bytes
+
+	return buf.Bytes()
 }
 
-func DeserializeSourceIPAddress(ieType uint16, ieLength uint16, ieValue []byte) (SourceIPAddress, error) {
-	sourceIPAddress := SourceIPAddress{
-		IEtype: ieType,
-		Length: ieLength,
-	}
+func DeserializeSourceIPAddress(ieHeader IEHeader, ieValue []byte) (SourceIPAddress, error) {
+	var mpl bool
+	var v4 bool
+	var v6 bool
+	var ipv4Address []byte
+	var ipv6Address []byte
+	var maskPrefixLength uint8
 
 	if ieValue[0]&0x80 == 0x80 {
-		sourceIPAddress.MPL = true
+		mpl = true
 	}
 	if ieValue[0]&0x40 == 0x40 {
-		sourceIPAddress.V4 = true
-		sourceIPAddress.IPv4Address = ieValue[1:5]
-		if sourceIPAddress.MPL {
-			sourceIPAddress.MaskPrefixLength = ieValue[5]
+		v4 = true
+		ipv4Address = ieValue[1:5]
+		if mpl {
+			maskPrefixLength = ieValue[5]
 		}
 	}
 	if ieValue[0]&0x20 == 0x20 {
-		sourceIPAddress.V6 = true
-		sourceIPAddress.IPv6Address = ieValue[1:17]
-		if sourceIPAddress.MPL {
-			sourceIPAddress.MaskPrefixLength = ieValue[17]
+		v6 = true
+		ipv6Address = ieValue[1:17]
+		if mpl {
+			maskPrefixLength = ieValue[17]
 		}
 	}
+
+	sourceIPAddress := SourceIPAddress{
+		Header:           ieHeader,
+		MPL:              mpl,
+		V4:               v4,
+		V6:               v6,
+		IPv4Address:      ipv4Address,
+		IPv6Address:      ipv6Address,
+		MaskPrefixLength: maskPrefixLength,
+	}
+
 	return sourceIPAddress, nil
 }

@@ -2,13 +2,11 @@ package ie
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 )
 
 type NodeReportType struct {
-	IEtype uint16
-	Length uint16
+	Header IEHeader
 	GPQR   bool
 	CKDR   bool
 	UPRR   bool
@@ -16,9 +14,12 @@ type NodeReportType struct {
 }
 
 func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) (NodeReportType, error) {
-	return NodeReportType{
-		IEtype: uint16(NodeReportTypeIEType),
+	ieHeader := IEHeader{
+		Type:   NodeReportTypeIEType,
 		Length: 1,
+	}
+	return NodeReportType{
+		Header: ieHeader,
 		GPQR:   gpqr,
 		CKDR:   ckdr,
 		UPRR:   uprr,
@@ -29,11 +30,8 @@ func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) (NodeReportTy
 func (nrt NodeReportType) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(nrt.IEtype))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(nrt.Length))
+	// Octets 1 to 4: Header
+	buf.Write(nrt.Header.Serialize())
 
 	// Octet 5: Spare, Spare, Spare, Spare, GPQR, CKDR, UPRR, UPFR
 	var octet5 byte
@@ -55,35 +53,34 @@ func (nrt NodeReportType) Serialize() []byte {
 }
 
 func (nrt NodeReportType) IsZeroValue() bool {
-	return nrt.Length == 0
+	return nrt.Header.Length == 0
 }
 
-func DeserializeNodeReportType(ieType uint16, ieLength uint16, ieValue []byte) (NodeReportType, error) {
-	var nrt NodeReportType
+func DeserializeNodeReportType(ieHeader IEHeader, ieValue []byte) (NodeReportType, error) {
 
 	if len(ieValue) < 1 {
-		return nrt, fmt.Errorf("invalid length for NodeReportType: got %d bytes, expected at least 1", len(ieValue))
+		return NodeReportType{}, fmt.Errorf("invalid length for NodeReportType: got %d bytes, expected at least 1", len(ieValue))
 	}
 
-	if ieType != uint16(NodeReportTypeIEType) {
-		return nrt, fmt.Errorf("invalid IE type: expected %d, got %d", NodeReportTypeIEType, ieType)
+	if uint16(ieHeader.Type) != uint16(NodeReportTypeIEType) {
+		return NodeReportType{}, fmt.Errorf("invalid IE type: expected %d, got %d", NodeReportTypeIEType, ieHeader.Type)
 	}
 
 	buf := bytes.NewBuffer(ieValue)
 
-	nrt.IEtype = ieType
-	nrt.Length = ieLength
-
 	var octet5 byte
 	var err error
 	if octet5, err = buf.ReadByte(); err != nil {
-		return nrt, fmt.Errorf("error reading NodeReportType flags: %v", err)
+		return NodeReportType{}, fmt.Errorf("error reading NodeReportType flags: %v", err)
 	}
 
-	nrt.GPQR = octet5&0x08 != 0
-	nrt.CKDR = octet5&0x04 != 0
-	nrt.UPRR = octet5&0x02 != 0
-	nrt.UPFR = octet5&0x01 != 0
+	nrt := NodeReportType{
+		Header: ieHeader,
+		GPQR:   octet5&0x08 != 0,
+		CKDR:   octet5&0x04 != 0,
+		UPRR:   octet5&0x02 != 0,
+		UPFR:   octet5&0x01 != 0,
+	}
 
 	return nrt, nil
 }

@@ -1,7 +1,6 @@
 package ie_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/dot-5g/pfcp/ie"
@@ -111,8 +110,6 @@ func TestGivenSerializedWhenDeserializNodeIDThenFieldsSetCorrectly(t *testing.T)
 	}
 
 	serializedNodeID := nodeID.Serialize()
-
-	fmt.Printf("Serialized NodeID: %v\n", serializedNodeID)
 
 	ieHeader := ie.IEHeader{
 		Type:   60,

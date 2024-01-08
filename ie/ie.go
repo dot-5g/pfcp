@@ -96,17 +96,17 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		case NodeIDIEType:
 			ie, err = DeserializeNodeID(ieHeader, ieValue)
 		case RecoveryTimeStampIEType:
-			ie, err = DeserializeRecoveryTimeStamp(uint16(ieHeader.Type), ieHeader.Length, ieValue)
+			ie, err = DeserializeRecoveryTimeStamp(ieHeader, ieValue)
 		case NodeReportTypeIEType:
-			ie, err = DeserializeNodeReportType(uint16(ieHeader.Type), ieHeader.Length, ieValue)
+			ie, err = DeserializeNodeReportType(ieHeader, ieValue)
 		case SourceIPAddressIEType:
-			ie, err = DeserializeSourceIPAddress(uint16(ieHeader.Type), ieHeader.Length, ieValue)
+			ie, err = DeserializeSourceIPAddress(ieHeader, ieValue)
 		case UPFunctionFeaturesIEType:
-			ie, err = DeserializeUPFunctionFeatures(uint16(ieHeader.Type), ieHeader.Length, ieValue)
+			ie, err = DeserializeUPFunctionFeatures(ieHeader, ieValue)
 		case FSEIDIEType:
-			ie, err = DeserializeFSEID(uint16(ieHeader.Type), ieHeader.Length, ieValue)
+			ie, err = DeserializeFSEID(ieHeader, ieValue)
 		case PDRIDIEType:
-			ie, err = DeserializePDRID(uint16(ieHeader.Type), ieHeader.Length, ieValue)
+			ie, err = DeserializePDRID(ieHeader, ieValue)
 		case PrecedenceIEType:
 			ie, err = DeserializePrecedence(uint16(ieHeader.Type), ieHeader.Length, ieValue)
 		case SourceInterfaceIEType:

@@ -1,13 +1,12 @@
 package ie
 
 import (
-	"encoding/binary"
+	"bytes"
 	"fmt"
 )
 
 type UPFunctionFeatures struct {
-	IEType                       uint16
-	Length                       uint16
+	Header                       IEHeader
 	SupportedFeatures            []byte
 	AdditionalSupportedFeatures1 []byte
 	AdditionalSupportedFeatures2 []byte
@@ -71,9 +70,13 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, e
 		}
 	}
 
+	ieHeader := IEHeader{
+		Type:   UPFunctionFeaturesIEType,
+		Length: uint16(len(featureBytes)),
+	}
+
 	return UPFunctionFeatures{
-		IEType:                       uint16(UPFunctionFeaturesIEType),
-		Length:                       uint16(len(featureBytes)),
+		Header:                       ieHeader,
 		SupportedFeatures:            featureBytes,
 		AdditionalSupportedFeatures1: nil,
 		AdditionalSupportedFeatures2: nil,
@@ -81,15 +84,16 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, e
 }
 
 func (ie UPFunctionFeatures) Serialize() []byte {
-	totalLength := 4 + ie.Length
-	serialized := make([]byte, totalLength)
 
-	binary.BigEndian.PutUint16(serialized[0:2], ie.IEType)
-	binary.BigEndian.PutUint16(serialized[2:4], ie.Length)
+	buf := new(bytes.Buffer)
 
-	copy(serialized[4:], ie.SupportedFeatures)
+	// Octets 1 to 4: Header
+	buf.Write(ie.Header.Serialize())
 
-	return serialized
+	// Octets 5 to 6: Supported Features
+	buf.Write(ie.SupportedFeatures)
+
+	return buf.Bytes()
 }
 
 func (ie UPFunctionFeatures) GetFeatures() []UPFeature {
@@ -107,29 +111,28 @@ func (ie UPFunctionFeatures) GetFeatures() []UPFeature {
 }
 
 func (ie UPFunctionFeatures) IsZeroValue() bool {
-	return ie.Length == 0
+	return ie.Header.Length == 0
 }
 
-func DeserializeUPFunctionFeatures(ieType uint16, ieLength uint16, ieValue []byte) (UPFunctionFeatures, error) {
-	if ieType != 43 {
+func DeserializeUPFunctionFeatures(ieHeader IEHeader, ieValue []byte) (UPFunctionFeatures, error) {
+	if ieHeader.Type != 43 {
 		return UPFunctionFeatures{}, fmt.Errorf("incorrect IE type")
 	}
-	if len(ieValue) != int(ieLength) {
-		return UPFunctionFeatures{}, fmt.Errorf("incorrect length: expected %d, got %d", ieLength, len(ieValue))
+	if len(ieValue) != int(ieHeader.Length) {
+		return UPFunctionFeatures{}, fmt.Errorf("incorrect length: expected %d, got %d", ieHeader.Length, len(ieValue))
 	}
 
 	upFuncFeatures := UPFunctionFeatures{
-		IEType:                       ieType,
-		Length:                       ieLength,
+		Header:                       ieHeader,
 		SupportedFeatures:            make([]byte, 0),
 		AdditionalSupportedFeatures1: make([]byte, 0),
 		AdditionalSupportedFeatures2: make([]byte, 0),
 	}
 
-	if ieLength >= 1 {
+	if ieHeader.Length >= 1 {
 		upFuncFeatures.SupportedFeatures = append(upFuncFeatures.SupportedFeatures, ieValue[0])
 	}
-	if ieLength >= 2 {
+	if ieHeader.Length >= 2 {
 		upFuncFeatures.SupportedFeatures = append(upFuncFeatures.SupportedFeatures, ieValue[1])
 	}
 

@@ -114,12 +114,12 @@ func PFCPNodeReportRequest(t *testing.T) {
 		}
 	}
 
-	if pfcpNodeReportRequestReceivedNodeReportType.Length != nodeReportType.Length {
-		t.Errorf("PFCP Node Report Request handler was called with wrong node report type length.\n- Sent node report type length: %v\n- Received node report type length %v\n", nodeReportType.Length, pfcpNodeReportRequestReceivedNodeReportType.Length)
+	if pfcpNodeReportRequestReceivedNodeReportType.Header.Length != nodeReportType.Header.Length {
+		t.Errorf("PFCP Node Report Request handler was called with wrong node report type length.\n- Sent node report type length: %v\n- Received node report type length %v\n", nodeReportType.Header.Length, pfcpNodeReportRequestReceivedNodeReportType.Header.Length)
 	}
 
-	if pfcpNodeReportRequestReceivedNodeReportType.IEtype != nodeReportType.IEtype {
-		t.Errorf("PFCP Node Report Request handler was called with wrong node report type type.\n- Sent node report type type: %v\n- Received node report type type %v\n", nodeReportType.IEtype, pfcpNodeReportRequestReceivedNodeReportType.IEtype)
+	if pfcpNodeReportRequestReceivedNodeReportType.Header.Type != nodeReportType.Header.Type {
+		t.Errorf("PFCP Node Report Request handler was called with wrong node report type type.\n- Sent node report type type: %v\n- Received node report type type %v\n", nodeReportType.Header.Type, pfcpNodeReportRequestReceivedNodeReportType.Header.Type)
 	}
 
 	if pfcpNodeReportRequestReceivedNodeReportType.GPQR != nodeReportType.GPQR {

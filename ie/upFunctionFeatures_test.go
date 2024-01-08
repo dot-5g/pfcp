@@ -20,17 +20,21 @@ func TestGivenSerializedWhenDeserializedThenDeserializedCorrectly(t *testing.T) 
 
 	serializedUPFunctionFeatures := upFunctionFeatures.Serialize()
 
-	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(43, 2, serializedUPFunctionFeatures[4:])
+	ieHeader := ie.IEHeader{
+		Type:   43,
+		Length: 2,
+	}
+	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(ieHeader, serializedUPFunctionFeatures[4:])
 	if err != nil {
 		t.Fatalf("Error deserializing UPFunctionFeatures: %v", err)
 	}
 
-	if deserializedUPFunctionFeatures.IEType != 43 {
-		t.Errorf("Expected IE type 43, got %d", deserializedUPFunctionFeatures.IEType)
+	if deserializedUPFunctionFeatures.Header.Type != 43 {
+		t.Errorf("Expected IE type 43, got %d", deserializedUPFunctionFeatures.Header.Type)
 	}
 
-	if deserializedUPFunctionFeatures.Length != 2 {
-		t.Errorf("Expected IE length 2, got %d", deserializedUPFunctionFeatures.Length)
+	if deserializedUPFunctionFeatures.Header.Length != 2 {
+		t.Errorf("Expected IE length 2, got %d", deserializedUPFunctionFeatures.Header.Length)
 	}
 
 	if len(deserializedUPFunctionFeatures.SupportedFeatures) != 2 {

@@ -17,7 +17,7 @@ type CreatePDR struct {
 func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) (CreatePDR, error) {
 	return CreatePDR{
 		IEType:     uint16(CreatePDRIEType),
-		Length:     pdrID.Length + precedence.Length + pdi.Length + 12,
+		Length:     pdrID.Header.Length + precedence.Length + pdi.Length + 12,
 		PDRID:      pdrID,
 		Precedence: precedence,
 		PDI:        pdi,
@@ -80,7 +80,11 @@ func DeserializeCreatePDR(ieType uint16, length uint16, value []byte) (CreatePDR
 
 		switch IEType(currentIEType) {
 		case PDRIDIEType:
-			pdrID, err := DeserializePDRID(currentIEType, currentIELength, currentIEValue)
+			pdrIDIEHeader := IEHeader{
+				Type:   IEType(currentIEType),
+				Length: currentIELength,
+			}
+			pdrID, err := DeserializePDRID(pdrIDIEHeader, currentIEValue)
 			if err != nil {
 				return CreatePDR{}, fmt.Errorf("failed to deserialize PDR ID: %v", err)
 			}
