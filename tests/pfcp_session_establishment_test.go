@@ -52,7 +52,7 @@ func HandlePFCPSessionEstablishmentResponse(sequenceNumber uint32, seid uint64, 
 }
 
 func TestPFCPSessionEstablishment(t *testing.T) {
-	// t.Run("TestPFCPSessionEstablishmentRequest", PFCPSessionEstablishmentRequest)
+	t.Run("TestPFCPSessionEstablishmentRequest", PFCPSessionEstablishmentRequest)
 	t.Run("TestPFCPSessionEstablishmentResponse", PFCPSessionEstablishmentResponse)
 }
 
