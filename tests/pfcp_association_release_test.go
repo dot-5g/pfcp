@@ -69,7 +69,7 @@ func PFCPAssociationReleaseRequest(t *testing.T) {
 		NodeID: nodeID,
 	}
 
-	pfcpClient.SendPFCPAssociationReleaseRequest(PFCPAssociationReleaseRequestMsg, sequenceNumber)
+	pfcpClient.SendPFCPAssociationReleaseRequest(&PFCPAssociationReleaseRequestMsg, sequenceNumber)
 
 	time.Sleep(time.Second)
 
@@ -131,7 +131,7 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 		Cause:  cause,
 	}
 
-	pfcpClient.SendPFCPAssociationReleaseResponse(PFCPAssociationReleaseResponseMsg, sequenceNumber)
+	pfcpClient.SendPFCPAssociationReleaseResponse(&PFCPAssociationReleaseResponseMsg, sequenceNumber)
 
 	time.Sleep(time.Second)
 

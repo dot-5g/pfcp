@@ -130,7 +130,7 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 	}
 	sequenceNumber := uint32(32)
 
-	err = pfcpClient.SendPFCPSessionEstablishmentRequest(PFCPSessionEstablishmentRequestMsg, seid, sequenceNumber)
+	err = pfcpClient.SendPFCPSessionEstablishmentRequest(&PFCPSessionEstablishmentRequestMsg, seid, sequenceNumber)
 	if err != nil {
 		t.Fatalf("Error sending PFCP Session Establishment Request: %v", err)
 	}
@@ -298,7 +298,7 @@ func PFCPSessionEstablishmentResponse(t *testing.T) {
 	sequenceNumber := uint32(32)
 	seid := uint64(1234567890)
 
-	err = pfcpClient.SendPFCPSessionEstablishmentResponse(PFCPSessionEstablishmentResponseMsg, seid, sequenceNumber)
+	err = pfcpClient.SendPFCPSessionEstablishmentResponse(&PFCPSessionEstablishmentResponseMsg, seid, sequenceNumber)
 	if err != nil {
 		t.Fatalf("Error sending PFCP Session Establishment Response: %v", err)
 	}

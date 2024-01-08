@@ -5,12 +5,14 @@ import (
 )
 
 type PFCPAssociationSetupRequest struct {
+	Header             Header
 	NodeID             ie.NodeID             // Mandatory
 	RecoveryTimeStamp  ie.RecoveryTimeStamp  // Mandatory
 	UPFunctionFeatures ie.UPFunctionFeatures // Conditional
 }
 
 type PFCPAssociationSetupResponse struct {
+	Header            Header
 	NodeID            ie.NodeID            // Mandatory
 	Cause             ie.Cause             // Mandatory
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
@@ -44,6 +46,22 @@ func (msg PFCPAssociationSetupRequest) GetMessageTypeString() string {
 
 func (msg PFCPAssociationSetupResponse) GetMessageTypeString() string {
 	return "PFCP Association Setup Response"
+}
+
+func (msg *PFCPAssociationSetupRequest) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg *PFCPAssociationSetupResponse) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg PFCPAssociationSetupRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg PFCPAssociationSetupResponse) GetHeader() Header {
+	return msg.Header
 }
 
 func DeserializePFCPAssociationSetupRequest(data []byte) (PFCPAssociationSetupRequest, error) {

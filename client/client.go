@@ -24,17 +24,19 @@ func New(ServerAddress string) *Pfcp {
 func (pfcp *Pfcp) sendNodePfcpMessage(message messages.PFCPMessage, sequenceNumber uint32) error {
 	messageType := message.GetMessageType()
 	header := messages.NewNodeHeader(messageType, sequenceNumber)
-	return pfcp.sendPfcpMessage(message, header)
+	message.SetHeader(header)
+	return pfcp.sendPfcpMessage(message)
 }
 
 func (pfcp *Pfcp) sendSessionPfcpMessage(message messages.PFCPMessage, seid uint64, sequenceNumber uint32) error {
 	messageType := message.GetMessageType()
 	header := messages.NewSessionHeader(messageType, seid, sequenceNumber)
-	return pfcp.sendPfcpMessage(message, header)
+	message.SetHeader(header)
+	return pfcp.sendPfcpMessage(message)
 }
 
-func (pfcp *Pfcp) sendPfcpMessage(message messages.PFCPMessage, header messages.Header) error {
-	payload := messages.Serialize(message, header)
+func (pfcp *Pfcp) sendPfcpMessage(message messages.PFCPMessage) error {
+	payload := messages.Serialize(message)
 	if err := pfcp.Udp.Send(payload); err != nil {
 		log.Printf("Failed to send PFCP: %v\n", err)
 		return err
@@ -43,66 +45,66 @@ func (pfcp *Pfcp) sendPfcpMessage(message messages.PFCPMessage, header messages.
 	return nil
 }
 
-func (pfcp *Pfcp) SendHeartbeatRequest(msg messages.HeartbeatRequest, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendHeartbeatRequest(msg *messages.HeartbeatRequest, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendHeartbeatResponse(msg messages.HeartbeatResponse, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendHeartbeatResponse(msg *messages.HeartbeatResponse, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(msg messages.PFCPAssociationSetupRequest, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPAssociationSetupRequest(msg *messages.PFCPAssociationSetupRequest, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(msg messages.PFCPAssociationSetupResponse, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPAssociationSetupResponse(msg *messages.PFCPAssociationSetupResponse, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(msg messages.PFCPAssociationUpdateRequest, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPAssociationUpdateRequest(msg *messages.PFCPAssociationUpdateRequest, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(msg messages.PFCPAssociationUpdateResponse, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPAssociationUpdateResponse(msg *messages.PFCPAssociationUpdateResponse, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPAssociationReleaseRequest(msg messages.PFCPAssociationReleaseRequest, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPAssociationReleaseRequest(msg *messages.PFCPAssociationReleaseRequest, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPAssociationReleaseResponse(msg messages.PFCPAssociationReleaseResponse, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPAssociationReleaseResponse(msg *messages.PFCPAssociationReleaseResponse, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPNodeReportRequest(msg messages.PFCPNodeReportRequest, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPNodeReportRequest(msg *messages.PFCPNodeReportRequest, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPNodeReportResponse(msg messages.PFCPNodeReportResponse, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPNodeReportResponse(msg *messages.PFCPNodeReportResponse, sequenceNumber uint32) error {
 	return pfcp.sendNodePfcpMessage(msg, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPSessionEstablishmentRequest(msg messages.PFCPSessionEstablishmentRequest, seid uint64, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPSessionEstablishmentRequest(msg *messages.PFCPSessionEstablishmentRequest, seid uint64, sequenceNumber uint32) error {
 	return pfcp.sendSessionPfcpMessage(msg, seid, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPSessionEstablishmentResponse(msg messages.PFCPSessionEstablishmentResponse, seid uint64, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPSessionEstablishmentResponse(msg *messages.PFCPSessionEstablishmentResponse, seid uint64, sequenceNumber uint32) error {
 	return pfcp.sendSessionPfcpMessage(msg, seid, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPSessionDeletionRequest(msg messages.PFCPSessionDeletionRequest, seid uint64, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPSessionDeletionRequest(msg *messages.PFCPSessionDeletionRequest, seid uint64, sequenceNumber uint32) error {
 	return pfcp.sendSessionPfcpMessage(msg, seid, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPSessionDeletionResponse(msg messages.PFCPSessionDeletionResponse, seid uint64, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPSessionDeletionResponse(msg *messages.PFCPSessionDeletionResponse, seid uint64, sequenceNumber uint32) error {
 	return pfcp.sendSessionPfcpMessage(msg, seid, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPSessionReportRequest(msg messages.PFCPSessionReportRequest, seid uint64, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPSessionReportRequest(msg *messages.PFCPSessionReportRequest, seid uint64, sequenceNumber uint32) error {
 	return pfcp.sendSessionPfcpMessage(msg, seid, sequenceNumber)
 }
 
-func (pfcp *Pfcp) SendPFCPSessionReportResponse(msg messages.PFCPSessionReportResponse, seid uint64, sequenceNumber uint32) error {
+func (pfcp *Pfcp) SendPFCPSessionReportResponse(msg *messages.PFCPSessionReportResponse, seid uint64, sequenceNumber uint32) error {
 	return pfcp.sendSessionPfcpMessage(msg, seid, sequenceNumber)
 }

@@ -31,7 +31,7 @@ func main() {
 	heartbeatRequestMsg := messages.HeartbeatRequest{
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
-	pfcpClient.SendHeartbeatRequest(heartbeatRequestMsg, sequenceNumber)
+	pfcpClient.SendHeartbeatRequest(&heartbeatRequestMsg, sequenceNumber)
 }
 ```
 

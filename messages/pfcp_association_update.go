@@ -3,10 +3,12 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPAssociationUpdateRequest struct {
+	Header Header
 	NodeID ie.NodeID // Mandatory
 }
 
 type PFCPAssociationUpdateResponse struct {
+	Header Header
 	NodeID ie.NodeID // Mandatory
 	Cause  ie.Cause  // Mandatory
 }
@@ -33,6 +35,22 @@ func (msg PFCPAssociationUpdateRequest) GetMessageTypeString() string {
 
 func (msg PFCPAssociationUpdateResponse) GetMessageTypeString() string {
 	return "PFCP Association Update Response"
+}
+
+func (msg *PFCPAssociationUpdateRequest) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg *PFCPAssociationUpdateResponse) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg PFCPAssociationUpdateRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg PFCPAssociationUpdateResponse) GetHeader() Header {
+	return msg.Header
 }
 
 func DeserializePFCPAssociationUpdateRequest(data []byte) (PFCPAssociationUpdateRequest, error) {

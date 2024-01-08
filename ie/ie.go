@@ -42,14 +42,11 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 			return nil, fmt.Errorf("not enough bytes for IE header")
 		}
 
-		ieType := IEType(binary.BigEndian.Uint16(b[index : index+2]))
-		ieLength := binary.BigEndian.Uint16(b[index+2 : index+4])
-		index += HeaderLength
-
 		ieHeader := Header{
-			Type:   ieType,
-			Length: ieLength,
+			Type:   IEType(binary.BigEndian.Uint16(b[index : index+2])),
+			Length: binary.BigEndian.Uint16(b[index+2 : index+4]),
 		}
+		index += HeaderLength
 
 		if len(b[index:]) < int(ieHeader.Length) {
 			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieHeader.Length, len(b[index:]))

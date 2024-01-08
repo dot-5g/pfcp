@@ -83,7 +83,7 @@ func PFCPNodeReportRequest(t *testing.T) {
 		NodeReportType: nodeReportType,
 	}
 
-	pfcpClient.SendPFCPNodeReportRequest(PFCPNodeReportRequestMsg, sequenceNumber)
+	pfcpClient.SendPFCPNodeReportRequest(&PFCPNodeReportRequestMsg, sequenceNumber)
 
 	time.Sleep(time.Second)
 
@@ -169,7 +169,7 @@ func PFCPNodeReportResponse(t *testing.T) {
 		Cause:  cause,
 	}
 
-	pfcpClient.SendPFCPNodeReportResponse(PFCPNodeReportResponseMsg, sequenceNumber)
+	pfcpClient.SendPFCPNodeReportResponse(&PFCPNodeReportResponseMsg, sequenceNumber)
 
 	time.Sleep(time.Second)
 

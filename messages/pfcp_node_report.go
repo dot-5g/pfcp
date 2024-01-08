@@ -5,11 +5,13 @@ import (
 )
 
 type PFCPNodeReportRequest struct {
+	Header         Header
 	NodeID         ie.NodeID         // Mandatory
 	NodeReportType ie.NodeReportType // Mandatory
 }
 
 type PFCPNodeReportResponse struct {
+	Header Header
 	NodeID ie.NodeID // Mandatory
 	Cause  ie.Cause  // Mandatory
 }
@@ -36,6 +38,22 @@ func (msg PFCPNodeReportRequest) GetMessageTypeString() string {
 
 func (msg PFCPNodeReportResponse) GetMessageTypeString() string {
 	return "PFCP Node Report Response"
+}
+
+func (msg *PFCPNodeReportRequest) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg *PFCPNodeReportResponse) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg PFCPNodeReportRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg PFCPNodeReportResponse) GetHeader() Header {
+	return msg.Header
 }
 
 func DeserializePFCPNodeReportRequest(data []byte) (PFCPNodeReportRequest, error) {
