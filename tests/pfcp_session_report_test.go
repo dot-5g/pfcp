@@ -69,7 +69,7 @@ func PFCPSessionReportRequest(t *testing.T) {
 	}
 	seid := uint64(12345)
 	sequenceNumber := uint32(1)
-	err = pfcpClient.SendPFCPSessionReportRequest(PFCPSessionReportRequestMsg, seid, sequenceNumber)
+	err = pfcpClient.SendPFCPSessionReportRequest(&PFCPSessionReportRequestMsg, seid, sequenceNumber)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -130,7 +130,7 @@ func PFCPSessionReportResponse(t *testing.T) {
 	}
 	seid := uint64(12345)
 	sequenceNumber := uint32(1)
-	err = pfcpClient.SendPFCPSessionReportResponse(PFCPSessionReportResponseMsg, seid, sequenceNumber)
+	err = pfcpClient.SendPFCPSessionReportResponse(&PFCPSessionReportResponseMsg, seid, sequenceNumber)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}

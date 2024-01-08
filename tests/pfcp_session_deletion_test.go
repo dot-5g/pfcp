@@ -61,7 +61,7 @@ func PFCPSessionDeletionRequest(t *testing.T) {
 	seid := uint64(1234567890)
 	sequenceNumber := uint32(32)
 
-	err := pfcpClient.SendPFCPSessionDeletionRequest(PFCPSessionDeletionRequestMsg, seid, sequenceNumber)
+	err := pfcpClient.SendPFCPSessionDeletionRequest(&PFCPSessionDeletionRequestMsg, seid, sequenceNumber)
 	if err != nil {
 		t.Fatalf("Error sending PFCP Session Deletion Request: %v", err)
 	}
@@ -97,7 +97,7 @@ func PFCPSessionDeletionResponse(t *testing.T) {
 	seid := uint64(1234567890)
 	sequenceNumber := uint32(31232)
 
-	err := pfcpClient.SendPFCPSessionDeletionResponse(PFCPSessionDeletionResponseMsg, seid, sequenceNumber)
+	err := pfcpClient.SendPFCPSessionDeletionResponse(&PFCPSessionDeletionResponseMsg, seid, sequenceNumber)
 	if err != nil {
 		t.Fatalf("Error sending PFCP Session Deletion Response: %v", err)
 	}

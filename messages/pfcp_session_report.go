@@ -3,11 +3,13 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPSessionReportRequest struct {
+	Header     Header
 	ReportType ie.ReportType // Mandatory
 }
 
 type PFCPSessionReportResponse struct {
-	Cause ie.Cause // Mandatory
+	Header Header
+	Cause  ie.Cause // Mandatory
 }
 
 func (msg PFCPSessionReportRequest) GetIEs() []ie.InformationElement {
@@ -32,6 +34,22 @@ func (msg PFCPSessionReportRequest) GetMessageTypeString() string {
 
 func (msg PFCPSessionReportResponse) GetMessageTypeString() string {
 	return "PFCP Session Report Response"
+}
+
+func (msg *PFCPSessionReportRequest) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg *PFCPSessionReportResponse) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg PFCPSessionReportRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg PFCPSessionReportResponse) GetHeader() Header {
+	return msg.Header
 }
 
 func DeserializePFCPSessionReportRequest(data []byte) (PFCPSessionReportRequest, error) {

@@ -5,11 +5,13 @@ import (
 )
 
 type HeartbeatRequest struct {
+	Header            Header
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 	SourceIPAddress   ie.SourceIPAddress   // Optional
 }
 
 type HeartbeatResponse struct {
+	Header            Header
 	RecoveryTimeStamp ie.RecoveryTimeStamp // Mandatory
 }
 
@@ -60,6 +62,22 @@ func DeserializeHeartbeatRequest(data []byte) (HeartbeatRequest, error) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 		SourceIPAddress:   sourceIPAddress,
 	}, err
+}
+
+func (msg HeartbeatRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg HeartbeatResponse) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg *HeartbeatRequest) SetHeader(header Header) {
+	msg.Header = header
+}
+
+func (msg *HeartbeatResponse) SetHeader(header Header) {
+	msg.Header = header
 }
 
 func DeserializeHeartbeatResponse(data []byte) (HeartbeatResponse, error) {

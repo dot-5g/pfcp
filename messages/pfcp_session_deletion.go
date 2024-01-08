@@ -2,9 +2,12 @@ package messages
 
 import "github.com/dot-5g/pfcp/ie"
 
-type PFCPSessionDeletionRequest struct{}
+type PFCPSessionDeletionRequest struct {
+	Header Header
+}
 
 type PFCPSessionDeletionResponse struct {
+	Header
 	Cause ie.Cause // Mandatory
 }
 
@@ -30,6 +33,22 @@ func (msg PFCPSessionDeletionRequest) GetMessageTypeString() string {
 
 func (msg PFCPSessionDeletionResponse) GetMessageTypeString() string {
 	return "PFCP Session Deletion Response"
+}
+
+func (msg *PFCPSessionDeletionRequest) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg *PFCPSessionDeletionResponse) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg PFCPSessionDeletionRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg PFCPSessionDeletionResponse) GetHeader() Header {
+	return msg.Header
 }
 
 func DeserializePFCPSessionDeletionRequest(data []byte) (PFCPSessionDeletionRequest, error) {

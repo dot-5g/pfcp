@@ -93,7 +93,7 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 		UPFunctionFeatures: upFeatures,
 	}
 
-	pfcpClient.SendPFCPAssociationSetupRequest(PFCPAssociationSetupRequestMsg, sequenceNumber)
+	pfcpClient.SendPFCPAssociationSetupRequest(&PFCPAssociationSetupRequestMsg, sequenceNumber)
 
 	time.Sleep(time.Second)
 
@@ -183,7 +183,7 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	pfcpClient.SendPFCPAssociationSetupResponse(PFCPAssociationSetupResponseMsg, sequenceNumber)
+	pfcpClient.SendPFCPAssociationSetupResponse(&PFCPAssociationSetupResponseMsg, sequenceNumber)
 
 	time.Sleep(time.Second)
 

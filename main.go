@@ -24,7 +24,7 @@ func main() {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 	sequenceNumber := uint32(1)
-	err = pfcpClient.SendPFCPAssociationSetupRequest(message, sequenceNumber)
+	err = pfcpClient.SendPFCPAssociationSetupRequest(&message, sequenceNumber)
 	if err != nil {
 		fmt.Printf("Error sending Heartbeat Request: %v", err)
 	}

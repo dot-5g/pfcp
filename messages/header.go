@@ -94,17 +94,6 @@ func (header Header) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func Serialize(message PFCPMessage, messageHeader Header) []byte {
-	var payload []byte
-	ies := message.GetIEs()
-	for _, element := range ies {
-		payload = append(payload, element.Serialize()...)
-	}
-	messageHeader.MessageLength = uint16(len(payload))
-	headerBytes := messageHeader.Serialize()
-	return append(headerBytes, payload...)
-}
-
 func DeserializeHeader(data []byte) (Header, error) {
 	const baseHeaderSize = 8                            // Base size for node-related messages
 	const seidSize = 8                                  // Size of SEID field

@@ -3,6 +3,7 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPSessionEstablishmentRequest struct {
+	Header    Header
 	NodeID    ie.NodeID    // Mandatory
 	CPFSEID   ie.FSEID     // Mandatory
 	CreatePDR ie.CreatePDR // Mandatory
@@ -10,6 +11,7 @@ type PFCPSessionEstablishmentRequest struct {
 }
 
 type PFCPSessionEstablishmentResponse struct {
+	Header Header
 	NodeID ie.NodeID // Mandatory
 	Cause  ie.Cause  // Mandatory
 }
@@ -36,6 +38,22 @@ func (msg PFCPSessionEstablishmentRequest) GetMessageTypeString() string {
 
 func (msg PFCPSessionEstablishmentResponse) GetMessageTypeString() string {
 	return "PFCP Session Establishment Response"
+}
+
+func (msg *PFCPSessionEstablishmentRequest) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg *PFCPSessionEstablishmentResponse) SetHeader(h Header) {
+	msg.Header = h
+}
+
+func (msg PFCPSessionEstablishmentRequest) GetHeader() Header {
+	return msg.Header
+}
+
+func (msg PFCPSessionEstablishmentResponse) GetHeader() Header {
+	return msg.Header
 }
 
 func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstablishmentRequest, error) {
