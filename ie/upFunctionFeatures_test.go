@@ -20,7 +20,7 @@ func TestGivenSerializedWhenDeserializedThenDeserializedCorrectly(t *testing.T) 
 
 	serializedUPFunctionFeatures := upFunctionFeatures.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   43,
 		Length: 2,
 	}

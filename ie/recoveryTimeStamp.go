@@ -10,12 +10,12 @@ import (
 const ntpEpochOffset = 2208988800 // Offset between Unix and NTP epoch (seconds)
 
 type RecoveryTimeStamp struct {
-	Header IEHeader
+	Header Header
 	Value  int64 // Seconds since 1900
 }
 
 func NewRecoveryTimeStamp(value time.Time) (RecoveryTimeStamp, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   RecoveryTimeStampIEType,
 		Length: 4,
 	}
@@ -41,7 +41,7 @@ func (rt RecoveryTimeStamp) IsZeroValue() bool {
 	return rt.Value == 0
 }
 
-func DeserializeRecoveryTimeStamp(ieHeader IEHeader, ieValue []byte) (RecoveryTimeStamp, error) {
+func DeserializeRecoveryTimeStamp(ieHeader Header, ieValue []byte) (RecoveryTimeStamp, error) {
 
 	if uint16(ieHeader.Type) != uint16(RecoveryTimeStampIEType) {
 		return RecoveryTimeStamp{}, fmt.Errorf("invalid IE type for RecoveryTimeStamp: expected %d, got %d", RecoveryTimeStampIEType, ieHeader.Type)

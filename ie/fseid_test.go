@@ -141,7 +141,7 @@ func TestGivenIPv4SerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) 
 
 	serialized := fseid.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   57,
 		Length: 13,
 	}

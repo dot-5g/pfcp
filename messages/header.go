@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-type MessageHeader struct {
+type Header struct {
 	Version        byte
 	FO             bool
 	MP             bool
@@ -17,14 +17,14 @@ type MessageHeader struct {
 	SequenceNumber uint32
 }
 
-func NewNodeMessageHeader(messageType MessageType, sequenceNumber uint32) MessageHeader {
+func NewNodeHeader(messageType MessageType, sequenceNumber uint32) Header {
 	var version byte = 1
 	var fo bool = false
 	var mp bool = false
 	var s bool = false
 	var messageLength uint16 = 0 // To be set later
 
-	return MessageHeader{
+	return Header{
 		Version:        version,
 		FO:             fo,
 		MP:             mp,
@@ -35,14 +35,14 @@ func NewNodeMessageHeader(messageType MessageType, sequenceNumber uint32) Messag
 	}
 }
 
-func NewSessionMessageHeader(messageType MessageType, seid uint64, sequenceNumber uint32) MessageHeader {
+func NewSessionHeader(messageType MessageType, seid uint64, sequenceNumber uint32) Header {
 	var version byte = 1
 	var fo bool = false
 	var mp bool = false
 	var s bool = true
 	var messageLength uint16 = 0 // To be set later
 
-	return MessageHeader{
+	return Header{
 		Version:        version,
 		FO:             fo,
 		MP:             mp,
@@ -54,7 +54,7 @@ func NewSessionMessageHeader(messageType MessageType, seid uint64, sequenceNumbe
 	}
 }
 
-func (header MessageHeader) Serialize() []byte {
+func (header Header) Serialize() []byte {
 	// if S = 0, SEID field is not present, k = 0, m = 0 and n = 5;
 	// if S = 1, SEID field is present, k = 1, m = 5 and n = 13.
 	buf := new(bytes.Buffer)
@@ -94,7 +94,7 @@ func (header MessageHeader) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func Serialize(message PFCPMessage, header MessageHeader) []byte {
+func Serialize(message PFCPMessage, header Header) []byte {
 	var payload []byte
 	ies := message.GetIEs()
 	for _, element := range ies {
@@ -105,16 +105,16 @@ func Serialize(message PFCPMessage, header MessageHeader) []byte {
 	return append(headerBytes, payload...)
 }
 
-func DeserializeMessageHeader(data []byte) (MessageHeader, error) {
+func DeserializeHeader(data []byte) (Header, error) {
 	const baseHeaderSize = 8                            // Base size for node-related messages
 	const seidSize = 8                                  // Size of SEID field
 	const sessionHeaderSize = baseHeaderSize + seidSize // Total size for session-related messages
 
 	if len(data) < baseHeaderSize {
-		return MessageHeader{}, fmt.Errorf("expected at least %d bytes, got %d", baseHeaderSize, len(data))
+		return Header{}, fmt.Errorf("expected at least %d bytes, got %d", baseHeaderSize, len(data))
 	}
 
-	header := MessageHeader{}
+	header := Header{}
 	header.Version = data[0] >> 5
 	header.FO = (data[0] & 0x04) != 0 // Extract the FO bit
 	header.MP = (data[0] & 0x02) != 0 // Extract the MP bit
@@ -127,7 +127,7 @@ func DeserializeMessageHeader(data []byte) (MessageHeader, error) {
 	var seqNumOffset int
 	if header.S {
 		if len(data) < sessionHeaderSize {
-			return MessageHeader{}, fmt.Errorf("expected %d bytes for session message, got %d", sessionHeaderSize, len(data))
+			return Header{}, fmt.Errorf("expected %d bytes for session message, got %d", sessionHeaderSize, len(data))
 		}
 		header.SEID = binary.BigEndian.Uint64(data[4:12])
 		seqNumOffset = 12
@@ -137,7 +137,7 @@ func DeserializeMessageHeader(data []byte) (MessageHeader, error) {
 
 	// Extract the sequence number
 	if len(data) < seqNumOffset+3 {
-		return MessageHeader{}, fmt.Errorf("insufficient data for sequence number")
+		return Header{}, fmt.Errorf("insufficient data for sequence number")
 	}
 	seqNumBytes := []byte{0, data[seqNumOffset], data[seqNumOffset+1], data[seqNumOffset+2]}
 	header.SequenceNumber = binary.BigEndian.Uint32(seqNumBytes)

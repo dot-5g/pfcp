@@ -38,7 +38,7 @@ func TestGivenFarIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T)
 
 	farIDSerialized := farID.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   108,
 		Length: 4,
 	}

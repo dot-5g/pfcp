@@ -82,7 +82,7 @@ func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.
 
 	serializedSourceIPAddress := sourceIPAddress.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   192,
 		Length: 6,
 	}

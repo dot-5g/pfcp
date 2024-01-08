@@ -39,7 +39,7 @@ func TestGivenPDRIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T)
 
 	pdrIDSerialized := pdrID.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   56,
 		Length: 2,
 	}

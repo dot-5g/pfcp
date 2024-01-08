@@ -7,7 +7,7 @@ import (
 )
 
 type FSEID struct {
-	Header IEHeader
+	Header Header
 	V4     bool
 	V6     bool
 	SEID   uint64
@@ -36,7 +36,7 @@ func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error
 		length += 16
 	}
 
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   FSEIDIEType,
 		Length: length,
 	}
@@ -85,7 +85,7 @@ func (fseid FSEID) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeFSEID(ieHeader IEHeader, ieValue []byte) (FSEID, error) {
+func DeserializeFSEID(ieHeader Header, ieValue []byte) (FSEID, error) {
 	v4 := ieValue[0]&0x02 > 0
 	v6 := ieValue[0]&0x01 > 0
 	seid := binary.BigEndian.Uint64(ieValue[1:9])

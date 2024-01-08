@@ -40,7 +40,7 @@ func TestGivenRecoveryTimeStampSerializedWhenDeserializeThenFieldsSetCorrectly(t
 	}
 
 	recoveryTimeStampSerialized := recoveryTimeStamp.Serialize()
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   96,
 		Length: 4,
 	}

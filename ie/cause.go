@@ -6,7 +6,7 @@ import (
 )
 
 type Cause struct {
-	Header IEHeader
+	Header Header
 	Value  CauseValue
 }
 
@@ -38,7 +38,7 @@ func NewCause(value CauseValue) (Cause, error) {
 		return Cause{}, fmt.Errorf("invalid value for Cause: %d", value)
 	}
 
-	header := IEHeader{
+	header := Header{
 		Type:   CauseIEType,
 		Length: 1,
 	}
@@ -65,7 +65,7 @@ func (cause Cause) IsZeroValue() bool {
 	return cause.Value == 0
 }
 
-func DeserializeCause(ieHeader IEHeader, ieValue []byte) (Cause, error) {
+func DeserializeCause(ieHeader Header, ieValue []byte) (Cause, error) {
 	var cause Cause
 
 	if len(ieValue) != 1 {

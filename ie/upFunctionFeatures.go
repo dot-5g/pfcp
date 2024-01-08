@@ -6,7 +6,7 @@ import (
 )
 
 type UPFunctionFeatures struct {
-	Header                       IEHeader
+	Header                       Header
 	SupportedFeatures            []byte
 	AdditionalSupportedFeatures1 []byte
 	AdditionalSupportedFeatures2 []byte
@@ -70,7 +70,7 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, e
 		}
 	}
 
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   UPFunctionFeaturesIEType,
 		Length: uint16(len(featureBytes)),
 	}
@@ -84,7 +84,6 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, e
 }
 
 func (ie UPFunctionFeatures) Serialize() []byte {
-
 	buf := new(bytes.Buffer)
 
 	// Octets 1 to 4: Header
@@ -114,7 +113,7 @@ func (ie UPFunctionFeatures) IsZeroValue() bool {
 	return ie.Header.Length == 0
 }
 
-func DeserializeUPFunctionFeatures(ieHeader IEHeader, ieValue []byte) (UPFunctionFeatures, error) {
+func DeserializeUPFunctionFeatures(ieHeader Header, ieValue []byte) (UPFunctionFeatures, error) {
 	if ieHeader.Type != 43 {
 		return UPFunctionFeatures{}, fmt.Errorf("incorrect IE type")
 	}

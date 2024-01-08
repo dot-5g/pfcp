@@ -48,7 +48,7 @@ func TestGivenPDISerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 
 	pdiSerialized := pdi.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   17,
 		Length: 5,
 	}

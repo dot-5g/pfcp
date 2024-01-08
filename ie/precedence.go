@@ -7,12 +7,12 @@ import (
 )
 
 type Precedence struct {
-	Header IEHeader
+	Header Header
 	Value  uint32
 }
 
 func NewPrecedence(value uint32) (Precedence, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   PrecedenceIEType,
 		Length: 4,
 	}
@@ -39,7 +39,7 @@ func (precedence Precedence) IsZeroValue() bool {
 	return precedence.Header.Length == 0
 }
 
-func DeserializePrecedence(ieHeader IEHeader, ieValue []byte) (Precedence, error) {
+func DeserializePrecedence(ieHeader Header, ieValue []byte) (Precedence, error) {
 	if len(ieValue) != 4 {
 		return Precedence{}, fmt.Errorf("invalid length for Precedence: got %d bytes, want 4", len(ieValue))
 	}

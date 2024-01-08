@@ -113,7 +113,7 @@ func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testin
 
 	serialized := createFar.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   3,
 		Length: 14,
 	}

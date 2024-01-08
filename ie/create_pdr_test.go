@@ -86,7 +86,7 @@ func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testin
 
 	serialized := createPDR.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   1,
 		Length: 17,
 	}

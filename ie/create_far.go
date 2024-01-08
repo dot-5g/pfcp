@@ -7,13 +7,13 @@ import (
 )
 
 type CreateFAR struct {
-	Header      IEHeader
+	Header      Header
 	FARID       FARID
 	ApplyAction ApplyAction
 }
 
 func NewCreateFAR(farid FARID, applyaction ApplyAction) (CreateFAR, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   IEType(CreateFARIEType),
 		Length: farid.Header.Length + applyaction.Header.Length + 8,
 	}
@@ -47,7 +47,7 @@ func (createfar CreateFAR) IsZeroValue() bool {
 	return createfar.Header.Length == 0
 }
 
-func DeserializeCreateFAR(ieHeader IEHeader, value []byte) (CreateFAR, error) {
+func DeserializeCreateFAR(ieHeader Header, value []byte) (CreateFAR, error) {
 	var createfar CreateFAR
 
 	if len(value) < HeaderLength {
@@ -71,7 +71,7 @@ func DeserializeCreateFAR(ieHeader IEHeader, value []byte) (CreateFAR, error) {
 	faridIELength := binary.BigEndian.Uint16(buffer.Next(2))
 	faridIEValue := buffer.Next(int(faridIELength))
 
-	faridIEHEader := IEHeader{
+	faridIEHEader := Header{
 		Type:   IEType(faridIEType),
 		Length: faridIELength,
 	}
@@ -97,12 +97,12 @@ func DeserializeCreateFAR(ieHeader IEHeader, value []byte) (CreateFAR, error) {
 	}
 	applyactionIEValue := buffer.Next(int(applyactionIELength))
 
-	applyActionIEHeader := IEHeader{
+	applyActionHeader := Header{
 		Type:   IEType(applyactionIEType),
 		Length: applyactionIELength,
 	}
 
-	applyaction, err := DeserializeApplyAction(applyActionIEHeader, applyactionIEValue)
+	applyaction, err := DeserializeApplyAction(applyActionHeader, applyactionIEValue)
 	if err != nil {
 		return createfar, fmt.Errorf("failed to deserialize ApplyAction: %v", err)
 	}

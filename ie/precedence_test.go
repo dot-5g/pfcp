@@ -37,7 +37,7 @@ func TestGivenPrecedenceSerializedWhenDeserializeThenFieldsSetCorrectly(t *testi
 	}
 
 	precedenceSerialized := precedence.Serialize()
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   29,
 		Length: 4,
 	}

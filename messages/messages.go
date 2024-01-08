@@ -54,8 +54,8 @@ var messageTypeDeserializers = map[MessageType]DeserializerFunc{
 	PFCPSessionReportResponseMessageType:        DeserializePFCPSessionReportResponse,
 }
 
-func DeserializePFCPMessage(payload []byte) (MessageHeader, PFCPMessage, error) {
-	header, err := DeserializeMessageHeader(payload)
+func DeserializePFCPMessage(payload []byte) (Header, PFCPMessage, error) {
+	header, err := DeserializeHeader(payload)
 	if err != nil {
 		return header, nil, err
 	}

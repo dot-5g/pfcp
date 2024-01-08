@@ -6,7 +6,7 @@ import (
 )
 
 type ApplyAction struct {
-	Header IEHeader
+	Header Header
 	DFRT   bool
 	IPMD   bool
 	IPMA   bool
@@ -62,7 +62,7 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 	var bdpn bool
 	var edrt bool
 
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   IEType(ApplyActionIEType),
 		Length: 2,
 	}
@@ -193,7 +193,7 @@ func (applyaction ApplyAction) IsZeroValue() bool {
 	return applyaction.Header.Length == 0
 }
 
-func DeserializeApplyAction(ieHeader IEHeader, ieValue []byte) (ApplyAction, error) {
+func DeserializeApplyAction(ieHeader Header, ieValue []byte) (ApplyAction, error) {
 	var applyaction ApplyAction
 
 	if ieHeader.Type != ApplyActionIEType {

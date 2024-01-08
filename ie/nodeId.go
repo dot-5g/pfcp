@@ -15,7 +15,7 @@ const (
 type NodeIDType int
 
 type NodeID struct {
-	Header IEHeader
+	Header Header
 	Type   NodeIDType
 	Value  []byte
 }
@@ -44,7 +44,7 @@ func NewNodeID(nodeID string) (NodeID, error) {
 		length = uint16(len(nodeIDValueBytes)) + 1
 		nodeIDType = FQDN
 	}
-	header := IEHeader{
+	header := Header{
 		Type:   NodeIDIEType,
 		Length: length,
 	}
@@ -75,7 +75,7 @@ func (n NodeID) IsZeroValue() bool {
 	return n.Header.Length == 0
 }
 
-func DeserializeNodeID(ieHeader IEHeader, ieValue []byte) (NodeID, error) {
+func DeserializeNodeID(ieHeader Header, ieValue []byte) (NodeID, error) {
 
 	if len(ieValue) < 1 {
 		return NodeID{}, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))

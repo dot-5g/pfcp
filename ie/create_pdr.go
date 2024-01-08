@@ -7,14 +7,14 @@ import (
 )
 
 type CreatePDR struct {
-	Header     IEHeader
+	Header     Header
 	PDRID      PDRID
 	Precedence Precedence
 	PDI        PDI
 }
 
 func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) (CreatePDR, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   IEType(CreatePDRIEType),
 		Length: pdrID.Header.Length + precedence.Header.Length + pdi.Header.Length + 12,
 	}
@@ -53,7 +53,7 @@ func (createPDR CreatePDR) Serialize() []byte {
 
 }
 
-func DeserializeCreatePDR(ieHeader IEHeader, value []byte) (CreatePDR, error) {
+func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 	createPDR := CreatePDR{
 		Header:     ieHeader,
 		PDRID:      PDRID{},
@@ -78,27 +78,27 @@ func DeserializeCreatePDR(ieHeader IEHeader, value []byte) (CreatePDR, error) {
 
 		switch IEType(currentIEType) {
 		case PDRIDIEType:
-			pdrIDIEHeader := IEHeader{
+			pdrIDHeader := Header{
 				Type:   IEType(currentIEType),
 				Length: currentIELength,
 			}
-			pdrID, err := DeserializePDRID(pdrIDIEHeader, currentIEValue)
+			pdrID, err := DeserializePDRID(pdrIDHeader, currentIEValue)
 			if err != nil {
 				return CreatePDR{}, fmt.Errorf("failed to deserialize PDR ID: %v", err)
 			}
 			createPDR.PDRID = pdrID
 		case PrecedenceIEType:
-			precedenceIEHeader := IEHeader{
+			precedenceHeader := Header{
 				Type:   IEType(currentIEType),
 				Length: currentIELength,
 			}
-			precedence, err := DeserializePrecedence(precedenceIEHeader, currentIEValue)
+			precedence, err := DeserializePrecedence(precedenceHeader, currentIEValue)
 			if err != nil {
 				return CreatePDR{}, fmt.Errorf("failed to deserialize Precedence: %v", err)
 			}
 			createPDR.Precedence = precedence
 		case PDIIEType:
-			pdiIEHEader := IEHeader{
+			pdiIEHEader := Header{
 				Type:   IEType(currentIEType),
 				Length: currentIELength,
 			}

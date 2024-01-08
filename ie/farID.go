@@ -7,12 +7,12 @@ import (
 )
 
 type FARID struct {
-	Header IEHeader
+	Header Header
 	Value  uint32
 }
 
 func NewFarID(value uint32) (FARID, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   IEType(FARIDIEType),
 		Length: 4,
 	}
@@ -39,7 +39,7 @@ func (farID FARID) IsZeroValue() bool {
 	return farID.Header.Length == 0
 }
 
-func DeserializeFARID(ieHeader IEHeader, ieValue []byte) (FARID, error) {
+func DeserializeFARID(ieHeader Header, ieValue []byte) (FARID, error) {
 	if len(ieValue) != 4 {
 		return FARID{}, fmt.Errorf("invalid length for FARID: got %d bytes, want 4", len(ieValue))
 	}

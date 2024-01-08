@@ -8,12 +8,12 @@ import (
 
 const HeaderLength = 4
 
-type IEHeader struct {
+type Header struct {
 	Type   IEType
 	Length uint16
 }
 
-func (ieHeader *IEHeader) Serialize() []byte {
+func (ieHeader *Header) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
 	// Octets 1 to 2: Type
@@ -25,8 +25,8 @@ func (ieHeader *IEHeader) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeIEHeader(payload []byte) (IEHeader, error) {
-	var ieHeader IEHeader
+func DeserializeHeader(payload []byte) (Header, error) {
+	var ieHeader Header
 
 	if len(payload) < HeaderLength {
 		return ieHeader, fmt.Errorf("not enough bytes for IE header")

@@ -46,7 +46,7 @@ func ParseInformationElements(b []byte) ([]InformationElement, error) {
 		ieLength := binary.BigEndian.Uint16(b[index+2 : index+4])
 		index += HeaderLength
 
-		ieHeader := IEHeader{
+		ieHeader := Header{
 			Type:   ieType,
 			Length: ieLength,
 		}

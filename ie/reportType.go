@@ -18,12 +18,12 @@ const (
 )
 
 type ReportType struct {
-	Header  IEHeader
+	Header  Header
 	Reports []Report
 }
 
 func NewReportType(reports []Report) (ReportType, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   IEType(ReportTypeIEType),
 		Length: 1,
 	}
@@ -55,7 +55,7 @@ func (reportType ReportType) IsZeroValue() bool {
 	return reportType.Header.Length == 0
 }
 
-func DeserializeReportType(ieHeader IEHeader, ieValue []byte) (ReportType, error) {
+func DeserializeReportType(ieHeader Header, ieValue []byte) (ReportType, error) {
 	if len(ieValue) != int(ieHeader.Length) {
 		return ReportType{}, errors.New("invalid length for ReportType")
 	}

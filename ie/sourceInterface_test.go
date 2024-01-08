@@ -38,7 +38,7 @@ func TestGivenSourceInterfaceSerializedWhenDeserializeThenFieldsSetCorrectly(t *
 
 	sourceInterfaceSerialized := sourceInterface.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   20,
 		Length: 1,
 	}

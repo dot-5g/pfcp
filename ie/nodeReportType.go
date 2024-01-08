@@ -6,7 +6,7 @@ import (
 )
 
 type NodeReportType struct {
-	Header IEHeader
+	Header Header
 	GPQR   bool
 	CKDR   bool
 	UPRR   bool
@@ -14,7 +14,7 @@ type NodeReportType struct {
 }
 
 func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) (NodeReportType, error) {
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   NodeReportTypeIEType,
 		Length: 1,
 	}
@@ -56,7 +56,7 @@ func (nrt NodeReportType) IsZeroValue() bool {
 	return nrt.Header.Length == 0
 }
 
-func DeserializeNodeReportType(ieHeader IEHeader, ieValue []byte) (NodeReportType, error) {
+func DeserializeNodeReportType(ieHeader Header, ieValue []byte) (NodeReportType, error) {
 
 	if len(ieValue) < 1 {
 		return NodeReportType{}, fmt.Errorf("invalid length for NodeReportType: got %d bytes, expected at least 1", len(ieValue))

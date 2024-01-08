@@ -111,7 +111,7 @@ func TestGivenSerializedWhenDeserializNodeIDThenFieldsSetCorrectly(t *testing.T)
 
 	serializedNodeID := nodeID.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   60,
 		Length: 5,
 	}

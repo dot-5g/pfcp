@@ -6,7 +6,7 @@ import (
 )
 
 type SourceInterface struct {
-	Header IEHeader
+	Header Header
 	Value  int
 }
 
@@ -15,7 +15,7 @@ func NewSourceInterface(value int) (SourceInterface, error) {
 		return SourceInterface{}, fmt.Errorf("invalid value for SourceInterface: got %d, want 0-15", value)
 	}
 
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   SourceInterfaceIEType,
 		Length: 1,
 	}
@@ -43,7 +43,7 @@ func (sourceInterface SourceInterface) IsZeroValue() bool {
 	return sourceInterface.Header.Length == 0
 }
 
-func DeserializeSourceInterface(ieHeader IEHeader, ieValue []byte) (SourceInterface, error) {
+func DeserializeSourceInterface(ieHeader Header, ieValue []byte) (SourceInterface, error) {
 	if len(ieValue) != 1 {
 		return SourceInterface{}, fmt.Errorf("invalid length for PDRID: got %d bytes, want 2", len(ieValue))
 	}

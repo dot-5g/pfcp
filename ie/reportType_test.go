@@ -47,7 +47,7 @@ func TestGivenSerializedWhenDeserializeReportTypeThenFieldsSetCorrectly(t *testi
 
 	serializedReportType := reportType.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   ie.ReportTypeIEType,
 		Length: 1,
 	}

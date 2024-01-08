@@ -6,7 +6,7 @@ import (
 )
 
 type SourceIPAddress struct {
-	Header           IEHeader
+	Header           Header
 	MPL              bool
 	V4               bool
 	V6               bool
@@ -45,7 +45,7 @@ func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress
 		maskPrefixLength = uint8(ones)
 	}
 
-	ieHeader := IEHeader{
+	ieHeader := Header{
 		Type:   SourceIPAddressIEType,
 		Length: length,
 	}
@@ -101,7 +101,7 @@ func (sourceIPAddress SourceIPAddress) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeSourceIPAddress(ieHeader IEHeader, ieValue []byte) (SourceIPAddress, error) {
+func DeserializeSourceIPAddress(ieHeader Header, ieValue []byte) (SourceIPAddress, error) {
 	var mpl bool
 	var v4 bool
 	var v6 bool

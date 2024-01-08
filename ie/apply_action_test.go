@@ -114,7 +114,7 @@ func TestGivenApplyActionSerializedWhenDeserializeThenFieldsSetCorrectly(t *test
 
 	serialized := applyAction.Serialize()
 
-	ieHeader := ie.IEHeader{
+	ieHeader := ie.Header{
 		Type:   44,
 		Length: 2,
 	}
