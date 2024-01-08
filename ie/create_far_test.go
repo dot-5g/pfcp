@@ -26,12 +26,12 @@ func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Error creating CreateFAR: %v", err)
 	}
 
-	if createFar.IEType != 3 {
-		t.Errorf("Expected IEType 3, got %d", createFar.IEType)
+	if createFar.Header.Type != 3 {
+		t.Errorf("Expected IEType 3, got %d", createFar.Header.Type)
 	}
 
-	if createFar.Length != 14 {
-		t.Errorf("Expected Length 14, got %d", createFar.Length)
+	if createFar.Header.Length != 14 {
+		t.Errorf("Expected Length 14, got %d", createFar.Header.Length)
 	}
 
 	if createFar.FARID.Value != 1 {
@@ -82,12 +82,12 @@ func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
 		t.Errorf("Expected BDPN false, got %v", createFar.ApplyAction.BDPN)
 	}
 
-	if createFar.ApplyAction.Length != 2 {
-		t.Errorf("Expected Length 2, got %d", createFar.ApplyAction.Length)
+	if createFar.ApplyAction.Header.Length != 2 {
+		t.Errorf("Expected Length 2, got %d", createFar.ApplyAction.Header.Length)
 	}
 
-	if createFar.ApplyAction.IEType != 44 {
-		t.Errorf("Expected IEType 44, got %d", createFar.ApplyAction.IEType)
+	if createFar.ApplyAction.Header.Type != 44 {
+		t.Errorf("Expected IEType 44, got %d", createFar.ApplyAction.Header.Type)
 	}
 
 }
@@ -113,18 +113,23 @@ func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testin
 
 	serialized := createFar.Serialize()
 
-	deserialized, err := ie.DeserializeCreateFAR(3, 14, serialized[4:])
+	ieHeader := ie.IEHeader{
+		Type:   3,
+		Length: 14,
+	}
+
+	deserialized, err := ie.DeserializeCreateFAR(ieHeader, serialized[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing CreateFAR: %v", err)
 	}
 
-	if deserialized.IEType != 3 {
-		t.Errorf("Expected IEType 3, got %d", deserialized.IEType)
+	if deserialized.Header.Type != 3 {
+		t.Errorf("Expected IEType 3, got %d", deserialized.Header.Type)
 	}
 
-	if deserialized.Length != 14 {
-		t.Errorf("Expected Length 14, got %d", deserialized.Length)
+	if deserialized.Header.Length != 14 {
+		t.Errorf("Expected Length 14, got %d", deserialized.Header.Length)
 	}
 
 	if deserialized.FARID != farId {

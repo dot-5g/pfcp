@@ -2,13 +2,11 @@ package ie
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 )
 
 type ApplyAction struct {
-	IEType uint16
-	Length uint16
+	Header IEHeader
 	DFRT   bool
 	IPMD   bool
 	IPMA   bool
@@ -63,6 +61,11 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 	var ddpn bool
 	var bdpn bool
 	var edrt bool
+
+	ieHeader := IEHeader{
+		Type:   IEType(ApplyActionIEType),
+		Length: 2,
+	}
 
 	if (contains(extraFlags, NOCP) || contains(extraFlags, BDPN) || contains(extraFlags, DDPN)) && flag != BUFF {
 		return ApplyAction{}, fmt.Errorf("the NOCP flag, BDPN and DDPN flag may only be set if the BUFF flag is set")
@@ -121,8 +124,7 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 	}
 
 	return ApplyAction{
-		IEType: uint16(ApplyActionIEType),
-		Length: 2,
+		Header: ieHeader,
 		DFRT:   dfrt,
 		IPMD:   ipmd,
 		IPMA:   ipma,
@@ -140,11 +142,8 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 func (applyaction ApplyAction) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(applyaction.IEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(applyaction.Length))
+	// Octets 1 to 4: Header
+	buf.Write(applyaction.Header.Serialize())
 
 	// Octet 5: DFRT (bit 8), IPMD (bit 7), IPMA (bit 6), DUPL (bit 5), NOCP (bit 4), BUFF (bit 3), FORW (bit 2), DROP (bit 1)
 	var byte5 byte
@@ -191,26 +190,25 @@ func (applyaction ApplyAction) Serialize() []byte {
 }
 
 func (applyaction ApplyAction) IsZeroValue() bool {
-	return applyaction.Length == 0
+	return applyaction.Header.Length == 0
 }
 
-func DeserializeApplyAction(ieType uint16, ieLength uint16, ieValue []byte) (ApplyAction, error) {
+func DeserializeApplyAction(ieHeader IEHeader, ieValue []byte) (ApplyAction, error) {
 	var applyaction ApplyAction
 
-	if ieType != uint16(ApplyActionIEType) {
-		return applyaction, fmt.Errorf("invalid IE type: expected %d, got %d", ApplyActionIEType, ieType)
+	if ieHeader.Type != ApplyActionIEType {
+		return applyaction, fmt.Errorf("invalid IE type: expected %d, got %d", ApplyActionIEType, ieHeader.Type)
 	}
 
-	if ieLength != 2 {
-		return applyaction, fmt.Errorf("invalid length field for ApplyAction: expected 2, got %d", ieLength)
+	if ieHeader.Length != 2 {
+		return applyaction, fmt.Errorf("invalid length field for ApplyAction: expected 2, got %d", ieHeader.Length)
 	}
 
 	if len(ieValue) != 2 {
 		return applyaction, fmt.Errorf("invalid length for ApplyAction: got %d bytes, want 2", len(ieValue))
 	}
 
-	applyaction.IEType = ieType
-	applyaction.Length = ieLength
+	applyaction.Header = ieHeader
 
 	// Deserialize the first byte (Octet 5)
 	byte5 := ieValue[0]

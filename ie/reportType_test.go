@@ -15,12 +15,12 @@ func TestGivenCorrectValueWhenNewReportTypeThenFieldsSetCorrectly(t *testing.T) 
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	if reportType.IEType != uint16(ie.ReportTypeIEType) {
-		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, reportType.IEType)
+	if reportType.Header.Type != ie.ReportTypeIEType {
+		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, reportType.Header.Type)
 	}
 
-	if reportType.Length != 1 {
-		t.Errorf("Expected length 1, got %d", reportType.Length)
+	if reportType.Header.Length != 1 {
+		t.Errorf("Expected length 1, got %d", reportType.Header.Length)
 	}
 
 	if len(reportType.Reports) != 2 {
@@ -47,17 +47,22 @@ func TestGivenSerializedWhenDeserializeReportTypeThenFieldsSetCorrectly(t *testi
 
 	serializedReportType := reportType.Serialize()
 
-	deserializedReportType, err := ie.DeserializeReportType(39, 1, serializedReportType[4:])
+	ieHeader := ie.IEHeader{
+		Type:   ie.ReportTypeIEType,
+		Length: 1,
+	}
+
+	deserializedReportType, err := ie.DeserializeReportType(ieHeader, serializedReportType[4:])
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	if deserializedReportType.IEType != uint16(ie.ReportTypeIEType) {
-		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, deserializedReportType.IEType)
+	if deserializedReportType.Header.Type != ie.ReportTypeIEType {
+		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, deserializedReportType.Header.Type)
 	}
 
-	if deserializedReportType.Length != 1 {
-		t.Errorf("Expected length 1, got %d", deserializedReportType.Length)
+	if deserializedReportType.Header.Length != 1 {
+		t.Errorf("Expected length 1, got %d", deserializedReportType.Header.Length)
 	}
 
 	if len(deserializedReportType.Reports) != 2 {

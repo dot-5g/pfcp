@@ -8,8 +8,8 @@ import (
 	"github.com/dot-5g/pfcp/messages"
 )
 
-func TestGivenPfcpHeaderWhenSerializePFCPHeaderThenSerializedCorrectly(t *testing.T) {
-	pfcpHeader := messages.PFCPHeader{
+func TestGivenPfcpHeaderWhenSerializeMessageHeaderThenSerializedCorrectly(t *testing.T) {
+	pfcpHeader := messages.MessageHeader{
 		Version:        1,
 		MessageType:    2,
 		MessageLength:  3,

@@ -15,12 +15,12 @@ func TestGivenCorrectFarIDValueWhenNewFarIDThenFieldsSetCorrectly(t *testing.T) 
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if farID.IEType != 108 {
-		t.Errorf("Expected IEType %d, got %d", 108, farID.IEType)
+	if farID.Header.Type != 108 {
+		t.Errorf("Expected IEType %d, got %d", 108, farID.Header.Type)
 	}
 
-	if farID.Length != 4 {
-		t.Errorf("Expected Length %d, got %d", 4, farID.Length)
+	if farID.Header.Length != 4 {
+		t.Errorf("Expected Length %d, got %d", 4, farID.Header.Length)
 	}
 
 	if farID.Value != farIDValue {
@@ -38,18 +38,22 @@ func TestGivenFarIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T)
 
 	farIDSerialized := farID.Serialize()
 
-	deserializedFarID, err := ie.DeserializeFARID(108, 4, farIDSerialized[4:])
+	ieHeader := ie.IEHeader{
+		Type:   108,
+		Length: 4,
+	}
+	deserializedFarID, err := ie.DeserializeFARID(ieHeader, farIDSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if deserializedFarID.IEType != 108 {
-		t.Errorf("Expected IEType %d, got %d", 108, deserializedFarID.IEType)
+	if deserializedFarID.Header.Type != 108 {
+		t.Errorf("Expected IEType %d, got %d", 108, deserializedFarID.Header.Type)
 	}
 
-	if deserializedFarID.Length != 4 {
-		t.Errorf("Expected Length %d, got %d", 4, deserializedFarID.Length)
+	if deserializedFarID.Header.Length != 4 {
+		t.Errorf("Expected Length %d, got %d", 4, deserializedFarID.Header.Length)
 	}
 
 	if deserializedFarID.Value != farIDValue {

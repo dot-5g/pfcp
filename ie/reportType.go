@@ -2,7 +2,6 @@ package ie
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 )
 
@@ -19,15 +18,18 @@ const (
 )
 
 type ReportType struct {
-	IEType  uint16
-	Length  uint16
+	Header  IEHeader
 	Reports []Report
 }
 
 func NewReportType(reports []Report) (ReportType, error) {
+	ieHeader := IEHeader{
+		Type:   IEType(ReportTypeIEType),
+		Length: 1,
+	}
+
 	return ReportType{
-		IEType:  uint16(ReportTypeIEType),
-		Length:  1,
+		Header:  ieHeader,
 		Reports: reports,
 	}, nil
 }
@@ -35,11 +37,8 @@ func NewReportType(reports []Report) (ReportType, error) {
 func (reportType ReportType) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 2: Type
-	binary.Write(buf, binary.BigEndian, uint16(ReportTypeIEType))
-
-	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(reportType.Length))
+	// Octets 1 to 4: Header
+	buf.Write(reportType.Header.Serialize())
 
 	// Octet 5: Reports
 	// Bit 1: DLDR, Bit 2: USAR, Bit 3: ERIR, Bit 4: UPIR, Bit 5: TMIR, Bit 6: SESR, Bit 7: UISR, Bit 8: Spare
@@ -53,11 +52,11 @@ func (reportType ReportType) Serialize() []byte {
 }
 
 func (reportType ReportType) IsZeroValue() bool {
-	return reportType.Length == 0
+	return reportType.Header.Length == 0
 }
 
-func DeserializeReportType(ieType uint16, ieLength uint16, ieValue []byte) (ReportType, error) {
-	if len(ieValue) != int(ieLength) {
+func DeserializeReportType(ieHeader IEHeader, ieValue []byte) (ReportType, error) {
+	if len(ieValue) != int(ieHeader.Length) {
 		return ReportType{}, errors.New("invalid length for ReportType")
 	}
 
@@ -71,8 +70,7 @@ func DeserializeReportType(ieType uint16, ieLength uint16, ieValue []byte) (Repo
 	}
 
 	return ReportType{
-		IEType:  ieType,
-		Length:  ieLength,
+		Header:  ieHeader,
 		Reports: reports,
 	}, nil
 }

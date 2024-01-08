@@ -19,12 +19,12 @@ func TestGivenCorrectPDIWhenNewPDIThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if pdi.IEType != 17 {
-		t.Errorf("Expected IEType %d, got %d", 17, pdi.IEType)
+	if pdi.Header.Type != 17 {
+		t.Errorf("Expected IEType %d, got %d", 17, pdi.Header.Type)
 	}
 
-	if pdi.Length != 5 {
-		t.Errorf("Expected Length %d, got %d", 5, pdi.Length)
+	if pdi.Header.Length != 5 {
+		t.Errorf("Expected Length %d, got %d", 5, pdi.Header.Length)
 	}
 
 	if pdi.SourceInterface != sourceInterface {
@@ -48,18 +48,23 @@ func TestGivenPDISerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 
 	pdiSerialized := pdi.Serialize()
 
-	deserializedPDI, err := ie.DeserializePDI(17, 5, pdiSerialized[4:])
+	ieHeader := ie.IEHeader{
+		Type:   17,
+		Length: 5,
+	}
+
+	deserializedPDI, err := ie.DeserializePDI(ieHeader, pdiSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if deserializedPDI.IEType != 17 {
-		t.Errorf("Expected IEType %d, got %d", 17, deserializedPDI.IEType)
+	if deserializedPDI.Header.Type != 17 {
+		t.Errorf("Expected IEType %d, got %d", 17, deserializedPDI.Header.Type)
 	}
 
-	if deserializedPDI.Length != 5 {
-		t.Errorf("Expected Length %d, got %d", 5, deserializedPDI.Length)
+	if deserializedPDI.Header.Length != 5 {
+		t.Errorf("Expected Length %d, got %d", 5, deserializedPDI.Header.Length)
 	}
 
 	if deserializedPDI.SourceInterface != sourceInterface {

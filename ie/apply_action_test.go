@@ -14,12 +14,12 @@ func TestGivenCorrectValuesWhenNewApplyActionThenFieldsSetCorrectly(t *testing.T
 		t.Fatalf("Error creating ApplyAction: %v", err)
 	}
 
-	if applyAction.IEType != 44 {
-		t.Errorf("Expected IEType 44, got %d", applyAction.IEType)
+	if applyAction.Header.Type != 44 {
+		t.Errorf("Expected IEType 44, got %d", applyAction.Header.Type)
 	}
 
-	if applyAction.Length != 2 {
-		t.Errorf("Expected Length 2, got %d", applyAction.Length)
+	if applyAction.Header.Length != 2 {
+		t.Errorf("Expected Length 2, got %d", applyAction.Header.Length)
 	}
 
 	if applyAction.FORW != true {
@@ -114,18 +114,23 @@ func TestGivenApplyActionSerializedWhenDeserializeThenFieldsSetCorrectly(t *test
 
 	serialized := applyAction.Serialize()
 
-	deserialized, err := ie.DeserializeApplyAction(44, 2, serialized[4:])
+	ieHeader := ie.IEHeader{
+		Type:   44,
+		Length: 2,
+	}
+
+	deserialized, err := ie.DeserializeApplyAction(ieHeader, serialized[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing ApplyAction: %v", err)
 	}
 
-	if deserialized.IEType != 44 {
-		t.Errorf("Expected IEType 44, got %d", deserialized.IEType)
+	if deserialized.Header.Type != 44 {
+		t.Errorf("Expected IEType 44, got %d", deserialized.Header.Type)
 	}
 
-	if deserialized.Length != 2 {
-		t.Errorf("Expected Length 2, got %d", deserialized.Length)
+	if deserialized.Header.Length != 2 {
+		t.Errorf("Expected Length 2, got %d", deserialized.Header.Length)
 	}
 
 	if deserialized.DFRT != false {
