@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net"
 	"sync"
 	"testing"
@@ -106,7 +105,6 @@ func HeartbeatRequest(t *testing.T) {
 	if heartbeatRequestReceivedSequenceNumber != sentSequenceNumber {
 		t.Errorf("Heartbeat request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sentSequenceNumber, heartbeatRequestReceivedSequenceNumber)
 	}
-	fmt.Printf("Remote address: %v\n", heartbeatRequestReceivedRemoteAddress)
 
 	remoteAddr := heartbeatRequestReceivedRemoteAddress.String()
 	if remoteAddr[:9] != "127.0.0.1" {
