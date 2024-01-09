@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"net"
 	"sync"
 	"testing"
 	"time"
@@ -30,7 +31,7 @@ var (
 	pfcpSessionEstablishmentResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPSessionEstablishmentRequest(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest) {
+func HandlePFCPSessionEstablishmentRequest(address net.Addr, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest) {
 	pfcpSessionEstablishmentRequestMu.Lock()
 	defer pfcpSessionEstablishmentRequestMu.Unlock()
 	pfcpSessionEstablishmentRequesthandlerCalled = true
@@ -42,7 +43,7 @@ func HandlePFCPSessionEstablishmentRequest(sequenceNumber uint32, seid uint64, m
 	pfcpSessionEstablishmentRequestReceivedCreateFAR = msg.CreateFAR
 }
 
-func HandlePFCPSessionEstablishmentResponse(sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse) {
+func HandlePFCPSessionEstablishmentResponse(address net.Addr, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse) {
 	pfcpSessionEstablishmentResponseMu.Lock()
 	defer pfcpSessionEstablishmentResponseMu.Unlock()
 	pfcpSessionEstablishmentResponsehandlerCalled = true

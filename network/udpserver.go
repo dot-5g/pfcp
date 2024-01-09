@@ -10,10 +10,10 @@ import (
 type UdpServer struct {
 	conn    *net.UDPConn
 	closeCh chan struct{}
-	Handler func([]byte)
+	Handler func(net.Addr, []byte)
 }
 
-func (udpServer *UdpServer) SetHandler(handler func([]byte)) {
+func (udpServer *UdpServer) SetHandler(handler func(net.Addr, []byte)) {
 	udpServer.Handler = handler
 }
 
@@ -49,7 +49,7 @@ func (udpServer *UdpServer) listen() error {
 			return nil
 		default:
 			buffer := make([]byte, 1024)
-			length, _, err := udpServer.conn.ReadFrom(buffer)
+			length, remoteAddress, err := udpServer.conn.ReadFrom(buffer)
 			if err != nil {
 				if !strings.Contains(err.Error(), "use of closed network connection") {
 					return fmt.Errorf("failed to read from UDP connection: %w", err)
@@ -57,7 +57,7 @@ func (udpServer *UdpServer) listen() error {
 				continue
 			}
 			if udpServer.Handler != nil {
-				udpServer.Handler(buffer[:length])
+				udpServer.Handler(remoteAddress, buffer[:length])
 			}
 		}
 	}
