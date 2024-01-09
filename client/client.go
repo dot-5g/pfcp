@@ -37,7 +37,7 @@ func (pfcp *Pfcp) sendPfcpMessage(message messages.PFCPMessage, header messages.
 	messageName := message.GetMessageTypeString()
 	payload := messages.Serialize(message, header)
 	if err := pfcp.Udp.Send(payload); err != nil {
-		log.Printf("Failed to send %s message to : %v\n", messageName, pfcp.ServerAddress, err)
+		log.Printf("Failed to send %s message to %v: %v\n", messageName, pfcp.ServerAddress, err)
 		return err
 	}
 	log.Printf("%s message sent successfully to %s.\n", messageName, pfcp.ServerAddress)
