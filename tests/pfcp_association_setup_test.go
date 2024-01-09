@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"net"
 	"sync"
 	"testing"
 	"time"
@@ -29,7 +30,7 @@ var (
 	pfcpAssociationSetupResponseReceivedCause             ie.Cause
 )
 
-func HandlePFCPAssociationSetupRequest(sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest) {
+func HandlePFCPAssociationSetupRequest(address net.Addr, sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest) {
 	pfcpAssociationSetupRequestMu.Lock()
 	defer pfcpAssociationSetupRequestMu.Unlock()
 	pfcpAssociationSetupRequesthandlerCalled = true
@@ -39,7 +40,7 @@ func HandlePFCPAssociationSetupRequest(sequenceNumber uint32, msg messages.PFCPA
 	pfcpAssociationSetupRequestReceivedUPFunctionFeatures = msg.UPFunctionFeatures
 }
 
-func HandlePFCPAssociationSetupResponse(sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse) {
+func HandlePFCPAssociationSetupResponse(address net.Addr, sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse) {
 	pfcpAssociationSetupResponseMu.Lock()
 	defer pfcpAssociationSetupResponseMu.Unlock()
 	pfcpAssociationSetupResponsehandlerCalled = true

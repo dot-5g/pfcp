@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"net"
 	"sync"
 	"testing"
 	"time"
@@ -16,6 +17,7 @@ var (
 	heartbeatRequesthandlerCalled             bool
 	heartbeatRequestreceivedRecoveryTimestamp ie.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber    uint32
+	heartbeatRequestReceivedRemoteAddress     net.Addr
 )
 
 var (
@@ -33,15 +35,16 @@ var (
 	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
-func HandleHeartbeatRequest(sequenceNumber uint32, msg messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(address net.Addr, sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestMu.Lock()
 	defer heartbeatRequestMu.Unlock()
 	heartbeatRequesthandlerCalled = true
 	heartbeatRequestreceivedRecoveryTimestamp = msg.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber = sequenceNumber
+	heartbeatRequestReceivedRemoteAddress = address
 }
 
-func HandleHeartbeatRequestWithSourceIP(sequenceNumber uint32, msg messages.HeartbeatRequest) {
+func HandleHeartbeatRequestWithSourceIP(address net.Addr, sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestWithSourceIPMu.Lock()
 	defer heartbeatRequestWithSourceIPMu.Unlock()
 	heartbeatRequestWithSourceIPhandlerCalled = true
@@ -50,7 +53,7 @@ func HandleHeartbeatRequestWithSourceIP(sequenceNumber uint32, msg messages.Hear
 	heartbeatRequestWithSourceIPReceivedSequenceNumber = sequenceNumber
 }
 
-func HandleHeartbeatResponse(sequenceNumber uint32, msg messages.HeartbeatResponse) {
+func HandleHeartbeatResponse(address net.Addr, sequenceNumber uint32, msg messages.HeartbeatResponse) {
 	heartbeatResponseMu.Lock()
 	defer heartbeatResponseMu.Unlock()
 	heartbeatResponsehandlerCalled = true
@@ -102,6 +105,12 @@ func HeartbeatRequest(t *testing.T) {
 	if heartbeatRequestReceivedSequenceNumber != sentSequenceNumber {
 		t.Errorf("Heartbeat request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sentSequenceNumber, heartbeatRequestReceivedSequenceNumber)
 	}
+
+	remoteAddr := heartbeatRequestReceivedRemoteAddress.String()
+	if remoteAddr[:9] != "127.0.0.1" {
+		t.Errorf("Heartbeat request handler was called with wrong remote address.\n- Sent remote address: %v\n- Received remote address %v\n", "127.0.0.1", remoteAddr)
+	}
+
 	heartbeatRequestMu.Unlock()
 }
 

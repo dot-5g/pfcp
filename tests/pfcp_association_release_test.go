@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"net"
 	"sync"
 	"testing"
 	"time"
@@ -26,7 +27,7 @@ var (
 	pfcpAssociationReleaseResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPAssociationReleaseRequest(sequenceNumber uint32, msg messages.PFCPAssociationReleaseRequest) {
+func HandlePFCPAssociationReleaseRequest(address net.Addr, sequenceNumber uint32, msg messages.PFCPAssociationReleaseRequest) {
 	pfcpAssociationReleaseRequestMu.Lock()
 	defer pfcpAssociationReleaseRequestMu.Unlock()
 	pfcpAssociationReleaseRequesthandlerCalled = true
@@ -34,7 +35,7 @@ func HandlePFCPAssociationReleaseRequest(sequenceNumber uint32, msg messages.PFC
 	pfcpAssociationReleaseRequestReceivedNodeID = msg.NodeID
 }
 
-func HandlePFCPAssociationReleaseResponse(sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse) {
+func HandlePFCPAssociationReleaseResponse(address net.Addr, sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse) {
 	pfcpAssociationReleaseResponseMu.Lock()
 	defer pfcpAssociationReleaseResponseMu.Unlock()
 	pfcpAssociationReleaseResponsehandlerCalled = true
