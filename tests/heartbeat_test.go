@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"net"
 	"sync"
 	"testing"
 	"time"
@@ -17,7 +16,7 @@ var (
 	heartbeatRequesthandlerCalled             bool
 	heartbeatRequestreceivedRecoveryTimestamp ie.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber    uint32
-	heartbeatRequestReceivedRemoteAddress     net.Addr
+	heartbeatRequestReceivedPFCPClient        *client.Pfcp
 )
 
 var (
@@ -35,16 +34,16 @@ var (
 	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
-func HandleHeartbeatRequest(address net.Addr, sequenceNumber uint32, msg messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(pfcpClient *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestMu.Lock()
 	defer heartbeatRequestMu.Unlock()
 	heartbeatRequesthandlerCalled = true
 	heartbeatRequestreceivedRecoveryTimestamp = msg.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber = sequenceNumber
-	heartbeatRequestReceivedRemoteAddress = address
+	heartbeatRequestReceivedPFCPClient = pfcpClient
 }
 
-func HandleHeartbeatRequestWithSourceIP(address net.Addr, sequenceNumber uint32, msg messages.HeartbeatRequest) {
+func HandleHeartbeatRequestWithSourceIP(pfcpClient *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestWithSourceIPMu.Lock()
 	defer heartbeatRequestWithSourceIPMu.Unlock()
 	heartbeatRequestWithSourceIPhandlerCalled = true
@@ -53,7 +52,7 @@ func HandleHeartbeatRequestWithSourceIP(address net.Addr, sequenceNumber uint32,
 	heartbeatRequestWithSourceIPReceivedSequenceNumber = sequenceNumber
 }
 
-func HandleHeartbeatResponse(address net.Addr, sequenceNumber uint32, msg messages.HeartbeatResponse) {
+func HandleHeartbeatResponse(pfcpClient *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatResponse) {
 	heartbeatResponseMu.Lock()
 	defer heartbeatResponseMu.Unlock()
 	heartbeatResponsehandlerCalled = true
@@ -106,9 +105,8 @@ func HeartbeatRequest(t *testing.T) {
 		t.Errorf("Heartbeat request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sentSequenceNumber, heartbeatRequestReceivedSequenceNumber)
 	}
 
-	remoteAddr := heartbeatRequestReceivedRemoteAddress.String()
-	if remoteAddr[:9] != "127.0.0.1" {
-		t.Errorf("Heartbeat request handler was called with wrong remote address.\n- Sent remote address: %v\n- Received remote address %v\n", "127.0.0.1", remoteAddr)
+	if heartbeatRequestReceivedPFCPClient == nil {
+		t.Errorf("Heartbeat request handler was called with wrong PFCP client.\n- Sent PFCP client: %v\n- Received PFCP client %v\n", pfcpClient, heartbeatRequestReceivedPFCPClient)
 	}
 
 	heartbeatRequestMu.Unlock()

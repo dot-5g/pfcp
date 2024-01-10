@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"net"
 	"sync"
 	"testing"
 	"time"
@@ -27,7 +26,7 @@ var (
 	pfcpSessionDeletionResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPSessionDeletionRequest(address net.Addr, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest) {
+func HandlePFCPSessionDeletionRequest(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest) {
 	pfcpSessionDeletionRequestMu.Lock()
 	defer pfcpSessionDeletionRequestMu.Unlock()
 	pfcpSessionDeletionRequesthandlerCalled = true
@@ -35,7 +34,7 @@ func HandlePFCPSessionDeletionRequest(address net.Addr, sequenceNumber uint32, s
 	pfcpSessionDeletionRequestReceivedSEID = seid
 }
 
-func HandlePFCPSessionDeletionResponse(address net.Addr, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse) {
+func HandlePFCPSessionDeletionResponse(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse) {
 	pfcpSessionDeletionResponseMu.Lock()
 	defer pfcpSessionDeletionResponseMu.Unlock()
 	pfcpSessionDeletionResponsehandlerCalled = true
