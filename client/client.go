@@ -7,6 +7,27 @@ import (
 	"github.com/dot-5g/pfcp/network"
 )
 
+type PfcpClienter interface {
+	SendHeartbeatRequest(msg messages.HeartbeatRequest, sequenceNumber uint32) error
+	SendHeartbeatResponse(msg messages.HeartbeatResponse, sequenceNumber uint32) error
+	SendPFCPAssociationSetupRequest(msg messages.PFCPAssociationSetupRequest, sequenceNumber uint32) error
+	SendPFCPAssociationSetupResponse(msg messages.PFCPAssociationSetupResponse, sequenceNumber uint32) error
+	SendPFCPAssociationUpdateRequest(msg messages.PFCPAssociationUpdateRequest, sequenceNumber uint32) error
+	SendPFCPAssociationUpdateResponse(msg messages.PFCPAssociationUpdateResponse, sequenceNumber uint32) error
+	SendPFCPAssociationReleaseRequest(msg messages.PFCPAssociationReleaseRequest, sequenceNumber uint32) error
+	SendPFCPAssociationReleaseResponse(msg messages.PFCPAssociationReleaseResponse, sequenceNumber uint32) error
+	SendPFCPNodeReportRequest(msg messages.PFCPNodeReportRequest, sequenceNumber uint32) error
+	SendPFCPNodeReportResponse(msg messages.PFCPNodeReportResponse, sequenceNumber uint32) error
+	SendPFCPSessionEstablishmentRequest(msg messages.PFCPSessionEstablishmentRequest, seid uint64, sequenceNumber uint32) error
+	SendPFCPSessionEstablishmentResponse(msg messages.PFCPSessionEstablishmentResponse, seid uint64, sequenceNumber uint32) error
+	SendPFCPSessionDeletionRequest(msg messages.PFCPSessionDeletionRequest, seid uint64, sequenceNumber uint32) error
+	SendPFCPSessionDeletionResponse(msg messages.PFCPSessionDeletionResponse, seid uint64, sequenceNumber uint32) error
+	SendPFCPSessionReportRequest(msg messages.PFCPSessionReportRequest, seid uint64, sequenceNumber uint32) error
+	SendPFCPSessionReportResponse(msg messages.PFCPSessionReportResponse, seid uint64, sequenceNumber uint32) error
+}
+
+var _ PfcpClienter = (*Pfcp)(nil)
+
 type Pfcp struct {
 	ServerAddress string
 	Udp           network.UdpSender
