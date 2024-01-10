@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"net"
 	"sync"
 	"testing"
 	"time"
@@ -28,7 +27,7 @@ var (
 	pfcpNodeReportResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPNodeReportRequest(address net.Addr, sequenceNumber uint32, msg messages.PFCPNodeReportRequest) {
+func HandlePFCPNodeReportRequest(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPNodeReportRequest) {
 	pfcpNodeReportRequestMu.Lock()
 	defer pfcpNodeReportRequestMu.Unlock()
 	pfcpNodeReportRequesthandlerCalled = true
@@ -37,7 +36,7 @@ func HandlePFCPNodeReportRequest(address net.Addr, sequenceNumber uint32, msg me
 	pfcpNodeReportRequestReceivedNodeReportType = msg.NodeReportType
 }
 
-func HandlePFCPNodeReportResponse(address net.Addr, sequenceNumber uint32, msg messages.PFCPNodeReportResponse) {
+func HandlePFCPNodeReportResponse(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPNodeReportResponse) {
 	pfcpNodeReportResponseMu.Lock()
 	defer pfcpNodeReportResponseMu.Unlock()
 	pfcpNodeReportResponsehandlerCalled = true
