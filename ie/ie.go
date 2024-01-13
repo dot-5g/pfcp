@@ -20,6 +20,7 @@ const (
 	PDRIDIEType              IEType = 56
 	FSEIDIEType              IEType = 57
 	NodeIDIEType             IEType = 60
+	UEIPAddressIEType        IEType = 93
 	RecoveryTimeStampIEType  IEType = 96
 	NodeReportTypeIEType     IEType = 101
 	FARIDIEType              IEType = 108

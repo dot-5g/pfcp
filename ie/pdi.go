@@ -8,7 +8,8 @@ import (
 
 type PDI struct {
 	Header          Header
-	SourceInterface SourceInterface
+	SourceInterface SourceInterface // Mandatory
+	UEIPAddress     UEIPAddress     // Optional
 }
 
 func NewPDI(sourceInterface SourceInterface) (PDI, error) {

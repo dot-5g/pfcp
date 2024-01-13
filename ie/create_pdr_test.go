@@ -53,8 +53,8 @@ func TestGivenCorrectParametersWhenNewCreatePDRThenFieldsSetCorrectly(t *testing
 		t.Errorf("Expected CreatePDR Precedence %v, got %v", precedence, createPDR.Precedence)
 	}
 
-	if createPDR.PDI != pdi {
-		t.Errorf("Expected CreatePDR PDI %v, got %v", pdi, createPDR.PDI)
+	if createPDR.PDI.SourceInterface != pdi.SourceInterface {
+		t.Errorf("Expected CreatePDR PDI SourceInterface %v, got %v", pdi.SourceInterface, createPDR.PDI.SourceInterface)
 	}
 }
 
@@ -113,7 +113,7 @@ func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testin
 		t.Errorf("Expected CreatePDR Precedence %v, got %v", precedence, deserialized.Precedence)
 	}
 
-	if deserialized.PDI != pdi {
-		t.Errorf("Expected CreatePDR PDI %v, got %v", pdi, deserialized.PDI)
+	if deserialized.PDI.SourceInterface != pdi.SourceInterface {
+		t.Errorf("Expected CreatePDR PDI SourceInterface %v, got %v", pdi.SourceInterface, deserialized.PDI.SourceInterface)
 	}
 }
