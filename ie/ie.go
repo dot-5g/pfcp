@@ -8,8 +8,8 @@ import (
 type IEType uint16
 
 const (
-	CreatePDRIEType          IEType = 1
-	CreateFARIEType          IEType = 3
+	PDRIEType                IEType = 1
+	FARIEType                IEType = 3
 	PDIIEType                IEType = 17
 	CauseIEType              IEType = 19
 	SourceInterfaceIEType    IEType = 20
@@ -80,14 +80,14 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeSourceInterface(ieHeader, ieValue)
 		case PDIIEType:
 			ie, err = DeserializePDI(ieHeader, ieValue)
-		case CreatePDRIEType:
-			ie, err = DeserializeCreatePDR(ieHeader, ieValue)
+		case PDRIEType:
+			ie, err = DeserializePDR(ieHeader, ieValue)
 		case FARIDIEType:
 			ie, err = DeserializeFARID(ieHeader, ieValue)
 		case ApplyActionIEType:
 			ie, err = DeserializeApplyAction(ieHeader, ieValue)
-		case CreateFARIEType:
-			ie, err = DeserializeCreateFAR(ieHeader, ieValue)
+		case FARIEType:
+			ie, err = DeserializeFAR(ieHeader, ieValue)
 		case ReportTypeIEType:
 			ie, err = DeserializeReportType(ieHeader, ieValue)
 		default:

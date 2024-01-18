@@ -3,10 +3,10 @@ package messages
 import "github.com/dot-5g/pfcp/ie"
 
 type PFCPSessionEstablishmentRequest struct {
-	NodeID    ie.NodeID    // Mandatory
-	CPFSEID   ie.FSEID     // Mandatory
-	CreatePDR ie.CreatePDR // Mandatory
-	CreateFAR ie.CreateFAR // Mandatory
+	NodeID  ie.NodeID // Mandatory
+	CPFSEID ie.FSEID  // Mandatory
+	PDR     ie.PDR    // Mandatory
+	FAR     ie.FAR    // Mandatory
 }
 
 type PFCPSessionEstablishmentResponse struct {
@@ -15,7 +15,7 @@ type PFCPSessionEstablishmentResponse struct {
 }
 
 func (msg PFCPSessionEstablishmentRequest) GetIEs() []ie.InformationElement {
-	return []ie.InformationElement{msg.NodeID, msg.CPFSEID, msg.CreatePDR, msg.CreateFAR}
+	return []ie.InformationElement{msg.NodeID, msg.CPFSEID, msg.PDR, msg.FAR}
 }
 
 func (msg PFCPSessionEstablishmentResponse) GetIEs() []ie.InformationElement {
@@ -42,8 +42,8 @@ func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstabli
 	ies, err := ie.DeserializeInformationElements(data)
 	var nodeID ie.NodeID
 	var controlPlaneFSEID ie.FSEID
-	var createPDR ie.CreatePDR
-	var createFAR ie.CreateFAR
+	var pdr ie.PDR
+	var far ie.FAR
 
 	for _, elem := range ies {
 		if nodeIDIE, ok := elem.(ie.NodeID); ok {
@@ -54,22 +54,22 @@ func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstabli
 			controlPlaneFSEID = controlPlaneFSEIDIE
 			continue
 		}
-		if createPDRIE, ok := elem.(ie.CreatePDR); ok {
-			createPDR = createPDRIE
+		if pdrIE, ok := elem.(ie.PDR); ok {
+			pdr = pdrIE
 			continue
 		}
-		if createFARIE, ok := elem.(ie.CreateFAR); ok {
-			createFAR = createFARIE
+		if farIE, ok := elem.(ie.FAR); ok {
+			far = farIE
 			continue
 		}
 
 	}
 
 	return PFCPSessionEstablishmentRequest{
-		NodeID:    nodeID,
-		CPFSEID:   controlPlaneFSEID,
-		CreatePDR: createPDR,
-		CreateFAR: createFAR,
+		NodeID:  nodeID,
+		CPFSEID: controlPlaneFSEID,
+		PDR:     pdr,
+		FAR:     far,
 	}, err
 }
 

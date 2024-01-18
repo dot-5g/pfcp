@@ -6,20 +6,20 @@ import (
 	"fmt"
 )
 
-type CreatePDR struct {
+type PDR struct {
 	Header     Header
 	PDRID      PDRID
 	Precedence Precedence
 	PDI        PDI
 }
 
-func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) (CreatePDR, error) {
+func NewPDR(pdrID PDRID, precedence Precedence, pdi PDI) (PDR, error) {
 	ieHeader := Header{
-		Type:   IEType(CreatePDRIEType),
+		Type:   IEType(PDRIEType),
 		Length: pdrID.Header.Length + precedence.Header.Length + pdi.Header.Length + 12,
 	}
 
-	return CreatePDR{
+	return PDR{
 		Header:     ieHeader,
 		PDRID:      pdrID,
 		Precedence: precedence,
@@ -27,34 +27,34 @@ func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) (CreatePDR, error
 	}, nil
 }
 
-func (createPDR CreatePDR) IsZeroValue() bool {
-	return createPDR.Header.Length == 0
+func (pdr PDR) IsZeroValue() bool {
+	return pdr.Header.Length == 0
 }
 
-func (createPDR CreatePDR) Serialize() []byte {
+func (pdr PDR) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
 	// Octets 1 to 4: Header
-	buf.Write(createPDR.Header.Serialize())
+	buf.Write(pdr.Header.Serialize())
 
 	// Octets 5 to n: PDR ID
-	serializedPDRID := createPDR.PDRID.Serialize()
+	serializedPDRID := pdr.PDRID.Serialize()
 	buf.Write(serializedPDRID)
 
 	// Octets n+1 to m: Precedence
-	serializedPrecedence := createPDR.Precedence.Serialize()
+	serializedPrecedence := pdr.Precedence.Serialize()
 	buf.Write(serializedPrecedence)
 
 	// Octets m+1 to o: PDI
-	serializedPDI := createPDR.PDI.Serialize()
+	serializedPDI := pdr.PDI.Serialize()
 	buf.Write(serializedPDI)
 
 	return buf.Bytes()
 
 }
 
-func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
-	createPDR := CreatePDR{
+func DeserializePDR(ieHeader Header, value []byte) (PDR, error) {
+	pdr := PDR{
 		Header:     ieHeader,
 		PDRID:      PDRID{},
 		Precedence: Precedence{},
@@ -64,14 +64,14 @@ func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 	index := 0
 	for index < len(value) {
 		if index+4 > len(value) {
-			return CreatePDR{}, fmt.Errorf("slice bounds out of range")
+			return PDR{}, fmt.Errorf("slice bounds out of range")
 		}
 
 		currentIEType := binary.BigEndian.Uint16(value[index : index+2])
 		currentIELength := binary.BigEndian.Uint16(value[index+2 : index+4])
 
 		if index+4+int(currentIELength) > len(value) {
-			return CreatePDR{}, fmt.Errorf("slice bounds out of range")
+			return PDR{}, fmt.Errorf("slice bounds out of range")
 		}
 
 		currentIEValue := value[index+4 : index+4+int(currentIELength)]
@@ -84,9 +84,9 @@ func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 			}
 			pdrID, err := DeserializePDRID(pdrIDHeader, currentIEValue)
 			if err != nil {
-				return CreatePDR{}, fmt.Errorf("failed to deserialize PDR ID: %v", err)
+				return PDR{}, fmt.Errorf("failed to deserialize PDR ID: %v", err)
 			}
-			createPDR.PDRID = pdrID
+			pdr.PDRID = pdrID
 		case PrecedenceIEType:
 			precedenceHeader := Header{
 				Type:   IEType(currentIEType),
@@ -94,9 +94,9 @@ func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 			}
 			precedence, err := DeserializePrecedence(precedenceHeader, currentIEValue)
 			if err != nil {
-				return CreatePDR{}, fmt.Errorf("failed to deserialize Precedence: %v", err)
+				return PDR{}, fmt.Errorf("failed to deserialize Precedence: %v", err)
 			}
-			createPDR.Precedence = precedence
+			pdr.Precedence = precedence
 		case PDIIEType:
 			pdiIEHEader := Header{
 				Type:   IEType(currentIEType),
@@ -104,13 +104,13 @@ func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 			}
 			pdi, err := DeserializePDI(pdiIEHEader, currentIEValue)
 			if err != nil {
-				return CreatePDR{}, fmt.Errorf("failed to deserialize PDI: %v", err)
+				return PDR{}, fmt.Errorf("failed to deserialize PDI: %v", err)
 			}
-			createPDR.PDI = pdi
+			pdr.PDI = pdi
 		}
 
 		index += 4 + int(currentIELength)
 	}
 
-	return createPDR, nil
+	return pdr, nil
 }

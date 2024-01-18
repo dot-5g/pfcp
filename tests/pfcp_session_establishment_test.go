@@ -18,8 +18,8 @@ var (
 	pfcpSessionEstablishmentRequestReceivedSEID           uint64
 	pfcpSessionEstablishmentRequestReceivedNodeID         ie.NodeID
 	pfcpSessionEstablishmentRequestReceivedCPFSEID        ie.FSEID
-	pfcpSessionEstablishmentRequestReceivedCreatePDR      ie.CreatePDR
-	pfcpSessionEstablishmentRequestReceivedCreateFAR      ie.CreateFAR
+	pfcpSessionEstablishmentRequestReceivedPDR            ie.PDR
+	pfcpSessionEstablishmentRequestReceivedFAR            ie.FAR
 )
 
 var (
@@ -38,8 +38,8 @@ func HandlePFCPSessionEstablishmentRequest(client *client.Pfcp, sequenceNumber u
 	pfcpSessionEstablishmentRequestReceivedSEID = seid
 	pfcpSessionEstablishmentRequestReceivedNodeID = msg.NodeID
 	pfcpSessionEstablishmentRequestReceivedCPFSEID = msg.CPFSEID
-	pfcpSessionEstablishmentRequestReceivedCreatePDR = msg.CreatePDR
-	pfcpSessionEstablishmentRequestReceivedCreateFAR = msg.CreateFAR
+	pfcpSessionEstablishmentRequestReceivedPDR = msg.PDR
+	pfcpSessionEstablishmentRequestReceivedFAR = msg.FAR
 }
 
 func HandlePFCPSessionEstablishmentResponse(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse) {
@@ -100,9 +100,9 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 		t.Fatalf("Error creating PDI: %v", err)
 	}
 
-	createPDR, err := ie.NewCreatePDR(pdrID, precedence, pdi)
+	pdr, err := ie.NewPDR(pdrID, precedence, pdi)
 	if err != nil {
-		t.Fatalf("Error creating CreatePDR: %v", err)
+		t.Fatalf("Error creating PDR: %v", err)
 	}
 
 	farID, err := ie.NewFarID(uint32(1))
@@ -117,16 +117,16 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 		t.Fatalf("Error creating ApplyAction: %v", err)
 	}
 
-	createFAR, err := ie.NewCreateFAR(farID, applyAction)
+	far, err := ie.NewFAR(farID, applyAction)
 	if err != nil {
-		t.Fatalf("Error creating CreateFAR: %v", err)
+		t.Fatalf("Error creating FAR: %v", err)
 	}
 
 	PFCPSessionEstablishmentRequestMsg := messages.PFCPSessionEstablishmentRequest{
-		NodeID:    nodeID,
-		CPFSEID:   fseid,
-		CreatePDR: createPDR,
-		CreateFAR: createFAR,
+		NodeID:  nodeID,
+		CPFSEID: fseid,
+		PDR:     pdr,
+		FAR:     far,
 	}
 	sequenceNumber := uint32(32)
 
@@ -208,64 +208,64 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 		}
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.Header.Length != createPDR.Header.Length {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR length.\n- Sent CreatePDR length: %v\n- Received CreatePDR length %v\n", createPDR.Header.Length, pfcpSessionEstablishmentRequestReceivedCreatePDR.Header.Length)
+	if pfcpSessionEstablishmentRequestReceivedPDR.Header.Length != pdr.Header.Length {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR length.\n- Sent PDR length: %v\n- Received PDR length %v\n", pdr.Header.Length, pfcpSessionEstablishmentRequestReceivedPDR.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.Header.Type != createPDR.Header.Type {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR type.\n- Sent CreatePDR type: %v\n- Received CreatePDR type %v\n", createPDR.Header.Type, pfcpSessionEstablishmentRequestReceivedCreatePDR.Header.Type)
+	if pfcpSessionEstablishmentRequestReceivedPDR.Header.Type != pdr.Header.Type {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR type.\n- Sent PDR type: %v\n- Received PDR type %v\n", pdr.Header.Type, pfcpSessionEstablishmentRequestReceivedPDR.Header.Type)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.PDRID != createPDR.PDRID {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR PDRID.\n- Sent CreatePDR PDRID: %v\n- Received CreatePDR PDRID %v\n", createPDR.PDRID, pfcpSessionEstablishmentRequestReceivedCreatePDR.PDRID)
+	if pfcpSessionEstablishmentRequestReceivedPDR.PDRID != pdr.PDRID {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR PDRID.\n- Sent PDR PDRID: %v\n- Received PDR PDRID %v\n", pdr.PDRID, pfcpSessionEstablishmentRequestReceivedPDR.PDRID)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.Precedence != createPDR.Precedence {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR Precedence.\n- Sent CreatePDR Precedence: %v\n- Received CreatePDR Precedence %v\n", createPDR.Precedence, pfcpSessionEstablishmentRequestReceivedCreatePDR.Precedence)
+	if pfcpSessionEstablishmentRequestReceivedPDR.Precedence != pdr.Precedence {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR Precedence.\n- Sent PDR Precedence: %v\n- Received PDR Precedence %v\n", pdr.Precedence, pfcpSessionEstablishmentRequestReceivedPDR.Precedence)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.Header.Length != createPDR.PDI.Header.Length {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR PDI length.\n- Sent CreatePDR PDI length: %v\n- Received CreatePDR PDI length %v\n", createPDR.PDI.Header.Length, pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.Header.Length)
+	if pfcpSessionEstablishmentRequestReceivedPDR.PDI.Header.Length != pdr.PDI.Header.Length {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR PDI length.\n- Sent PDR PDI length: %v\n- Received PDR PDI length %v\n", pdr.PDI.Header.Length, pfcpSessionEstablishmentRequestReceivedPDR.PDI.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.Header.Type != createPDR.PDI.Header.Type {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR PDI type.\n- Sent CreatePDR PDI type: %v\n- Received CreatePDR PDI type %v\n", createPDR.PDI.Header.Type, pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.Header.Type)
+	if pfcpSessionEstablishmentRequestReceivedPDR.PDI.Header.Type != pdr.PDI.Header.Type {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR PDI type.\n- Sent PDR PDI type: %v\n- Received PDR PDI type %v\n", pdr.PDI.Header.Type, pfcpSessionEstablishmentRequestReceivedPDR.PDI.Header.Type)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.SourceInterface.Header.Length != createPDR.PDI.SourceInterface.Header.Length {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR PDI SourceInterface length.\n- Sent CreatePDR PDI SourceInterface length: %v\n- Received CreatePDR PDI SourceInterface length %v\n", createPDR.PDI.SourceInterface.Header.Length, pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.SourceInterface.Header.Length)
+	if pfcpSessionEstablishmentRequestReceivedPDR.PDI.SourceInterface.Header.Length != pdr.PDI.SourceInterface.Header.Length {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR PDI SourceInterface length.\n- Sent PDR PDI SourceInterface length: %v\n- Received PDR PDI SourceInterface length %v\n", pdr.PDI.SourceInterface.Header.Length, pfcpSessionEstablishmentRequestReceivedPDR.PDI.SourceInterface.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.SourceInterface.Header.Type != createPDR.PDI.SourceInterface.Header.Type {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR PDI SourceInterface type.\n- Sent CreatePDR PDI SourceInterface type: %v\n- Received CreatePDR PDI SourceInterface type %v\n", createPDR.PDI.SourceInterface.Header.Type, pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.SourceInterface.Header.Type)
+	if pfcpSessionEstablishmentRequestReceivedPDR.PDI.SourceInterface.Header.Type != pdr.PDI.SourceInterface.Header.Type {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR PDI SourceInterface type.\n- Sent PDR PDI SourceInterface type: %v\n- Received PDR PDI SourceInterface type %v\n", pdr.PDI.SourceInterface.Header.Type, pfcpSessionEstablishmentRequestReceivedPDR.PDI.SourceInterface.Header.Type)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.SourceInterface.Value != createPDR.PDI.SourceInterface.Value {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreatePDR PDI SourceInterface Value.\n- Sent CreatePDR PDI SourceInterface Value: %v\n- Received CreatePDR PDI SourceInterface Value %v\n", createPDR.PDI.SourceInterface.Value, pfcpSessionEstablishmentRequestReceivedCreatePDR.PDI.SourceInterface.Value)
+	if pfcpSessionEstablishmentRequestReceivedPDR.PDI.SourceInterface.Value != pdr.PDI.SourceInterface.Value {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong PDR PDI SourceInterface Value.\n- Sent PDR PDI SourceInterface Value: %v\n- Received PDR PDI SourceInterface Value %v\n", pdr.PDI.SourceInterface.Value, pfcpSessionEstablishmentRequestReceivedPDR.PDI.SourceInterface.Value)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreateFAR.Header.Type != createFAR.Header.Type {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreateFAR IEType.\n- Sent CreateFAR IEType: %v\n- Received CreateFAR IEType %v\n", createFAR.Header.Type, pfcpSessionEstablishmentRequestReceivedCreateFAR.Header.Type)
+	if pfcpSessionEstablishmentRequestReceivedFAR.Header.Type != far.Header.Type {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong FAR IEType.\n- Sent FAR IEType: %v\n- Received FAR IEType %v\n", far.Header.Type, pfcpSessionEstablishmentRequestReceivedFAR.Header.Type)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreateFAR.Header.Length != createFAR.Header.Length {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreateFAR Length.\n- Sent CreateFAR Length: %v\n- Received CreateFAR Length %v\n", createFAR.Header.Length, pfcpSessionEstablishmentRequestReceivedCreateFAR.Header.Length)
+	if pfcpSessionEstablishmentRequestReceivedFAR.Header.Length != far.Header.Length {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong FAR Length.\n- Sent FAR Length: %v\n- Received FAR Length %v\n", far.Header.Length, pfcpSessionEstablishmentRequestReceivedFAR.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreateFAR.FARID != createFAR.FARID {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreateFAR FARID.\n- Sent CreateFAR FARID: %v\n- Received CreateFAR FARID %v\n", createFAR.FARID, pfcpSessionEstablishmentRequestReceivedCreateFAR.FARID)
+	if pfcpSessionEstablishmentRequestReceivedFAR.FARID != far.FARID {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong FAR FARID.\n- Sent FAR FARID: %v\n- Received FAR FARID %v\n", far.FARID, pfcpSessionEstablishmentRequestReceivedFAR.FARID)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreateFAR.ApplyAction.Header.Length != createFAR.ApplyAction.Header.Length {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreateFAR ApplyAction Length.\n- Sent CreateFAR ApplyAction Length: %v\n- Received CreateFAR ApplyAction Length %v\n", createFAR.ApplyAction.Header.Length, pfcpSessionEstablishmentRequestReceivedCreateFAR.ApplyAction.Header.Length)
+	if pfcpSessionEstablishmentRequestReceivedFAR.ApplyAction.Header.Length != far.ApplyAction.Header.Length {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong FAR ApplyAction Length.\n- Sent FAR ApplyAction Length: %v\n- Received FAR ApplyAction Length %v\n", far.ApplyAction.Header.Length, pfcpSessionEstablishmentRequestReceivedFAR.ApplyAction.Header.Length)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreateFAR.ApplyAction.Header.Type != createFAR.ApplyAction.Header.Type {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreateFAR ApplyAction IEType.\n- Sent CreateFAR ApplyAction IEType: %v\n- Received CreateFAR ApplyAction IEType %v\n", createFAR.ApplyAction.Header.Type, pfcpSessionEstablishmentRequestReceivedCreateFAR.ApplyAction.Header.Type)
+	if pfcpSessionEstablishmentRequestReceivedFAR.ApplyAction.Header.Type != far.ApplyAction.Header.Type {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong FAR ApplyAction IEType.\n- Sent FAR ApplyAction IEType: %v\n- Received FAR ApplyAction IEType %v\n", far.ApplyAction.Header.Type, pfcpSessionEstablishmentRequestReceivedFAR.ApplyAction.Header.Type)
 	}
 
-	if pfcpSessionEstablishmentRequestReceivedCreateFAR.ApplyAction.FORW != createFAR.ApplyAction.FORW {
-		t.Errorf("PFCP Session Establishment Request handler was called with wrong CreateFAR ApplyAction Forw.\n- Sent CreateFAR ApplyAction Forw: %v\n- Received CreateFAR ApplyAction Forw %v\n", createFAR.ApplyAction.FORW, pfcpSessionEstablishmentRequestReceivedCreateFAR.ApplyAction.FORW)
+	if pfcpSessionEstablishmentRequestReceivedFAR.ApplyAction.FORW != far.ApplyAction.FORW {
+		t.Errorf("PFCP Session Establishment Request handler was called with wrong FAR ApplyAction Forw.\n- Sent FAR ApplyAction Forw: %v\n- Received FAR ApplyAction Forw %v\n", far.ApplyAction.FORW, pfcpSessionEstablishmentRequestReceivedFAR.ApplyAction.FORW)
 	}
 
 	pfcpSessionEstablishmentRequestMu.Unlock()
