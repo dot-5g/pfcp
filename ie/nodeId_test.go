@@ -38,6 +38,19 @@ func TestNewNodeIDIPv4(t *testing.T) {
 
 }
 
+func TestString(t *testing.T) {
+	nodeIDstring := "1.2.3.4"
+	nodeID, err := ie.NewNodeID(nodeIDstring)
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
+
+	if nodeID.String() != nodeIDstring {
+		t.Errorf("Expected NodeID string, got %s", nodeID.String())
+	}
+
+}
+
 func TestNewNodeIDIPv6(t *testing.T) {
 	nodeID, err := ie.NewNodeID("2001:db8::68")
 

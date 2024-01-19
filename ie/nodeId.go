@@ -55,6 +55,19 @@ func NewNodeID(nodeID string) (NodeID, error) {
 	}, nil
 }
 
+func (n NodeID) String() string {
+	switch n.Type {
+	case IPv4:
+		return net.IP(n.Value).To4().String()
+	case IPv6:
+		return net.IP(n.Value).To16().String()
+	case FQDN:
+		return string(n.Value)
+	default:
+		return ""
+	}
+}
+
 func (n NodeID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
