@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"log"
 	"net"
 
@@ -184,7 +183,7 @@ func (server *Server) handlePFCPMessage(address net.Addr, payload []byte) {
 	payloadMessage := payload[payloadOffset:]
 
 	if !server.ClientExistsForAddress(address) {
-		fmt.Printf("Adding client with address %s\n", address)
+		log.Printf("Adding client with address %s\n", address)
 		server.AddClient(address)
 	}
 

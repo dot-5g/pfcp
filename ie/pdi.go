@@ -8,18 +8,20 @@ import (
 
 type PDI struct {
 	Header          Header
-	SourceInterface SourceInterface
+	SourceInterface SourceInterface // Mandatory
+	UEIPAddress     UEIPAddress     // Optional
 }
 
-func NewPDI(sourceInterface SourceInterface) (PDI, error) {
+func NewPDI(sourceInterface SourceInterface, ueIPAddress UEIPAddress) (PDI, error) {
 	ieHeader := Header{
 		Type:   PDIIEType,
-		Length: sourceInterface.Header.Length + 4,
+		Length: sourceInterface.Header.Length + ueIPAddress.Header.Length + 8,
 	}
 
 	return PDI{
 		Header:          ieHeader,
 		SourceInterface: sourceInterface,
+		UEIPAddress:     ueIPAddress,
 	}, nil
 }
 
@@ -32,6 +34,12 @@ func (pdi PDI) Serialize() []byte {
 	// Octets 5 to n: Source Interface
 	serializedSourceInterface := pdi.SourceInterface.Serialize()
 	buf.Write(serializedSourceInterface)
+
+	// Octets (n+1) to (n+m): UE IP Address
+	if !pdi.UEIPAddress.IsZeroValue() {
+		serializedUEIPAddress := pdi.UEIPAddress.Serialize()
+		buf.Write(serializedUEIPAddress)
+	}
 
 	return buf.Bytes()
 
@@ -46,21 +54,52 @@ func DeserializePDI(ieHeader Header, ieValue []byte) (PDI, error) {
 		return PDI{}, fmt.Errorf("invalid length for PDI: got %d bytes, want at least 1", len(ieValue))
 	}
 
-	sourceInterfaceIELength := ieHeader.Length - HeaderLength
-	sourceInterfaceIEValue := ieValue[4 : 4+sourceInterfaceIELength]
-	sourceInterfaceIEType := binary.BigEndian.Uint16(ieValue[:2])
-
-	sourceInterfaceHeader := Header{
-		Type:   IEType(sourceInterfaceIEType),
-		Length: sourceInterfaceIELength,
-	}
-	sourceInterface, err := DeserializeSourceInterface(sourceInterfaceHeader, sourceInterfaceIEValue)
-	if err != nil {
-		return PDI{}, err
-	}
-
-	return PDI{
+	pdi := PDI{
 		Header:          ieHeader,
-		SourceInterface: sourceInterface,
-	}, nil
+		SourceInterface: SourceInterface{},
+		UEIPAddress:     UEIPAddress{},
+	}
+
+	index := 0
+	for index < len(ieValue) {
+		if index+4 > len(ieValue) {
+			return PDI{}, fmt.Errorf("slice bounds out of range")
+		}
+
+		currentIEType := binary.BigEndian.Uint16(ieValue[index : index+2])
+		currentIELength := binary.BigEndian.Uint16(ieValue[index+2 : index+4])
+
+		if index+4+int(currentIELength) > len(ieValue) {
+			return PDI{}, fmt.Errorf("slice bounds out of range")
+		}
+
+		currentIEValue := ieValue[index+4 : index+4+int(currentIELength)]
+
+		switch IEType(currentIEType) {
+		case SourceInterfaceIEType:
+			sourceInterfaceHeader := Header{
+				Type:   IEType(currentIEType),
+				Length: currentIELength,
+			}
+			sourceInterface, err := DeserializeSourceInterface(sourceInterfaceHeader, currentIEValue)
+			if err != nil {
+				return PDI{}, fmt.Errorf("failed to deserialize Source Interface: %v", err)
+			}
+			pdi.SourceInterface = sourceInterface
+		case UEIPAddressIEType:
+			ueIPAddressHeader := Header{
+				Type:   IEType(currentIEType),
+				Length: currentIELength,
+			}
+			ueIPAddress, err := DeserializeUEIPAddress(ueIPAddressHeader, currentIEValue)
+			if err != nil {
+				return PDI{}, fmt.Errorf("failed to deserialize UE IP Address: %v", err)
+			}
+			pdi.UEIPAddress = ueIPAddress
+		}
+		index += 4 + int(currentIELength)
+
+	}
+
+	return pdi, nil
 }

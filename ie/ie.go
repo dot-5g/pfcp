@@ -20,6 +20,7 @@ const (
 	PDRIDIEType              IEType = 56
 	FSEIDIEType              IEType = 57
 	NodeIDIEType             IEType = 60
+	UEIPAddressIEType        IEType = 93
 	RecoveryTimeStampIEType  IEType = 96
 	NodeReportTypeIEType     IEType = 101
 	FARIDIEType              IEType = 108
@@ -90,6 +91,8 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeCreateFAR(ieHeader, ieValue)
 		case ReportTypeIEType:
 			ie, err = DeserializeReportType(ieHeader, ieValue)
+		case UEIPAddressIEType:
+			ie, err = DeserializeUEIPAddress(ieHeader, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieHeader.Type)
 		}

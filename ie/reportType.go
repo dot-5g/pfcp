@@ -2,7 +2,7 @@ package ie
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 )
 
 type Report int
@@ -57,7 +57,7 @@ func (reportType ReportType) IsZeroValue() bool {
 
 func DeserializeReportType(ieHeader Header, ieValue []byte) (ReportType, error) {
 	if len(ieValue) != int(ieHeader.Length) {
-		return ReportType{}, errors.New("invalid length for ReportType")
+		return ReportType{}, fmt.Errorf("invalid length for ReportType")
 	}
 
 	var reports []Report
