@@ -37,23 +37,11 @@ func TestGivenPrecedenceSerializedWhenDeserializeThenFieldsSetCorrectly(t *testi
 	}
 
 	precedenceSerialized := precedence.Serialize()
-	ieHeader := ie.Header{
-		Type:   29,
-		Length: 4,
-	}
 
-	deserializedPrecedence, err := ie.DeserializePrecedence(ieHeader, precedenceSerialized[4:])
+	deserializedPrecedence, err := ie.DeserializePrecedence(precedenceSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
-	}
-
-	if deserializedPrecedence.Header.Type != 29 {
-		t.Errorf("Expected IEType %d, got %d", 29, deserializedPrecedence.Header.Type)
-	}
-
-	if deserializedPrecedence.Header.Length != 4 {
-		t.Errorf("Expected Length %d, got %d", 4, deserializedPrecedence.Header.Length)
 	}
 
 	if deserializedPrecedence.Value != precedenceValue {

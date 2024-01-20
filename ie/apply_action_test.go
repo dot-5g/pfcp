@@ -114,23 +114,10 @@ func TestGivenApplyActionSerializedWhenDeserializeThenFieldsSetCorrectly(t *test
 
 	serialized := applyAction.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   44,
-		Length: 2,
-	}
-
-	deserialized, err := ie.DeserializeApplyAction(ieHeader, serialized[4:])
+	deserialized, err := ie.DeserializeApplyAction(serialized[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing ApplyAction: %v", err)
-	}
-
-	if deserialized.Header.Type != 44 {
-		t.Errorf("Expected IEType 44, got %d", deserialized.Header.Type)
-	}
-
-	if deserialized.Header.Length != 2 {
-		t.Errorf("Expected Length 2, got %d", deserialized.Header.Length)
 	}
 
 	if deserialized.DFRT != false {

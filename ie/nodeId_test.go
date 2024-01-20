@@ -124,19 +124,10 @@ func TestGivenSerializedWhenDeserializNodeIDThenFieldsSetCorrectly(t *testing.T)
 
 	serializedNodeID := nodeID.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   60,
-		Length: 5,
-	}
-
-	deserializedNodeID, err := ie.DeserializeNodeID(ieHeader, serializedNodeID[4:])
+	deserializedNodeID, err := ie.DeserializeNodeID(serializedNodeID[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
-	}
-
-	if deserializedNodeID.Header.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", deserializedNodeID.Header.Type)
 	}
 
 	if deserializedNodeID.Type != 0 {

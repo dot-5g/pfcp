@@ -30,6 +30,7 @@ const (
 type InformationElement interface {
 	Serialize() []byte
 	IsZeroValue() bool
+	SetHeader(Header) InformationElement
 }
 
 func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
@@ -60,44 +61,45 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 		var ie InformationElement
 		switch ieHeader.Type {
 		case CauseIEType:
-			ie, err = DeserializeCause(ieHeader, ieValue)
+			ie, err = DeserializeCause(ieValue)
 		case NodeIDIEType:
-			ie, err = DeserializeNodeID(ieHeader, ieValue)
+			ie, err = DeserializeNodeID(ieValue)
 		case RecoveryTimeStampIEType:
-			ie, err = DeserializeRecoveryTimeStamp(ieHeader, ieValue)
+			ie, err = DeserializeRecoveryTimeStamp(ieValue)
 		case NodeReportTypeIEType:
-			ie, err = DeserializeNodeReportType(ieHeader, ieValue)
+			ie, err = DeserializeNodeReportType(ieValue)
 		case SourceIPAddressIEType:
-			ie, err = DeserializeSourceIPAddress(ieHeader, ieValue)
+			ie, err = DeserializeSourceIPAddress(ieValue)
 		case UPFunctionFeaturesIEType:
-			ie, err = DeserializeUPFunctionFeatures(ieHeader, ieValue)
+			ie, err = DeserializeUPFunctionFeatures(ieValue)
 		case FSEIDIEType:
-			ie, err = DeserializeFSEID(ieHeader, ieValue)
+			ie, err = DeserializeFSEID(ieValue)
 		case PDRIDIEType:
-			ie, err = DeserializePDRID(ieHeader, ieValue)
+			ie, err = DeserializePDRID(ieValue)
 		case PrecedenceIEType:
-			ie, err = DeserializePrecedence(ieHeader, ieValue)
+			ie, err = DeserializePrecedence(ieValue)
 		case SourceInterfaceIEType:
-			ie, err = DeserializeSourceInterface(ieHeader, ieValue)
+			ie, err = DeserializeSourceInterface(ieValue)
 		case PDIIEType:
-			ie, err = DeserializePDI(ieHeader, ieValue)
+			ie, err = DeserializePDI(ieValue)
 		case CreatePDRIEType:
-			ie, err = DeserializeCreatePDR(ieHeader, ieValue)
+			ie, err = DeserializeCreatePDR(ieValue)
 		case FARIDIEType:
-			ie, err = DeserializeFARID(ieHeader, ieValue)
+			ie, err = DeserializeFARID(ieValue)
 		case ApplyActionIEType:
-			ie, err = DeserializeApplyAction(ieHeader, ieValue)
+			ie, err = DeserializeApplyAction(ieValue)
 		case CreateFARIEType:
-			ie, err = DeserializeCreateFAR(ieHeader, ieValue)
+			ie, err = DeserializeCreateFAR(ieValue)
 		case ReportTypeIEType:
-			ie, err = DeserializeReportType(ieHeader, ieValue)
+			ie, err = DeserializeReportType(ieValue)
 		case UEIPAddressIEType:
-			ie, err = DeserializeUEIPAddress(ieHeader, ieValue)
+			ie, err = DeserializeUEIPAddress(ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieHeader.Type)
 		}
 
 		if ie != nil {
+			ie = ie.SetHeader(ieHeader)
 			ies = append(ies, ie)
 		}
 

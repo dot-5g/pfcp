@@ -47,22 +47,9 @@ func TestGivenSerializedWhenDeserializeReportTypeThenFieldsSetCorrectly(t *testi
 
 	serializedReportType := reportType.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   ie.ReportTypeIEType,
-		Length: 1,
-	}
-
-	deserializedReportType, err := ie.DeserializeReportType(ieHeader, serializedReportType[4:])
+	deserializedReportType, err := ie.DeserializeReportType(serializedReportType[4:])
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
-	}
-
-	if deserializedReportType.Header.Type != ie.ReportTypeIEType {
-		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, deserializedReportType.Header.Type)
-	}
-
-	if deserializedReportType.Header.Length != 1 {
-		t.Errorf("Expected length 1, got %d", deserializedReportType.Header.Length)
 	}
 
 	if len(deserializedReportType.Reports) != 2 {

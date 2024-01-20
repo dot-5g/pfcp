@@ -56,14 +56,15 @@ func (nrt NodeReportType) IsZeroValue() bool {
 	return nrt.Header.Length == 0
 }
 
-func DeserializeNodeReportType(ieHeader Header, ieValue []byte) (NodeReportType, error) {
+func (nrt NodeReportType) SetHeader(header Header) InformationElement {
+	nrt.Header = header
+	return nrt
+}
+
+func DeserializeNodeReportType(ieValue []byte) (NodeReportType, error) {
 
 	if len(ieValue) < 1 {
 		return NodeReportType{}, fmt.Errorf("invalid length for NodeReportType: got %d bytes, expected at least 1", len(ieValue))
-	}
-
-	if uint16(ieHeader.Type) != uint16(NodeReportTypeIEType) {
-		return NodeReportType{}, fmt.Errorf("invalid IE type: expected %d, got %d", NodeReportTypeIEType, ieHeader.Type)
 	}
 
 	buf := bytes.NewBuffer(ieValue)
@@ -75,11 +76,10 @@ func DeserializeNodeReportType(ieHeader Header, ieValue []byte) (NodeReportType,
 	}
 
 	nrt := NodeReportType{
-		Header: ieHeader,
-		GPQR:   octet5&0x08 != 0,
-		CKDR:   octet5&0x04 != 0,
-		UPRR:   octet5&0x02 != 0,
-		UPFR:   octet5&0x01 != 0,
+		GPQR: octet5&0x08 != 0,
+		CKDR: octet5&0x04 != 0,
+		UPRR: octet5&0x02 != 0,
+		UPFR: octet5&0x01 != 0,
 	}
 
 	return nrt, nil

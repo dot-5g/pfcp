@@ -101,7 +101,12 @@ func (sourceIPAddress SourceIPAddress) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeSourceIPAddress(ieHeader Header, ieValue []byte) (SourceIPAddress, error) {
+func (sourceIPAddress SourceIPAddress) SetHeader(header Header) InformationElement {
+	sourceIPAddress.Header = header
+	return sourceIPAddress
+}
+
+func DeserializeSourceIPAddress(ieValue []byte) (SourceIPAddress, error) {
 	var mpl bool
 	var v4 bool
 	var v6 bool
@@ -127,15 +132,12 @@ func DeserializeSourceIPAddress(ieHeader Header, ieValue []byte) (SourceIPAddres
 		}
 	}
 
-	sourceIPAddress := SourceIPAddress{
-		Header:           ieHeader,
+	return SourceIPAddress{
 		MPL:              mpl,
 		V4:               v4,
 		V6:               v6,
 		IPv4Address:      ipv4Address,
 		IPv6Address:      ipv6Address,
 		MaskPrefixLength: maskPrefixLength,
-	}
-
-	return sourceIPAddress, nil
+	}, nil
 }
