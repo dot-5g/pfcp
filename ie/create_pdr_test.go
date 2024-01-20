@@ -41,14 +41,6 @@ func TestGivenCorrectParametersWhenNewCreatePDRThenFieldsSetCorrectly(t *testing
 		t.Fatalf("Error creating CreatePDR: %v", err)
 	}
 
-	if createPDR.Header.Type != 1 {
-		t.Errorf("Expected CreatePDR IEType 1, got %d", createPDR.Header.Type)
-	}
-
-	if createPDR.Header.Length != 29 {
-		t.Errorf("Expected CreatePDR length 29, got %d", createPDR.Header.Length)
-	}
-
 	if createPDR.PDRID != pdrID {
 		t.Errorf("Expected CreatePDR PDRID %v, got %v", pdrID, createPDR.PDRID)
 	}
@@ -145,23 +137,10 @@ func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testin
 
 	serialized := createPDR.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   1,
-		Length: 17,
-	}
-
-	deserialized, err := ie.DeserializeCreatePDR(ieHeader, serialized[4:])
+	deserialized, err := ie.DeserializeCreatePDR(serialized[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing CreatePDR: %v", err)
-	}
-
-	if deserialized.Header.Type != 1 {
-		t.Errorf("Expected CreatePDR IEType 1, got %d", deserialized.Header.Type)
-	}
-
-	if deserialized.Header.Length != 17 {
-		t.Errorf("Expected CreatePDR length 17, got %d", deserialized.Header.Length)
 	}
 
 	if deserialized.PDRID != pdrID {

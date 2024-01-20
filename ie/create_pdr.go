@@ -53,9 +53,13 @@ func (createPDR CreatePDR) Serialize() []byte {
 
 }
 
-func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
+func (createPDR CreatePDR) SetHeader(header Header) InformationElement {
+	createPDR.Header = header
+	return createPDR
+}
+
+func DeserializeCreatePDR(value []byte) (CreatePDR, error) {
 	createPDR := CreatePDR{
-		Header:     ieHeader,
 		PDRID:      PDRID{},
 		Precedence: Precedence{},
 		PDI:        PDI{},
@@ -82,9 +86,14 @@ func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 				Type:   IEType(currentIEType),
 				Length: currentIELength,
 			}
-			pdrID, err := DeserializePDRID(pdrIDHeader, currentIEValue)
+
+			tempPdrID, err := DeserializePDRID(currentIEValue)
 			if err != nil {
 				return CreatePDR{}, fmt.Errorf("failed to deserialize PDR ID: %v", err)
+			}
+			pdrID, ok := tempPdrID.SetHeader(pdrIDHeader).(PDRID)
+			if !ok {
+				return CreatePDR{}, fmt.Errorf("type assertion to PDRID failed")
 			}
 			createPDR.PDRID = pdrID
 		case PrecedenceIEType:
@@ -92,19 +101,27 @@ func DeserializeCreatePDR(ieHeader Header, value []byte) (CreatePDR, error) {
 				Type:   IEType(currentIEType),
 				Length: currentIELength,
 			}
-			precedence, err := DeserializePrecedence(precedenceHeader, currentIEValue)
+			tempPrecedence, err := DeserializePrecedence(currentIEValue)
 			if err != nil {
 				return CreatePDR{}, fmt.Errorf("failed to deserialize Precedence: %v", err)
 			}
+			precedence, ok := tempPrecedence.SetHeader(precedenceHeader).(Precedence)
+			if !ok {
+				return CreatePDR{}, fmt.Errorf("type assertion to Precedence failed")
+			}
 			createPDR.Precedence = precedence
 		case PDIIEType:
-			pdiIEHEader := Header{
+			pdiIEHeader := Header{
 				Type:   IEType(currentIEType),
 				Length: currentIELength,
 			}
-			pdi, err := DeserializePDI(pdiIEHEader, currentIEValue)
+			tempPDI, err := DeserializePDI(currentIEValue)
 			if err != nil {
 				return CreatePDR{}, fmt.Errorf("failed to deserialize PDI: %v", err)
+			}
+			pdi, ok := tempPDI.SetHeader(pdiIEHeader).(PDI)
+			if !ok {
+				return CreatePDR{}, fmt.Errorf("type assertion to PDI failed")
 			}
 			createPDR.PDI = pdi
 		}

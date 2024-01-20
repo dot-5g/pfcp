@@ -113,6 +113,11 @@ func (ie UPFunctionFeatures) IsZeroValue() bool {
 	return ie.Header.Length == 0
 }
 
+func (ie UPFunctionFeatures) SetHeader(header Header) InformationElement {
+	ie.Header = header
+	return ie
+}
+
 func DeserializeUPFunctionFeatures(ieHeader Header, ieValue []byte) (UPFunctionFeatures, error) {
 	if ieHeader.Type != 43 {
 		return UPFunctionFeatures{}, fmt.Errorf("incorrect IE type")
@@ -122,7 +127,6 @@ func DeserializeUPFunctionFeatures(ieHeader Header, ieValue []byte) (UPFunctionF
 	}
 
 	upFuncFeatures := UPFunctionFeatures{
-		Header:                       ieHeader,
 		SupportedFeatures:            make([]byte, 0),
 		AdditionalSupportedFeatures1: make([]byte, 0),
 		AdditionalSupportedFeatures2: make([]byte, 0),

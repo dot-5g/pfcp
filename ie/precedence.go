@@ -39,12 +39,16 @@ func (precedence Precedence) IsZeroValue() bool {
 	return precedence.Header.Length == 0
 }
 
-func DeserializePrecedence(ieHeader Header, ieValue []byte) (Precedence, error) {
+func (precedence Precedence) SetHeader(header Header) InformationElement {
+	precedence.Header = header
+	return precedence
+}
+
+func DeserializePrecedence(ieValue []byte) (Precedence, error) {
 	if len(ieValue) != 4 {
 		return Precedence{}, fmt.Errorf("invalid length for Precedence: got %d bytes, want 4", len(ieValue))
 	}
 	return Precedence{
-		Header: ieHeader,
-		Value:  binary.BigEndian.Uint32(ieValue),
+		Value: binary.BigEndian.Uint32(ieValue),
 	}, nil
 }

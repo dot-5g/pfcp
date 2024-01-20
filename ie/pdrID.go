@@ -39,12 +39,16 @@ func (pdrID PDRID) IsZeroValue() bool {
 	return pdrID.Header.Length == 0
 }
 
-func DeserializePDRID(ieHeader Header, ieValue []byte) (PDRID, error) {
+func (pdrID PDRID) SetHeader(header Header) InformationElement {
+	pdrID.Header = header
+	return pdrID
+}
+
+func DeserializePDRID(ieValue []byte) (PDRID, error) {
 	if len(ieValue) != 2 {
 		return PDRID{}, fmt.Errorf("invalid length for PDRID: got %d bytes, want 2", len(ieValue))
 	}
 	return PDRID{
-		Header: ieHeader,
 		RuleID: binary.BigEndian.Uint16(ieValue),
 	}, nil
 }

@@ -43,14 +43,18 @@ func (sourceInterface SourceInterface) IsZeroValue() bool {
 	return sourceInterface.Header.Length == 0
 }
 
-func DeserializeSourceInterface(ieHeader Header, ieValue []byte) (SourceInterface, error) {
+func (sourceInterface SourceInterface) SetHeader(header Header) InformationElement {
+	sourceInterface.Header = header
+	return sourceInterface
+}
+
+func DeserializeSourceInterface(ieValue []byte) (SourceInterface, error) {
 	if len(ieValue) != 1 {
 		return SourceInterface{}, fmt.Errorf("invalid length for PDRID: got %d bytes, want 2", len(ieValue))
 	}
 	value := int(ieValue[0] & 0x0F)
 
 	return SourceInterface{
-		Header: ieHeader,
-		Value:  value,
+		Value: value,
 	}, nil
 }

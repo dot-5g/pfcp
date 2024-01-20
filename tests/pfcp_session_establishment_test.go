@@ -53,7 +53,7 @@ func HandlePFCPSessionEstablishmentResponse(client *client.Pfcp, sequenceNumber 
 
 func TestPFCPSessionEstablishment(t *testing.T) {
 	t.Run("TestPFCPSessionEstablishmentRequest", PFCPSessionEstablishmentRequest)
-	// t.Run("TestPFCPSessionEstablishmentResponse", PFCPSessionEstablishmentResponse)
+	t.Run("TestPFCPSessionEstablishmentResponse", PFCPSessionEstablishmentResponse)
 }
 
 func PFCPSessionEstablishmentRequest(t *testing.T) {

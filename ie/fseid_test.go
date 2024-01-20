@@ -16,14 +16,6 @@ func TestGivenValidIPv4AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing.T
 		t.Fatalf("Error creating FSEID: %v", err)
 	}
 
-	if fseid.Header.Type != 57 {
-		t.Errorf("Expected FSEID IEType 97, got %d", fseid.Header.Type)
-	}
-
-	if fseid.Header.Length != 13 {
-		t.Errorf("Expected FSEID length 13, got %d", fseid.Header.Length)
-	}
-
 	if fseid.V4 != true {
 		t.Errorf("Expected FSEID V4 true, got %v", fseid.V4)
 	}
@@ -54,14 +46,6 @@ func TestGivenValidIPv6AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing.T
 		t.Fatalf("Error creating FSEID: %v", err)
 	}
 
-	if fseid.Header.Type != 57 {
-		t.Errorf("Expected FSEID IEType 97, got %d", fseid.Header.Type)
-	}
-
-	if fseid.Header.Length != 25 {
-		t.Errorf("Expected FSEID length 25, got %d", fseid.Header.Length)
-	}
-
 	if fseid.V4 != false {
 		t.Errorf("Expected FSEID V4 false, got %v", fseid.V4)
 	}
@@ -90,14 +74,6 @@ func TestGivenIPv4AndIPv6AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing
 
 	if err != nil {
 		t.Fatalf("Error creating FSEID: %v", err)
-	}
-
-	if fseid.Header.Type != 57 {
-		t.Errorf("Expected FSEID IEType 57, got %d", fseid.Header.Type)
-	}
-
-	if fseid.Header.Length != 29 {
-		t.Errorf("Expected FSEID length 29, got %d", fseid.Header.Length)
 	}
 
 	if fseid.V4 != true {
@@ -141,23 +117,10 @@ func TestGivenIPv4SerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) 
 
 	serialized := fseid.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   57,
-		Length: 13,
-	}
-
-	deserialized, err := ie.DeserializeFSEID(ieHeader, serialized[4:])
+	deserialized, err := ie.DeserializeFSEID(serialized[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing FSEID: %v", err)
-	}
-
-	if deserialized.Header.Type != 57 {
-		t.Errorf("Expected FSEID IEType 57, got %d", deserialized.Header.Type)
-	}
-
-	if deserialized.Header.Length != 13 {
-		t.Errorf("Expected FSEID length 13, got %d", deserialized.Header.Length)
 	}
 
 	if deserialized.V4 != true {

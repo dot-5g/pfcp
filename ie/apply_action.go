@@ -193,22 +193,17 @@ func (applyaction ApplyAction) IsZeroValue() bool {
 	return applyaction.Header.Length == 0
 }
 
-func DeserializeApplyAction(ieHeader Header, ieValue []byte) (ApplyAction, error) {
+func (applyaction ApplyAction) SetHeader(header Header) InformationElement {
+	applyaction.Header = header
+	return applyaction
+}
+
+func DeserializeApplyAction(ieValue []byte) (ApplyAction, error) {
 	var applyaction ApplyAction
 
-	if ieHeader.Type != ApplyActionIEType {
-		return applyaction, fmt.Errorf("invalid IE type: expected %d, got %d", ApplyActionIEType, ieHeader.Type)
-	}
-
-	if ieHeader.Length != 2 {
-		return applyaction, fmt.Errorf("invalid length field for ApplyAction: expected 2, got %d", ieHeader.Length)
-	}
-
 	if len(ieValue) != 2 {
-		return applyaction, fmt.Errorf("invalid length for ApplyAction: got %d bytes, want 2", len(ieValue))
+		return ApplyAction{}, fmt.Errorf("invalid length for ApplyAction: got %d bytes, want 2", len(ieValue))
 	}
-
-	applyaction.Header = ieHeader
 
 	// Deserialize the first byte (Octet 5)
 	byte5 := ieValue[0]

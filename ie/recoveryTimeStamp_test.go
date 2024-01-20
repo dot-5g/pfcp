@@ -40,23 +40,11 @@ func TestGivenRecoveryTimeStampSerializedWhenDeserializeThenFieldsSetCorrectly(t
 	}
 
 	recoveryTimeStampSerialized := recoveryTimeStamp.Serialize()
-	ieHeader := ie.Header{
-		Type:   96,
-		Length: 4,
-	}
 
-	deserializedRecoveryTimeStamp, err := ie.DeserializeRecoveryTimeStamp(ieHeader, recoveryTimeStampSerialized[4:])
+	deserializedRecoveryTimeStamp, err := ie.DeserializeRecoveryTimeStamp(recoveryTimeStampSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
-	}
-
-	if deserializedRecoveryTimeStamp.Header.Type != 96 {
-		t.Errorf("Expected IEType %d, got %d", 96, deserializedRecoveryTimeStamp.Header.Type)
-	}
-
-	if deserializedRecoveryTimeStamp.Header.Length != 4 {
-		t.Errorf("Expected Length %d, got %d", 4, deserializedRecoveryTimeStamp.Header.Length)
 	}
 
 	// Validate that secodns match num of seconds since 1900

@@ -160,18 +160,17 @@ func (ueIPaddress UEIPAddress) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeUEIPAddress(ieHeader Header, ieValue []byte) (UEIPAddress, error) {
+func (ueIPaddress UEIPAddress) SetHeader(ieHeader Header) InformationElement {
+	ueIPaddress.Header = ieHeader
+	return ueIPaddress
+}
+
+func DeserializeUEIPAddress(ieValue []byte) (UEIPAddress, error) {
 	if len(ieValue) < 1 {
 		return UEIPAddress{}, fmt.Errorf("invalid length for UEIPAddress")
 	}
 
-	if ieHeader.Type != UEIPAddressIEType {
-		return UEIPAddress{}, fmt.Errorf("invalid IE type for UEIPAddress")
-	}
-
-	ueIPAddress := UEIPAddress{
-		Header: ieHeader,
-	}
+	ueIPAddress := UEIPAddress{}
 
 	octet5 := ieValue[0]
 	ueIPAddress.IP6PL = octet5&(1<<7) > 0

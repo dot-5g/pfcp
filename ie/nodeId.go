@@ -88,14 +88,15 @@ func (n NodeID) IsZeroValue() bool {
 	return n.Header.Length == 0
 }
 
-func DeserializeNodeID(ieHeader Header, ieValue []byte) (NodeID, error) {
+func (n NodeID) SetHeader(ieHeader Header) InformationElement {
+	n.Header = ieHeader
+	return n
+}
+
+func DeserializeNodeID(ieValue []byte) (NodeID, error) {
 
 	if len(ieValue) < 1 {
 		return NodeID{}, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
-	}
-
-	if uint16(ieHeader.Type) != uint16(NodeIDIEType) {
-		return NodeID{}, fmt.Errorf("invalid IE type: expected %d, got %d", NodeIDIEType, ieHeader.Type)
 	}
 
 	nodeIDType := NodeIDType(ieValue[0] & 0x0F)
@@ -114,9 +115,8 @@ func DeserializeNodeID(ieHeader Header, ieValue []byte) (NodeID, error) {
 	}
 
 	nodeID := NodeID{
-		Header: ieHeader,
-		Type:   nodeIDType,
-		Value:  ieValue[1:],
+		Type:  nodeIDType,
+		Value: ieValue[1:],
 	}
 
 	return nodeID, nil

@@ -47,25 +47,28 @@ func (createfar CreateFAR) IsZeroValue() bool {
 	return createfar.Header.Length == 0
 }
 
-func DeserializeCreateFAR(ieHeader Header, value []byte) (CreateFAR, error) {
+func (createfar CreateFAR) SetHeader(header Header) InformationElement {
+	createfar.Header = header
+	return createfar
+}
+
+func DeserializeCreateFAR(value []byte) (CreateFAR, error) {
 	var createfar CreateFAR
 
 	if len(value) < HeaderLength {
-		return createfar, fmt.Errorf("invalid length for CreateFAR: got %d bytes, want at least %d", len(value), HeaderLength)
+		return CreateFAR{}, fmt.Errorf("invalid length for CreateFAR: got %d bytes, want at least %d", len(value), HeaderLength)
 	}
-
-	createfar.Header = ieHeader
 
 	buffer := bytes.NewBuffer(value)
 
 	// Deserialize FARID
 	if buffer.Len() < 2 {
-		return createfar, fmt.Errorf("not enough data for FARID type")
+		return CreateFAR{}, fmt.Errorf("not enough data for FARID type")
 	}
 	faridIEType := binary.BigEndian.Uint16(buffer.Next(2))
 
 	if buffer.Len() < 2 {
-		return createfar, fmt.Errorf("not enough data for FARID length")
+		return CreateFAR{}, fmt.Errorf("not enough data for FARID length")
 	}
 
 	faridIELength := binary.BigEndian.Uint16(buffer.Next(2))
@@ -76,24 +79,29 @@ func DeserializeCreateFAR(ieHeader Header, value []byte) (CreateFAR, error) {
 		Length: faridIELength,
 	}
 
-	farid, err := DeserializeFARID(faridIEHEader, faridIEValue)
+	tempFarid, err := DeserializeFARID(faridIEValue)
 	if err != nil {
-		return createfar, fmt.Errorf("failed to deserialize FARID: %v", err)
+		return CreateFAR{}, fmt.Errorf("failed to deserialize FARID: %v", err)
 	}
+	farid, ok := tempFarid.SetHeader(faridIEHEader).(FARID)
+	if !ok {
+		return CreateFAR{}, fmt.Errorf("type assertion to FarID failed")
+	}
+
 	createfar.FARID = farid
 
 	if buffer.Len() < 2 {
-		return createfar, fmt.Errorf("not enough data for ApplyAction type")
+		return CreateFAR{}, fmt.Errorf("not enough data for ApplyAction type")
 	}
 	applyactionIEType := binary.BigEndian.Uint16(buffer.Next(2))
 
 	if buffer.Len() < 2 {
-		return createfar, fmt.Errorf("not enough data for ApplyAction length")
+		return CreateFAR{}, fmt.Errorf("not enough data for ApplyAction length")
 	}
 	applyactionIELength := binary.BigEndian.Uint16(buffer.Next(2))
 
 	if buffer.Len() < int(applyactionIELength) {
-		return createfar, fmt.Errorf("not enough data for ApplyAction value, expected %d, got %d", applyactionIELength, buffer.Len())
+		return CreateFAR{}, fmt.Errorf("not enough data for ApplyAction value, expected %d, got %d", applyactionIELength, buffer.Len())
 	}
 	applyactionIEValue := buffer.Next(int(applyactionIELength))
 
@@ -102,10 +110,16 @@ func DeserializeCreateFAR(ieHeader Header, value []byte) (CreateFAR, error) {
 		Length: applyactionIELength,
 	}
 
-	applyaction, err := DeserializeApplyAction(applyActionHeader, applyactionIEValue)
+	tempApplyaction, err := DeserializeApplyAction(applyactionIEValue)
 	if err != nil {
-		return createfar, fmt.Errorf("failed to deserialize ApplyAction: %v", err)
+		return CreateFAR{}, fmt.Errorf("failed to deserialize ApplyAction: %v", err)
 	}
+
+	applyaction, ok := tempApplyaction.SetHeader(applyActionHeader).(ApplyAction)
+	if !ok {
+		return CreateFAR{}, fmt.Errorf("type assertion to ApplyAction failed")
+	}
+
 	createfar.ApplyAction = applyaction
 	return createfar, nil
 }

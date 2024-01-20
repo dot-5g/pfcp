@@ -41,22 +41,19 @@ func (rt RecoveryTimeStamp) IsZeroValue() bool {
 	return rt.Value == 0
 }
 
-func DeserializeRecoveryTimeStamp(ieHeader Header, ieValue []byte) (RecoveryTimeStamp, error) {
+func (rt RecoveryTimeStamp) SetHeader(ieHeader Header) InformationElement {
+	rt.Header = ieHeader
+	return rt
+}
 
-	if uint16(ieHeader.Type) != uint16(RecoveryTimeStampIEType) {
-		return RecoveryTimeStamp{}, fmt.Errorf("invalid IE type for RecoveryTimeStamp: expected %d, got %d", RecoveryTimeStampIEType, ieHeader.Type)
-	}
-	if ieHeader.Length != 4 {
-		return RecoveryTimeStamp{}, fmt.Errorf("invalid length for RecoveryTimeStamp: expected 4, got %d", ieHeader.Length)
-	}
+func DeserializeRecoveryTimeStamp(ieValue []byte) (RecoveryTimeStamp, error) {
 
 	if len(ieValue) < 4 {
 		return RecoveryTimeStamp{}, fmt.Errorf("invalid length for RecoveryTimeStamp value: expected at least 4 bytes, got %d", len(ieValue))
 	}
 
 	rt := RecoveryTimeStamp{
-		Header: ieHeader,
-		Value:  int64(binary.BigEndian.Uint32(ieValue)),
+		Value: int64(binary.BigEndian.Uint32(ieValue)),
 	}
 	return rt, nil
 }

@@ -2,7 +2,6 @@ package ie
 
 import (
 	"bytes"
-	"fmt"
 )
 
 type Report int
@@ -55,10 +54,12 @@ func (reportType ReportType) IsZeroValue() bool {
 	return reportType.Header.Length == 0
 }
 
-func DeserializeReportType(ieHeader Header, ieValue []byte) (ReportType, error) {
-	if len(ieValue) != int(ieHeader.Length) {
-		return ReportType{}, fmt.Errorf("invalid length for ReportType")
-	}
+func (reportType ReportType) SetHeader(header Header) InformationElement {
+	reportType.Header = header
+	return reportType
+}
+
+func DeserializeReportType(ieValue []byte) (ReportType, error) {
 
 	var reports []Report
 	reportsByte := ieValue[0]
@@ -70,7 +71,6 @@ func DeserializeReportType(ieHeader Header, ieValue []byte) (ReportType, error) 
 	}
 
 	return ReportType{
-		Header:  ieHeader,
 		Reports: reports,
 	}, nil
 }

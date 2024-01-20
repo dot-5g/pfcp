@@ -85,7 +85,12 @@ func (fseid FSEID) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func DeserializeFSEID(ieHeader Header, ieValue []byte) (FSEID, error) {
+func (fseid FSEID) SetHeader(ieHeader Header) InformationElement {
+	fseid.Header = ieHeader
+	return fseid
+}
+
+func DeserializeFSEID(ieValue []byte) (FSEID, error) {
 	v4 := ieValue[0]&0x02 > 0
 	v6 := ieValue[0]&0x01 > 0
 	seid := binary.BigEndian.Uint64(ieValue[1:9])
@@ -109,12 +114,11 @@ func DeserializeFSEID(ieHeader Header, ieValue []byte) (FSEID, error) {
 	}
 
 	return FSEID{
-		Header: ieHeader,
-		V4:     v4,
-		V6:     v6,
-		SEID:   seid,
-		IPv4:   ipv4,
-		IPv6:   ipv6,
+		V4:   v4,
+		V6:   v6,
+		SEID: seid,
+		IPv4: ipv4,
+		IPv6: ipv6,
 	}, nil
 }
 

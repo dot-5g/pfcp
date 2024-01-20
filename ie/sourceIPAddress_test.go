@@ -82,23 +82,10 @@ func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.
 
 	serializedSourceIPAddress := sourceIPAddress.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   192,
-		Length: 6,
-	}
-
-	deserializedSourceIPAddress, err := ie.DeserializeSourceIPAddress(ieHeader, serializedSourceIPAddress[4:])
+	deserializedSourceIPAddress, err := ie.DeserializeSourceIPAddress(serializedSourceIPAddress[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing SourceIPAddress: %v", err)
-	}
-
-	if deserializedSourceIPAddress.Header.Type != 192 {
-		t.Errorf("Expected NodeID, got %d", deserializedSourceIPAddress.Header.Type)
-	}
-
-	if deserializedSourceIPAddress.Header.Length != 6 {
-		t.Errorf("Expected NodeID length 5, got %d", deserializedSourceIPAddress.Header.Length)
 	}
 
 	if deserializedSourceIPAddress.MPL != true {

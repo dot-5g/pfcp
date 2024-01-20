@@ -65,15 +65,18 @@ func (cause Cause) IsZeroValue() bool {
 	return cause.Value == 0
 }
 
-func DeserializeCause(ieHeader Header, ieValue []byte) (Cause, error) {
-	var cause Cause
+func (cause Cause) SetHeader(ieHeader Header) InformationElement {
+	cause.Header = ieHeader
+	return cause
+}
+
+func DeserializeCause(ieValue []byte) (Cause, error) {
 
 	if len(ieValue) != 1 {
-		return cause, fmt.Errorf("invalid length for Cause: got %d bytes, want 1", len(ieValue))
+		return Cause{}, fmt.Errorf("invalid length for Cause: got %d bytes, want 1", len(ieValue))
 	}
 
 	return Cause{
-		Header: ieHeader,
-		Value:  CauseValue(ieValue[0]),
+		Value: CauseValue(ieValue[0]),
 	}, nil
 }

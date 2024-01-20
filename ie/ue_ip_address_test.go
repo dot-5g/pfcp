@@ -327,23 +327,10 @@ func TestGivenSerializesWhenDeserializeUEIPAddressThenFieldsSetCorrectly(t *test
 
 	serializedUEIPAddress := ueIPAddress.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   93,
-		Length: 2,
-	}
-
-	deserialized, err := ie.DeserializeUEIPAddress(ieHeader, serializedUEIPAddress[4:])
+	deserialized, err := ie.DeserializeUEIPAddress(serializedUEIPAddress[4:])
 
 	if err != nil {
 		t.Fatalf("Error deserializing UEIPAddress: %v", err)
-	}
-
-	if deserialized.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress, got %d", deserialized.Header.Type)
-	}
-
-	if deserialized.Header.Length != 2 {
-		t.Errorf("Expected UEIPAddress length 2, got %d", deserialized.Header.Length)
 	}
 
 	if deserialized.IP6PL != true {

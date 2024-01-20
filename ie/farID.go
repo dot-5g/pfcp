@@ -39,17 +39,17 @@ func (farID FARID) IsZeroValue() bool {
 	return farID.Header.Length == 0
 }
 
-func DeserializeFARID(ieHeader Header, ieValue []byte) (FARID, error) {
+func (farID FARID) SetHeader(header Header) InformationElement {
+	farID.Header = header
+	return farID
+}
+
+func DeserializeFARID(ieValue []byte) (FARID, error) {
 	if len(ieValue) != 4 {
 		return FARID{}, fmt.Errorf("invalid length for FARID: got %d bytes, want 4", len(ieValue))
 	}
 
-	if ieHeader.Type != FARIDIEType {
-		return FARID{}, fmt.Errorf("invalid IE type for FARID: got %d, want %d", ieHeader.Type, FARIDIEType)
-	}
-
 	return FARID{
-		Header: ieHeader,
-		Value:  binary.BigEndian.Uint32(ieValue),
+		Value: binary.BigEndian.Uint32(ieValue),
 	}, nil
 }

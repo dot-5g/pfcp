@@ -38,23 +38,10 @@ func TestGivenSourceInterfaceSerializedWhenDeserializeThenFieldsSetCorrectly(t *
 
 	sourceInterfaceSerialized := sourceInterface.Serialize()
 
-	ieHeader := ie.Header{
-		Type:   20,
-		Length: 1,
-	}
-
-	deserializedSourceInterface, err := ie.DeserializeSourceInterface(ieHeader, sourceInterfaceSerialized[4:])
+	deserializedSourceInterface, err := ie.DeserializeSourceInterface(sourceInterfaceSerialized[4:])
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
-	}
-
-	if deserializedSourceInterface.Header.Type != 20 {
-		t.Errorf("Expected IEType %d, got %d", 20, deserializedSourceInterface.Header.Type)
-	}
-
-	if deserializedSourceInterface.Header.Length != 1 {
-		t.Errorf("Expected Length %d, got %d", 1, deserializedSourceInterface.Header.Length)
 	}
 
 	if deserializedSourceInterface.Value != value {
