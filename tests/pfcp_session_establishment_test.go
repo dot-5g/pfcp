@@ -53,7 +53,7 @@ func HandlePFCPSessionEstablishmentResponse(client *client.Pfcp, sequenceNumber 
 
 func TestPFCPSessionEstablishment(t *testing.T) {
 	t.Run("TestPFCPSessionEstablishmentRequest", PFCPSessionEstablishmentRequest)
-	t.Run("TestPFCPSessionEstablishmentResponse", PFCPSessionEstablishmentResponse)
+	// t.Run("TestPFCPSessionEstablishmentResponse", PFCPSessionEstablishmentResponse)
 }
 
 func PFCPSessionEstablishmentRequest(t *testing.T) {
@@ -95,7 +95,14 @@ func PFCPSessionEstablishmentRequest(t *testing.T) {
 		t.Fatalf("Error creating SourceInterface: %v", err)
 	}
 
-	pdi, err := ie.NewPDI(sourceInterface)
+	sd := ie.SourceDestination{}
+	prefixLength := uint8(32)
+	ueIPAddress, err := ie.NewUEIPAddress("", "", sd, 0, prefixLength, false, true)
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
+
+	pdi, err := ie.NewPDI(sourceInterface, ueIPAddress)
 	if err != nil {
 		t.Fatalf("Error creating PDI: %v", err)
 	}

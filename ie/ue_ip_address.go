@@ -2,7 +2,7 @@ package ie
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"net"
 )
 
@@ -26,42 +26,59 @@ type SourceDestination struct {
 	Destination bool
 }
 
-func NewUEIPAddress(ipv4CIDR string, ipv6CIDR string, sd SourceDestination, ipv6PrefixDelegationBits uint8) (UEIPAddress, error) {
-	var ipv4Address, ipv6Address []byte
-	var ipv6PrefixLength uint8
+func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination, ipv6PrefixDelegationBits uint8, ipv6PrefixLength uint8, chooseV4 bool, chooseV6 bool) (UEIPAddress, error) {
+	var sourceDestination bool
+	var ipv4Bytes []byte
+	var ipv6Bytes []byte
 	var length uint16 = 1
+	var v4 bool
+	var v6 bool
+	var ipv6d bool
+	var ip6pl bool
 
-	if ipv4CIDR != "" {
-		ip, _, err := net.ParseCIDR(ipv4CIDR)
-		if err != nil {
-			return UEIPAddress{}, err
+	if chooseV4 && ipv4Address != "" {
+		return UEIPAddress{}, fmt.Errorf("cannot choose IPv4 and provide IPv4 address")
+	}
+
+	if chooseV6 && ipv6Address != "" {
+		return UEIPAddress{}, fmt.Errorf("cannot choose IPv6 and provide IPv6 address")
+	}
+
+	if ipv6PrefixDelegationBits != 0 {
+		if ipv6Address == "" && !chooseV6 {
+			return UEIPAddress{}, fmt.Errorf("cannot provide IPv6 prefix delegation bits without IPv6 Address or choosing IPv6")
 		}
-		ipv4Address = ip.To4()
-		if ipv4Address == nil {
-			return UEIPAddress{}, errors.New("invalid IPv4 address")
+		ipv6d = true
+		length += 1
+	}
+
+	if ipv6PrefixLength != 0 {
+		if ipv6Address == "" && !chooseV6 {
+			return UEIPAddress{}, fmt.Errorf("cannot provide IPv6 prefix length without IPv6 Address or choosing IPv6")
 		}
+		if ipv6d {
+			return UEIPAddress{}, fmt.Errorf("cannot provide IPv6 prefix length with IPv6 prefix delegation bits")
+		}
+		ip6pl = true
+		length += 1
+	}
+
+	if ipv4Address != "" {
+		ipv4Bytes = net.ParseIP(ipv4Address).To4()
+		if ipv4Bytes == nil {
+			return UEIPAddress{}, fmt.Errorf("invalid IPv4 address")
+		}
+		v4 = true
 		length += 4
 	}
 
-	if ipv6CIDR != "" {
-		ip, ipv6Network, err := net.ParseCIDR(ipv6CIDR)
-		if err != nil {
-			return UEIPAddress{}, err
+	if ipv6Address != "" {
+		ipv6Bytes = net.ParseIP(ipv6Address).To16()
+		if ipv6Bytes == nil {
+			return UEIPAddress{}, fmt.Errorf("invalid IPv6 address")
 		}
-		ipv6Address = ip.To16()
-		if ipv6Address == nil {
-			return UEIPAddress{}, errors.New("invalid IPv6 address")
-		}
-		ones, _ := ipv6Network.Mask.Size()
-		ipv6PrefixLength = uint8(ones)
-		length += 18
-	}
-
-	var sourceDestination bool
-	if sd.Source {
-		sourceDestination = false
-	} else if sd.Destination {
-		sourceDestination = true
+		v6 = true
+		length += 16
 	}
 
 	ieHeader := Header{
@@ -71,21 +88,25 @@ func NewUEIPAddress(ipv4CIDR string, ipv6CIDR string, sd SourceDestination, ipv6
 
 	return UEIPAddress{
 		Header:                   ieHeader,
-		IP6PL:                    ipv6PrefixLength != 0,
-		CHV6:                     ipv6Address == nil,
-		CHV4:                     ipv4Address == nil,
-		IPv6D:                    ipv6PrefixDelegationBits != 0,
+		IP6PL:                    ip6pl,
+		CHV6:                     chooseV6,
+		CHV4:                     chooseV4,
+		IPv6D:                    ipv6d,
 		SD:                       sourceDestination,
-		V4:                       ipv4Address != nil,
-		V6:                       ipv6Address != nil,
-		IPv4Address:              ipv4Address,
-		IPv6Address:              ipv6Address,
+		V4:                       v4,
+		V6:                       v6,
+		IPv4Address:              ipv4Bytes,
+		IPv6Address:              ipv6Bytes,
 		IPv6PrefixDelegationBits: ipv6PrefixDelegationBits,
 		IPv6PrefixLength:         ipv6PrefixLength,
 	}, nil
 }
 
-func (ueIPaddress *UEIPAddress) Serialize() []byte {
+func (ueIPaddress UEIPAddress) IsZeroValue() bool {
+	return ueIPaddress.Header.Length == 0
+}
+
+func (ueIPaddress UEIPAddress) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
 	// Octets 1 to 4: Header
@@ -132,10 +153,68 @@ func (ueIPaddress *UEIPAddress) Serialize() []byte {
 	}
 
 	// Octet s: IPv6 Prefix Length
-	if ueIPaddress.IPv6D {
+	if ueIPaddress.IP6PL {
 		buf.WriteByte(ueIPaddress.IPv6PrefixLength)
 	}
 
 	return buf.Bytes()
+}
 
+func DeserializeUEIPAddress(ieHeader Header, ieValue []byte) (UEIPAddress, error) {
+	if len(ieValue) < 1 {
+		return UEIPAddress{}, fmt.Errorf("invalid length for UEIPAddress")
+	}
+
+	if ieHeader.Type != UEIPAddressIEType {
+		return UEIPAddress{}, fmt.Errorf("invalid IE type for UEIPAddress")
+	}
+
+	ueIPAddress := UEIPAddress{
+		Header: ieHeader,
+	}
+
+	octet5 := ieValue[0]
+	ueIPAddress.IP6PL = octet5&(1<<7) > 0
+	ueIPAddress.CHV6 = octet5&(1<<6) > 0
+	ueIPAddress.CHV4 = octet5&(1<<5) > 0
+	ueIPAddress.IPv6D = octet5&(1<<4) > 0
+	ueIPAddress.SD = octet5&(1<<3) > 0
+	ueIPAddress.V4 = octet5&(1<<2) > 0
+	ueIPAddress.V6 = octet5&(1<<1) > 0
+
+	index := 1
+
+	if ueIPAddress.V4 {
+		if len(ieValue[index:]) < 4 {
+			return UEIPAddress{}, fmt.Errorf("invalid length for IPv4 address")
+		}
+		ueIPAddress.IPv4Address = ieValue[index : index+4]
+		index += 4
+	}
+
+	if ueIPAddress.V6 {
+		if len(ieValue[index:]) < 16 {
+			return UEIPAddress{}, fmt.Errorf("invalid length for IPv6 address")
+		}
+		ueIPAddress.IPv6Address = ieValue[index : index+16]
+		index += 16
+	}
+
+	if ueIPAddress.IPv6D {
+		if len(ieValue[index:]) < 1 {
+			return UEIPAddress{}, fmt.Errorf("invalid length for IPv6 prefix delegation bits")
+		}
+		ueIPAddress.IPv6PrefixDelegationBits = ieValue[index]
+		index += 1
+	}
+
+	if ueIPAddress.IP6PL {
+		if len(ieValue[index:]) < 1 {
+			return UEIPAddress{}, fmt.Errorf("invalid length for IPv6 prefix length")
+		}
+		ueIPAddress.IPv6PrefixLength = ieValue[index]
+		index += 1
+	}
+
+	return ueIPAddress, nil
 }

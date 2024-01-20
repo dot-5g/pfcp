@@ -91,6 +91,8 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 			ie, err = DeserializeCreateFAR(ieHeader, ieValue)
 		case ReportTypeIEType:
 			ie, err = DeserializeReportType(ieHeader, ieValue)
+		case UEIPAddressIEType:
+			ie, err = DeserializeUEIPAddress(ieHeader, ieValue)
 		default:
 			err = fmt.Errorf("unknown IE type %d", ieHeader.Type)
 		}
