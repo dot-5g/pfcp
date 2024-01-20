@@ -1,40 +1,46 @@
 package ie_test
 
-// func TestGivenSerializedWhenDeserializedThenDeserializedCorrectly(t *testing.T) {
-// 	features := [](ie.UPFeature){
-// 		ie.BUCP,
-// 		ie.TRACE,
-// 	}
+import (
+	"testing"
 
-// 	upFunctionFeatures, err := ie.NewUPFunctionFeatures(features)
+	"github.com/dot-5g/pfcp/ie"
+)
 
-// 	if err != nil {
-// 		t.Fatalf("Error creating UPFunctionFeatures: %v", err)
-// 	}
+func TestGivenSerializedWhenDeserializeUPFunctionFeaturesThenDeserializedCorrectly(t *testing.T) {
+	features := [](ie.UPFeature){
+		ie.BUCP,
+		ie.TRACE,
+	}
 
-// 	serializedUPFunctionFeatures := upFunctionFeatures.Serialize()
+	upFunctionFeatures, err := ie.NewUPFunctionFeatures(features)
 
-// 	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(serializedUPFunctionFeatures[4:])
-// 	if err != nil {
-// 		t.Fatalf("Error deserializing UPFunctionFeatures: %v", err)
-// 	}
+	if err != nil {
+		t.Fatalf("Error creating UPFunctionFeatures: %v", err)
+	}
 
-// 	if len(deserializedUPFunctionFeatures.SupportedFeatures) != 2 {
-// 		t.Errorf("Expected 2 supported features, got %d", len(deserializedUPFunctionFeatures.SupportedFeatures))
-// 	}
+	serializedUPFunctionFeatures := upFunctionFeatures.Serialize()
 
-// 	deserializedFeatures := deserializedUPFunctionFeatures.GetFeatures()
+	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(serializedUPFunctionFeatures[4:])
+	if err != nil {
+		t.Fatalf("Error deserializing UPFunctionFeatures: %v", err)
+	}
 
-// 	if len(deserializedFeatures) != 2 {
-// 		t.Errorf("Expected 2 features, got %d", len(deserializedFeatures))
-// 	}
+	if len(deserializedUPFunctionFeatures.SupportedFeatures) != 2 {
+		t.Errorf("Expected 2 supported features, got %d", len(deserializedUPFunctionFeatures.SupportedFeatures))
+	}
 
-// 	if deserializedFeatures[0] != ie.BUCP {
-// 		t.Errorf("Expected BUCP feature, got %v", deserializedFeatures[0])
-// 	}
+	deserializedFeatures := deserializedUPFunctionFeatures.GetFeatures()
 
-// 	if deserializedFeatures[1] != ie.TRACE {
-// 		t.Errorf("Expected TRACE feature, got %v", deserializedFeatures[1])
-// 	}
+	if len(deserializedFeatures) != 2 {
+		t.Errorf("Expected 2 features, got %d", len(deserializedFeatures))
+	}
 
-// }
+	if deserializedFeatures[0] != ie.BUCP {
+		t.Errorf("Expected BUCP feature, got %v", deserializedFeatures[0])
+	}
+
+	if deserializedFeatures[1] != ie.TRACE {
+		t.Errorf("Expected TRACE feature, got %v", deserializedFeatures[1])
+	}
+
+}

@@ -71,7 +71,7 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 		case SourceIPAddressIEType:
 			ie, err = DeserializeSourceIPAddress(ieValue)
 		case UPFunctionFeaturesIEType:
-			ie, err = DeserializeUPFunctionFeatures(ieHeader, ieValue)
+			ie, err = DeserializeUPFunctionFeatures(ieValue)
 		case FSEIDIEType:
 			ie, err = DeserializeFSEID(ieValue)
 		case PDRIDIEType:

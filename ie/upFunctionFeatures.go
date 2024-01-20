@@ -118,25 +118,20 @@ func (ie UPFunctionFeatures) SetHeader(header Header) InformationElement {
 	return ie
 }
 
-func DeserializeUPFunctionFeatures(ieHeader Header, ieValue []byte) (UPFunctionFeatures, error) {
-	if ieHeader.Type != 43 {
-		return UPFunctionFeatures{}, fmt.Errorf("incorrect IE type")
-	}
-	if len(ieValue) != int(ieHeader.Length) {
-		return UPFunctionFeatures{}, fmt.Errorf("incorrect length: expected %d, got %d", ieHeader.Length, len(ieValue))
+func DeserializeUPFunctionFeatures(ieValue []byte) (UPFunctionFeatures, error) {
+	upFuncFeatures := UPFunctionFeatures{}
+
+	if len(ieValue) < 2 {
+		return UPFunctionFeatures{}, fmt.Errorf("invalid UPFunctionFeatures length: got %d bytes, expected at least 2", len(ieValue))
 	}
 
-	upFuncFeatures := UPFunctionFeatures{
-		SupportedFeatures:            make([]byte, 0),
-		AdditionalSupportedFeatures1: make([]byte, 0),
-		AdditionalSupportedFeatures2: make([]byte, 0),
-	}
+	upFuncFeatures.SupportedFeatures = ieValue[:2]
 
-	if ieHeader.Length >= 1 {
-		upFuncFeatures.SupportedFeatures = append(upFuncFeatures.SupportedFeatures, ieValue[0])
+	if len(ieValue) > 2 {
+		upFuncFeatures.AdditionalSupportedFeatures1 = ieValue[2:3]
 	}
-	if ieHeader.Length >= 2 {
-		upFuncFeatures.SupportedFeatures = append(upFuncFeatures.SupportedFeatures, ieValue[1])
+	if len(ieValue) > 3 {
+		upFuncFeatures.AdditionalSupportedFeatures2 = ieValue[3:4]
 	}
 
 	return upFuncFeatures, nil
