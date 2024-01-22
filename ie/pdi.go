@@ -21,29 +21,22 @@ func NewPDI(sourceInterface SourceInterface, ueIPAddress UEIPAddress) (PDI, erro
 func (pdi PDI) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 5 to n: Source Interface
-
-	serializedSourceInterface := pdi.SourceInterface.Serialize()
-	sourceInterfaceLength := uint16(len(serializedSourceInterface))
-	sourceInterfaceHeader := Header{
-		Type:   pdi.SourceInterface.GetType(),
-		Length: sourceInterfaceLength,
+	for _, ie := range pdi.GetIEs() {
+		serializedIE := ie.Serialize()
+		ieLength := uint16(len(serializedIE))
+		ieHeader := Header{
+			Type:   ie.GetType(),
+			Length: ieLength,
+		}
+		buf.Write(ieHeader.Serialize())
+		buf.Write(ie.Serialize())
 	}
-	buf.Write(sourceInterfaceHeader.Serialize())
-	buf.Write(serializedSourceInterface)
-
-	// Octets (n+1) to (n+m): UE IP Address
-	serializedUEIPAddress := pdi.UEIPAddress.Serialize()
-	ueIpAddressLength := uint16(len(serializedUEIPAddress))
-	ueIPAddressHeader := Header{
-		Type:   pdi.UEIPAddress.GetType(),
-		Length: ueIpAddressLength,
-	}
-	buf.Write(ueIPAddressHeader.Serialize())
-	buf.Write(serializedUEIPAddress)
 
 	return buf.Bytes()
+}
 
+func (pdi PDI) GetIEs() []InformationElement {
+	return []InformationElement{pdi.SourceInterface, pdi.UEIPAddress}
 }
 
 func (pdi PDI) GetType() IEType {

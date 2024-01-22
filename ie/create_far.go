@@ -19,31 +19,25 @@ func NewCreateFAR(farid FARID, applyaction ApplyAction) (CreateFAR, error) {
 	}, nil
 }
 
-func (createfar CreateFAR) Serialize() []byte {
+func (createFAR CreateFAR) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 5 to n: FAR ID
-	serializedFARID := createfar.FARID.Serialize()
-	farIDLength := uint16(len(serializedFARID))
-	farIDHeader := Header{
-		Type:   createfar.FARID.GetType(),
-		Length: farIDLength,
+	for _, ie := range createFAR.GetIEs() {
+		serializedIE := ie.Serialize()
+		ieLength := uint16(len(serializedIE))
+		ieHeader := Header{
+			Type:   ie.GetType(),
+			Length: ieLength,
+		}
+		buf.Write(ieHeader.Serialize())
+		buf.Write(ie.Serialize())
 	}
-	buf.Write(farIDHeader.Serialize())
-	buf.Write(serializedFARID)
-
-	// Octets n+1 to m: Apply Action
-	serializedApplyAction := createfar.ApplyAction.Serialize()
-	applyActionLength := uint16(len(serializedApplyAction))
-	applyActionHeader := Header{
-		Type:   createfar.ApplyAction.GetType(),
-		Length: applyActionLength,
-	}
-	buf.Write(applyActionHeader.Serialize())
-	buf.Write(serializedApplyAction)
 
 	return buf.Bytes()
+}
 
+func (createFAR CreateFAR) GetIEs() []InformationElement {
+	return []InformationElement{createFAR.FARID, createFAR.ApplyAction}
 }
 
 func (createfar CreateFAR) GetType() IEType {
