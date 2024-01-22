@@ -8,8 +8,8 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	// t.Run("TestMoreThanOneServer", MoreThanOneServer)
-	// t.Run("TestServerClosedNoError", ServerClosedNoError)
+	t.Run("TestMoreThanOneServer", MoreThanOneServer)
+	t.Run("TestServerClosedNoError", ServerClosedNoError)
 }
 
 func MoreThanOneServer(t *testing.T) {
@@ -17,7 +17,13 @@ func MoreThanOneServer(t *testing.T) {
 
 	server1 := server.New(address)
 	server2 := server.New(address)
-	go server1.Run()
+	go func() {
+		err := server1.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
+
 	defer server1.Close()
 
 	time.Sleep(time.Second)
@@ -32,7 +38,13 @@ func MoreThanOneServer(t *testing.T) {
 
 func ServerClosedNoError(t *testing.T) {
 	server := server.New("127.0.0.1:8805")
-	go server.Run()
+	go func() {
+		err := server.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
+
 	time.Sleep(time.Second)
 	server.Close()
 

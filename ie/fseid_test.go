@@ -117,7 +117,7 @@ func TestGivenIPv4SerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) 
 
 	serialized := fseid.Serialize()
 
-	deserialized, err := ie.DeserializeFSEID(serialized[4:])
+	deserialized, err := ie.DeserializeFSEID(serialized)
 
 	if err != nil {
 		t.Fatalf("Error deserializing FSEID: %v", err)

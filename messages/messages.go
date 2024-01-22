@@ -30,3 +30,21 @@ type PFCPMessage interface {
 	GetMessageType() MessageType
 	GetMessageTypeString() string
 }
+
+func Serialize(message PFCPMessage, messageHeader Header) []byte {
+	var payload []byte
+	ies := message.GetIEs()
+	for _, element := range ies {
+		serializedElement := element.Serialize()
+		elementLength := uint16(len(serializedElement))
+		header := ie.Header{
+			Type:   element.GetType(),
+			Length: elementLength,
+		}
+		payload = append(payload, header.Serialize()...)
+		payload = append(payload, serializedElement...)
+	}
+	messageHeader.MessageLength = uint16(len(payload))
+	headerBytes := messageHeader.Serialize()
+	return append(headerBytes, payload...)
+}

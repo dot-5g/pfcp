@@ -13,14 +13,6 @@ func TestNewNodeIDIPv4(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if nodeID.Header.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", nodeID.Header.Type)
-	}
-
-	if nodeID.Header.Length != 4+1 {
-		t.Errorf("Expected NodeID length 4, got %d", nodeID.Header.Length)
-	}
-
 	if nodeID.Type != 0 {
 		t.Errorf("Expected NodeID type IPv4, got %d", nodeID.Type)
 	}
@@ -58,14 +50,6 @@ func TestNewNodeIDIPv6(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if nodeID.Header.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", nodeID.Header.Type)
-	}
-
-	if nodeID.Header.Length != 16+1 {
-		t.Errorf("Expected NodeID length 16, got %d", nodeID.Header.Length)
-	}
-
 	if nodeID.Type != 1 {
 		t.Errorf("Expected NodeID type IPv6, got %d", nodeID.Type)
 	}
@@ -88,14 +72,6 @@ func TestNewNodeIDFQDN(t *testing.T) {
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
-	}
-
-	if nodeID.Header.Type != 60 {
-		t.Errorf("Expected NodeID, got %d", nodeID.Header.Type)
-	}
-
-	if nodeID.Header.Length != 15+1 {
-		t.Errorf("Expected NodeID length 15, got %d", nodeID.Header.Length)
 	}
 
 	if nodeID.Type != 2 {
@@ -124,7 +100,7 @@ func TestGivenSerializedWhenDeserializNodeIDThenFieldsSetCorrectly(t *testing.T)
 
 	serializedNodeID := nodeID.Serialize()
 
-	deserializedNodeID, err := ie.DeserializeNodeID(serializedNodeID[4:])
+	deserializedNodeID, err := ie.DeserializeNodeID(serializedNodeID)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)

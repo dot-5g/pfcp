@@ -53,7 +53,14 @@ func TestPFCPSessionReport(t *testing.T) {
 func PFCPSessionReportRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionReportRequest(HandlePFCPSessionReportRequest)
-	go pfcpServer.Run()
+
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
+
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
@@ -89,14 +96,6 @@ func PFCPSessionReportRequest(t *testing.T) {
 		t.Errorf("Expected SEID %d, got %d", seid, pfcpSessionReportRequestReceivedSEID)
 	}
 
-	if pfcpSessionReportRequestReceivedReportType.Header.Type != ie.ReportTypeIEType {
-		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, pfcpSessionReportRequestReceivedReportType.Header.Type)
-	}
-
-	if pfcpSessionReportRequestReceivedReportType.Header.Length != 1 {
-		t.Errorf("Expected length 1, got %d", pfcpSessionReportRequestReceivedReportType.Header.Length)
-	}
-
 	if len(pfcpSessionReportRequestReceivedReportType.Reports) != 2 {
 		t.Errorf("Expected 2 reports, got %d", len(pfcpSessionReportRequestReceivedReportType.Reports))
 	}
@@ -114,7 +113,14 @@ func PFCPSessionReportRequest(t *testing.T) {
 func PFCPSessionReportResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionReportResponse(HandlePFCPSessionReportResponse)
-	go pfcpServer.Run()
+
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
+
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
@@ -148,14 +154,6 @@ func PFCPSessionReportResponse(t *testing.T) {
 
 	if pfcpSessionReportResponseReceivedSEID != seid {
 		t.Errorf("Expected SEID %d, got %d", seid, pfcpSessionReportResponseReceivedSEID)
-	}
-
-	if pfcpSessionReportResponseReceivedCause.Header.Type != ie.CauseIEType {
-		t.Errorf("Expected IE type %d, got %d", ie.CauseIEType, pfcpSessionReportResponseReceivedCause.Header.Type)
-	}
-
-	if pfcpSessionReportResponseReceivedCause.Header.Length != 1 {
-		t.Errorf("Expected length 1, got %d", pfcpSessionReportResponseReceivedCause.Header.Length)
 	}
 
 	if pfcpSessionReportResponseReceivedCause.Value != ie.RequestAccepted {

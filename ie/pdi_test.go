@@ -24,24 +24,8 @@ func TestGivenCorrectPDIWhenNewPDIThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	if pdi.Header.Type != 17 {
-		t.Errorf("Expected IEType %d, got %d", 17, pdi.Header.Type)
-	}
-
-	if pdi.Header.Length != 11 {
-		t.Errorf("Expected Length %d, got %d", 11, pdi.Header.Length)
-	}
-
 	if pdi.SourceInterface != sourceInterface {
 		t.Errorf("Expected SourceInterface %v, got %v", sourceInterface, pdi.SourceInterface)
-	}
-
-	if pdi.UEIPAddress.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress IEType %d, got %d", 93, pdi.UEIPAddress.Header.Type)
-	}
-
-	if pdi.UEIPAddress.Header.Length != 2 {
-		t.Errorf("Expected UEIPAddress Length %d, got %d", 2, pdi.UEIPAddress.Header.Length)
 	}
 
 	if pdi.UEIPAddress.IP6PL != true {
@@ -110,7 +94,7 @@ func TestGivenPDISerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 
 	pdiSerialized := pdi.Serialize()
 
-	deserializedPDI, err := ie.DeserializePDI(pdiSerialized[4:])
+	deserializedPDI, err := ie.DeserializePDI(pdiSerialized)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)

@@ -10,26 +10,18 @@ import (
 const ntpEpochOffset = 2208988800 // Offset between Unix and NTP epoch (seconds)
 
 type RecoveryTimeStamp struct {
-	Header Header
-	Value  int64 // Seconds since 1900
+	Value int64 // Seconds since 1900
 }
 
 func NewRecoveryTimeStamp(value time.Time) (RecoveryTimeStamp, error) {
-	ieHeader := Header{
-		Type:   RecoveryTimeStampIEType,
-		Length: 4,
-	}
+
 	return RecoveryTimeStamp{
-		Header: ieHeader,
-		Value:  value.Unix() + ntpEpochOffset,
+		Value: value.Unix() + ntpEpochOffset,
 	}, nil
 }
 
 func (rt RecoveryTimeStamp) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(rt.Header.Serialize())
 
 	// Octets 5 to 8: Value
 	binary.Write(buf, binary.BigEndian, uint32(rt.Value))
@@ -37,13 +29,8 @@ func (rt RecoveryTimeStamp) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (rt RecoveryTimeStamp) IsZeroValue() bool {
-	return rt.Value == 0
-}
-
-func (rt RecoveryTimeStamp) SetHeader(ieHeader Header) InformationElement {
-	rt.Header = ieHeader
-	return rt
+func (rt RecoveryTimeStamp) GetType() IEType {
+	return RecoveryTimeStampIEType
 }
 
 func DeserializeRecoveryTimeStamp(ieValue []byte) (RecoveryTimeStamp, error) {

@@ -6,7 +6,6 @@ import (
 )
 
 type UPFunctionFeatures struct {
-	Header                       Header
 	SupportedFeatures            []byte
 	AdditionalSupportedFeatures1 []byte
 	AdditionalSupportedFeatures2 []byte
@@ -70,13 +69,7 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, e
 		}
 	}
 
-	ieHeader := Header{
-		Type:   UPFunctionFeaturesIEType,
-		Length: uint16(len(featureBytes)),
-	}
-
 	return UPFunctionFeatures{
-		Header:                       ieHeader,
 		SupportedFeatures:            featureBytes,
 		AdditionalSupportedFeatures1: nil,
 		AdditionalSupportedFeatures2: nil,
@@ -85,9 +78,6 @@ func NewUPFunctionFeatures(supportedFeatures []UPFeature) (UPFunctionFeatures, e
 
 func (ie UPFunctionFeatures) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(ie.Header.Serialize())
 
 	// Octets 5 to 6: Supported Features
 	buf.Write(ie.SupportedFeatures)
@@ -109,13 +99,8 @@ func (ie UPFunctionFeatures) GetFeatures() []UPFeature {
 	return features
 }
 
-func (ie UPFunctionFeatures) IsZeroValue() bool {
-	return ie.Header.Length == 0
-}
-
-func (ie UPFunctionFeatures) SetHeader(header Header) InformationElement {
-	ie.Header = header
-	return ie
+func (ie UPFunctionFeatures) GetType() IEType {
+	return UPFunctionFeaturesIEType
 }
 
 func DeserializeUPFunctionFeatures(ieValue []byte) (UPFunctionFeatures, error) {

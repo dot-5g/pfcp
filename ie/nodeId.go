@@ -15,25 +15,21 @@ const (
 type NodeIDType int
 
 type NodeID struct {
-	Header Header
-	Type   NodeIDType
-	Value  []byte
+	Type  NodeIDType
+	Value []byte
 }
 
 func NewNodeID(nodeID string) (NodeID, error) {
 	var nodeIDValueBytes []byte
-	var length uint16
 	var nodeIDType NodeIDType
 
 	ip := net.ParseIP(nodeID)
 
 	if ip.To4() != nil {
 		nodeIDValueBytes = ip.To4()
-		length = uint16(len(nodeIDValueBytes)) + 1
 		nodeIDType = IPv4
 	} else if ip.To16() != nil {
 		nodeIDValueBytes = ip.To16()
-		length = uint16(len(nodeIDValueBytes)) + 1
 		nodeIDType = IPv6
 	} else {
 		fqdn := []byte(nodeID)
@@ -41,17 +37,12 @@ func NewNodeID(nodeID string) (NodeID, error) {
 			return NodeID{}, fmt.Errorf("invalid length for FQDN NodeID: got %d bytes, want <= 255", len(fqdn))
 		}
 		nodeIDValueBytes = fqdn
-		length = uint16(len(nodeIDValueBytes)) + 1
 		nodeIDType = FQDN
 	}
-	header := Header{
-		Type:   NodeIDIEType,
-		Length: length,
-	}
+
 	return NodeID{
-		Header: header,
-		Type:   nodeIDType,
-		Value:  nodeIDValueBytes,
+		Type:  nodeIDType,
+		Value: nodeIDValueBytes,
 	}, nil
 }
 
@@ -71,9 +62,6 @@ func (n NodeID) String() string {
 func (n NodeID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 4: Header
-	buf.Write(n.Header.Serialize())
-
 	// Octet 5: Spare (4 bits) + Node ID Type (4 bits)
 	spareAndType := byte(n.Type & 0x0F) // Ensure NodeIDType is only 4 bits
 	buf.WriteByte(spareAndType)
@@ -84,13 +72,8 @@ func (n NodeID) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (n NodeID) IsZeroValue() bool {
-	return n.Header.Length == 0
-}
-
-func (n NodeID) SetHeader(ieHeader Header) InformationElement {
-	n.Header = ieHeader
-	return n
+func (n NodeID) GetType() IEType {
+	return NodeIDIEType
 }
 
 func DeserializeNodeID(ieValue []byte) (NodeID, error) {
@@ -120,8 +103,4 @@ func DeserializeNodeID(ieValue []byte) (NodeID, error) {
 	}
 
 	return nodeID, nil
-}
-
-func (n NodeID) GetHeader() Header {
-	return n.Header
 }

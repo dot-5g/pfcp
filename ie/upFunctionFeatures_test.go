@@ -20,7 +20,7 @@ func TestGivenSerializedWhenDeserializeUPFunctionFeaturesThenDeserializedCorrect
 
 	serializedUPFunctionFeatures := upFunctionFeatures.Serialize()
 
-	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(serializedUPFunctionFeatures[4:])
+	deserializedUPFunctionFeatures, err := ie.DeserializeUPFunctionFeatures(serializedUPFunctionFeatures)
 	if err != nil {
 		t.Fatalf("Error deserializing UPFunctionFeatures: %v", err)
 	}

@@ -52,7 +52,12 @@ func PFCPAssociationReleaseRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPAssociationReleaseRequest(HandlePFCPAssociationReleaseRequest)
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 
@@ -69,7 +74,10 @@ func PFCPAssociationReleaseRequest(t *testing.T) {
 		NodeID: nodeID,
 	}
 
-	pfcpClient.SendPFCPAssociationReleaseRequest(PFCPAssociationReleaseRequestMsg, sequenceNumber)
+	err = pfcpClient.SendPFCPAssociationReleaseRequest(PFCPAssociationReleaseRequestMsg, sequenceNumber)
+	if err != nil {
+		t.Fatalf("Failed to send PFCP Association Release Request: %v", err)
+	}
 
 	time.Sleep(time.Second)
 
@@ -80,10 +88,6 @@ func PFCPAssociationReleaseRequest(t *testing.T) {
 
 	if pfcpAssociationReleaseRequestReceivedSequenceNumber != sequenceNumber {
 		t.Errorf("PFCP Association Release Request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpAssociationReleaseRequestReceivedSequenceNumber)
-	}
-
-	if pfcpAssociationReleaseRequestReceivedNodeID.Header.Length != nodeID.Header.Length {
-		t.Errorf("PFCP Association Release Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationReleaseRequestReceivedNodeID.Header.Length)
 	}
 
 	if pfcpAssociationReleaseRequestReceivedNodeID.Type != nodeID.Type {
@@ -107,7 +111,12 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPAssociationReleaseResponse(HandlePFCPAssociationReleaseResponse)
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 
@@ -131,7 +140,10 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 		Cause:  cause,
 	}
 
-	pfcpClient.SendPFCPAssociationReleaseResponse(PFCPAssociationReleaseResponseMsg, sequenceNumber)
+	err = pfcpClient.SendPFCPAssociationReleaseResponse(PFCPAssociationReleaseResponseMsg, sequenceNumber)
+	if err != nil {
+		t.Fatalf("Failed to send PFCP Association Release Response: %v", err)
+	}
 
 	time.Sleep(time.Second)
 
@@ -142,10 +154,6 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 
 	if pfcpAssociationReleaseResponseReceivedSequenceNumber != sequenceNumber {
 		t.Errorf("PFCP Association Release Response handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sequenceNumber, pfcpAssociationReleaseResponseReceivedSequenceNumber)
-	}
-
-	if pfcpAssociationReleaseResponseReceivedNodeID.Header.Length != nodeID.Header.Length {
-		t.Errorf("PFCP Association Release Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationReleaseResponseReceivedNodeID.Header.Length)
 	}
 
 	if pfcpAssociationReleaseResponseReceivedNodeID.Type != nodeID.Type {
@@ -160,14 +168,6 @@ func PFCPAssociationReleaseResponse(t *testing.T) {
 		if pfcpAssociationReleaseResponseReceivedNodeID.Value[i] != nodeID.Value[i] {
 			t.Errorf("PFCP Association Release Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationReleaseResponseReceivedNodeID.Value)
 		}
-	}
-
-	if pfcpAssociationReleaseResponseReceivedCause.Header.Length != cause.Header.Length {
-		t.Errorf("PFCP Association Release Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Header.Length, pfcpAssociationReleaseResponseReceivedCause.Header.Length)
-	}
-
-	if pfcpAssociationReleaseResponseReceivedCause.Header.Type != cause.Header.Type {
-		t.Errorf("PFCP Association Release Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Header.Type, pfcpAssociationReleaseResponseReceivedCause.Header.Type)
 	}
 
 	if pfcpAssociationReleaseResponseReceivedCause.Value != cause.Value {

@@ -30,7 +30,7 @@ func TestGivenFarIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T)
 
 	farIDSerialized := farID.Serialize()
 
-	deserializedFarID, err := ie.DeserializeFARID(farIDSerialized[4:])
+	deserializedFarID, err := ie.DeserializeFARID(farIDSerialized)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)

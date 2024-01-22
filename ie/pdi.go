@@ -7,19 +7,12 @@ import (
 )
 
 type PDI struct {
-	Header          Header
 	SourceInterface SourceInterface // Mandatory
 	UEIPAddress     UEIPAddress     // Optional
 }
 
 func NewPDI(sourceInterface SourceInterface, ueIPAddress UEIPAddress) (PDI, error) {
-	ieHeader := Header{
-		Type:   PDIIEType,
-		Length: sourceInterface.Header.Length + ueIPAddress.Header.Length + 8,
-	}
-
 	return PDI{
-		Header:          ieHeader,
 		SourceInterface: sourceInterface,
 		UEIPAddress:     ueIPAddress,
 	}, nil
@@ -28,30 +21,33 @@ func NewPDI(sourceInterface SourceInterface, ueIPAddress UEIPAddress) (PDI, erro
 func (pdi PDI) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 4: Header
-	buf.Write(pdi.Header.Serialize())
-
 	// Octets 5 to n: Source Interface
+
 	serializedSourceInterface := pdi.SourceInterface.Serialize()
+	sourceInterfaceLength := uint16(len(serializedSourceInterface))
+	sourceInterfaceHeader := Header{
+		Type:   pdi.SourceInterface.GetType(),
+		Length: sourceInterfaceLength,
+	}
+	buf.Write(sourceInterfaceHeader.Serialize())
 	buf.Write(serializedSourceInterface)
 
 	// Octets (n+1) to (n+m): UE IP Address
-	if !pdi.UEIPAddress.IsZeroValue() {
-		serializedUEIPAddress := pdi.UEIPAddress.Serialize()
-		buf.Write(serializedUEIPAddress)
+	serializedUEIPAddress := pdi.UEIPAddress.Serialize()
+	ueIpAddressLength := uint16(len(serializedUEIPAddress))
+	ueIPAddressHeader := Header{
+		Type:   pdi.UEIPAddress.GetType(),
+		Length: ueIpAddressLength,
 	}
+	buf.Write(ueIPAddressHeader.Serialize())
+	buf.Write(serializedUEIPAddress)
 
 	return buf.Bytes()
 
 }
 
-func (pdi PDI) IsZeroValue() bool {
-	return pdi.Header.Length == 0
-}
-
-func (pdi PDI) SetHeader(header Header) InformationElement {
-	pdi.Header = header
-	return pdi
+func (pdi PDI) GetType() IEType {
+	return PDIIEType
 }
 
 func DeserializePDI(ieValue []byte) (PDI, error) {
@@ -81,39 +77,19 @@ func DeserializePDI(ieValue []byte) (PDI, error) {
 
 		switch IEType(currentIEType) {
 		case SourceInterfaceIEType:
-			sourceInterfaceHeader := Header{
-				Type:   IEType(currentIEType),
-				Length: currentIELength,
-			}
-
-			tempSourceInterface, err := DeserializeSourceInterface(currentIEValue)
+			sourceInterface, err := DeserializeSourceInterface(currentIEValue)
 			if err != nil {
 				return PDI{}, fmt.Errorf("failed to deserialize Source Interface: %v", err)
 			}
-
-			sourceInterface, ok := tempSourceInterface.SetHeader(sourceInterfaceHeader).(SourceInterface)
-			if !ok {
-				return PDI{}, fmt.Errorf("type assertion to FarID failed")
-			}
-
 			pdi.SourceInterface = sourceInterface
 		case UEIPAddressIEType:
-			ueIPAddressHeader := Header{
-				Type:   IEType(currentIEType),
-				Length: currentIELength,
-			}
-			tempUeIPAddress, err := DeserializeUEIPAddress(currentIEValue)
+			ueIPAddress, err := DeserializeUEIPAddress(currentIEValue)
 			if err != nil {
 				return PDI{}, fmt.Errorf("failed to deserialize UE IP Address: %v", err)
-			}
-			ueIPAddress, ok := tempUeIPAddress.SetHeader(ueIPAddressHeader).(UEIPAddress)
-			if !ok {
-				return PDI{}, fmt.Errorf("type assertion to FarID failed")
 			}
 			pdi.UEIPAddress = ueIPAddress
 		}
 		index += 4 + int(currentIELength)
-
 	}
 
 	return pdi, nil

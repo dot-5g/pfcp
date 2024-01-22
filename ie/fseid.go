@@ -7,16 +7,14 @@ import (
 )
 
 type FSEID struct {
-	Header Header
-	V4     bool
-	V6     bool
-	SEID   uint64
-	IPv4   []byte
-	IPv6   []byte
+	V4   bool
+	V6   bool
+	SEID uint64
+	IPv4 []byte
+	IPv6 []byte
 }
 
 func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error) {
-	var length uint16 = 9
 	var v4 bool
 	var v6 bool
 	var ipv4Addr []byte
@@ -29,25 +27,17 @@ func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error
 
 	if ipv4Addr != nil {
 		v4 = true
-		length += 4
 	}
 	if ipv6Addr != nil {
 		v6 = true
-		length += 16
-	}
-
-	ieHeader := Header{
-		Type:   FSEIDIEType,
-		Length: length,
 	}
 
 	fseid := FSEID{
-		Header: ieHeader,
-		V4:     v4,
-		V6:     v6,
-		SEID:   seid,
-		IPv4:   ipv4Addr,
-		IPv6:   ipv6Addr,
+		V4:   v4,
+		V6:   v6,
+		SEID: seid,
+		IPv4: ipv4Addr,
+		IPv6: ipv6Addr,
 	}
 
 	return fseid, nil
@@ -55,9 +45,6 @@ func NewFSEID(seid uint64, ipv4Address string, ipv6Address string) (FSEID, error
 
 func (fseid FSEID) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(fseid.Header.Serialize())
 
 	// Octet 5: Spare (6 bits) + V4 (1 bit) + V6 (1 bit)
 	var flags byte
@@ -85,9 +72,8 @@ func (fseid FSEID) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (fseid FSEID) SetHeader(ieHeader Header) InformationElement {
-	fseid.Header = ieHeader
-	return fseid
+func (fseid FSEID) GetType() IEType {
+	return FSEIDIEType
 }
 
 func DeserializeFSEID(ieValue []byte) (FSEID, error) {
@@ -120,8 +106,4 @@ func DeserializeFSEID(ieValue []byte) (FSEID, error) {
 		IPv4: ipv4,
 		IPv6: ipv6,
 	}, nil
-}
-
-func (fseid FSEID) IsZeroValue() bool {
-	return fseid.Header.Length == 0
 }

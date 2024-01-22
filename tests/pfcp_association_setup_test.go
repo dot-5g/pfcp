@@ -58,7 +58,12 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPAssociationSetupRequest(HandlePFCPAssociationSetupRequest)
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 
@@ -93,7 +98,10 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 		UPFunctionFeatures: upFeatures,
 	}
 
-	pfcpClient.SendPFCPAssociationSetupRequest(PFCPAssociationSetupRequestMsg, sequenceNumber)
+	err = pfcpClient.SendPFCPAssociationSetupRequest(PFCPAssociationSetupRequestMsg, sequenceNumber)
+	if err != nil {
+		t.Fatalf("Failed to send PFCP Association Setup Request: %v", err)
+	}
 
 	time.Sleep(time.Second)
 
@@ -110,10 +118,6 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 		t.Errorf("PFCP Association Setup Request handler was called with wrong recovery timestamp.\n- Sent recovery timestamp: %v\n- Received recovery timestamp %v\n", recoveryTimeStamp, pfcpAssociationSetupRequestReceivedRecoveryTimeStamp)
 	}
 
-	if pfcpAssociationSetupRequestReceivedNodeID.Header.Length != nodeID.Header.Length {
-		t.Errorf("PFCP Association Setup Request handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationSetupRequestReceivedNodeID.Header.Length)
-	}
-
 	if pfcpAssociationSetupRequestReceivedNodeID.Type != nodeID.Type {
 		t.Errorf("PFCP Association Setup Request handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpAssociationSetupRequestReceivedNodeID.Type)
 	}
@@ -126,10 +130,6 @@ func PFCPAssociationSetupRequest(t *testing.T) {
 		if pfcpAssociationSetupRequestReceivedNodeID.Value[i] != nodeID.Value[i] {
 			t.Errorf("PFCP Association Setup Request handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationSetupRequestReceivedNodeID.Value)
 		}
-	}
-
-	if pfcpAssociationSetupRequestReceivedUPFunctionFeatures.Header.Length != upFeatures.Header.Length {
-		t.Errorf("PFCP Association Setup Request handler was called with wrong UP function features length.\n- Sent UP function features length: %v\n- Received UP function features length %v\n", upFeatures.Header.Length, pfcpAssociationSetupRequestReceivedUPFunctionFeatures.Header.Length)
 	}
 
 	receivedFeatures := pfcpAssociationSetupRequestReceivedUPFunctionFeatures.GetFeatures()
@@ -151,7 +151,12 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPAssociationSetupResponse(HandlePFCPAssociationSetupResponse)
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 
@@ -183,7 +188,10 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	pfcpClient.SendPFCPAssociationSetupResponse(PFCPAssociationSetupResponseMsg, sequenceNumber)
+	err = pfcpClient.SendPFCPAssociationSetupResponse(PFCPAssociationSetupResponseMsg, sequenceNumber)
+	if err != nil {
+		t.Fatalf("Failed to send PFCP Association Setup Response: %v", err)
+	}
 
 	time.Sleep(time.Second)
 
@@ -201,10 +209,6 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		t.Errorf("PFCP Association Setup Response handler was called with wrong recovery timestamp.\n- Sent recovery timestamp: %v\n- Received recovery timestamp %v\n", recoveryTimeStamp, pfcpAssociationSetupResponseReceivedRecoveryTimeStamp)
 	}
 
-	if pfcpAssociationSetupResponseReceivedNodeID.Header.Length != nodeID.Header.Length {
-		t.Errorf("PFCP Association Setup Response handler was called with wrong node ID length.\n- Sent node ID length: %v\n- Received node ID length %v\n", nodeID.Header.Length, pfcpAssociationSetupResponseReceivedNodeID.Header.Length)
-	}
-
 	if pfcpAssociationSetupResponseReceivedNodeID.Type != nodeID.Type {
 		t.Errorf("PFCP Association Setup Response handler was called with wrong node ID type.\n- Sent node ID type: %v\n- Received node ID type %v\n", nodeID.Type, pfcpAssociationSetupResponseReceivedNodeID.Type)
 	}
@@ -217,14 +221,6 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		if pfcpAssociationSetupResponseReceivedNodeID.Value[i] != nodeID.Value[i] {
 			t.Errorf("PFCP Association Setup Response handler was called with wrong node ID value.\n- Sent node ID value: %v\n- Received node ID value %v\n", nodeID.Value, pfcpAssociationSetupResponseReceivedNodeID.Value)
 		}
-	}
-
-	if pfcpAssociationSetupResponseReceivedCause.Header.Type != cause.Header.Type {
-		t.Errorf("PFCP Association Setup Response handler was called with wrong cause type.\n- Sent cause type: %v\n- Received cause type %v\n", cause.Header.Type, pfcpAssociationSetupResponseReceivedCause.Header.Type)
-	}
-
-	if pfcpAssociationSetupResponseReceivedCause.Header.Length != cause.Header.Length {
-		t.Errorf("PFCP Association Setup Response handler was called with wrong cause length.\n- Sent cause length: %v\n- Received cause length %v\n", cause.Header.Length, pfcpAssociationSetupResponseReceivedCause.Header.Length)
 	}
 
 	if pfcpAssociationSetupResponseReceivedCause.Value != cause.Value {

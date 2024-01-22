@@ -7,18 +7,11 @@ import (
 )
 
 type PDRID struct {
-	Header Header
 	RuleID uint16
 }
 
 func NewPDRID(ruleID uint16) (PDRID, error) {
-	ieHeader := Header{
-		Type:   PDRIDIEType,
-		Length: 2,
-	}
-
 	return PDRID{
-		Header: ieHeader,
 		RuleID: ruleID,
 	}, nil
 }
@@ -26,22 +19,14 @@ func NewPDRID(ruleID uint16) (PDRID, error) {
 func (pdrID PDRID) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 1 to 4: Header
-	buf.Write(pdrID.Header.Serialize())
-
 	// Octets 5 to 6: RuleID
 	binary.Write(buf, binary.BigEndian, pdrID.RuleID)
 
 	return buf.Bytes()
 }
 
-func (pdrID PDRID) IsZeroValue() bool {
-	return pdrID.Header.Length == 0
-}
-
-func (pdrID PDRID) SetHeader(header Header) InformationElement {
-	pdrID.Header = header
-	return pdrID
+func (pdrID PDRID) GetType() IEType {
+	return PDRIDIEType
 }
 
 func DeserializePDRID(ieValue []byte) (PDRID, error) {

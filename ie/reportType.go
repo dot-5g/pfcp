@@ -17,27 +17,17 @@ const (
 )
 
 type ReportType struct {
-	Header  Header
 	Reports []Report
 }
 
 func NewReportType(reports []Report) (ReportType, error) {
-	ieHeader := Header{
-		Type:   IEType(ReportTypeIEType),
-		Length: 1,
-	}
-
 	return ReportType{
-		Header:  ieHeader,
 		Reports: reports,
 	}, nil
 }
 
 func (reportType ReportType) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(reportType.Header.Serialize())
 
 	// Octet 5: Reports
 	// Bit 1: DLDR, Bit 2: USAR, Bit 3: ERIR, Bit 4: UPIR, Bit 5: TMIR, Bit 6: SESR, Bit 7: UISR, Bit 8: Spare
@@ -50,13 +40,8 @@ func (reportType ReportType) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (reportType ReportType) IsZeroValue() bool {
-	return reportType.Header.Length == 0
-}
-
-func (reportType ReportType) SetHeader(header Header) InformationElement {
-	reportType.Header = header
-	return reportType
+func (reportType ReportType) GetType() IEType {
+	return ReportTypeIEType
 }
 
 func DeserializeReportType(ieValue []byte) (ReportType, error) {

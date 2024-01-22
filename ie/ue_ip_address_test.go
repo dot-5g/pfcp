@@ -16,14 +16,6 @@ func TestGivenIPv4AddressWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) 
 		t.Fatalf("Error creating UEIPAddress: %v", err)
 	}
 
-	if ueIPAddress.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress, got %d", ueIPAddress.Header.Type)
-	}
-
-	if ueIPAddress.Header.Length != 5 {
-		t.Errorf("Expected UEIPAddress length 5, got %d", ueIPAddress.Header.Length)
-	}
-
 	if ueIPAddress.IP6PL != false {
 		t.Errorf("Expected UEIPAddress IP6PL false, got %v", ueIPAddress.IP6PL)
 	}
@@ -78,14 +70,6 @@ func TestGivenIPv6AddresWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Error creating UEIPAddress: %v", err)
 	}
 
-	if ueIPAddress.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress, got %d", ueIPAddress.Header.Type)
-	}
-
-	if ueIPAddress.Header.Length != 17 {
-		t.Errorf("Expected UEIPAddress length 17, got %d", ueIPAddress.Header.Length)
-	}
-
 	if ueIPAddress.IP6PL != false {
 		t.Errorf("Expected UEIPAddress IP6PL false, got %v", ueIPAddress.IP6PL)
 	}
@@ -137,14 +121,6 @@ func TestGivenChooseV4WhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
 	ueIPAddress, err := ie.NewUEIPAddress("", "", sd, 0, 0, true, false)
 	if err != nil {
 		t.Fatalf("Error creating UEIPAddress: %v", err)
-	}
-
-	if ueIPAddress.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress, got %d", ueIPAddress.Header.Type)
-	}
-
-	if ueIPAddress.Header.Length != 1 {
-		t.Errorf("Expected UEIPAddress length 1, got %d", ueIPAddress.Header.Length)
 	}
 
 	if ueIPAddress.IP6PL != false {
@@ -201,14 +177,6 @@ func TestGivenChooseV6WithDelegationWhenNewUEIPAddressThenFieldsSetCorrectly(t *
 		t.Fatalf("Error creating UEIPAddress: %v", err)
 	}
 
-	if ueIPAddress.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress, got %d", ueIPAddress.Header.Type)
-	}
-
-	if ueIPAddress.Header.Length != 2 {
-		t.Errorf("Expected UEIPAddress length 2, got %d", ueIPAddress.Header.Length)
-	}
-
 	if ueIPAddress.IP6PL != false {
 		t.Errorf("Expected UEIPAddress IP6PL false, got %v", ueIPAddress.IP6PL)
 	}
@@ -261,14 +229,6 @@ func TestGivenChooseV6WithPrefixLengthWhenNewUEIPAddressThenFieldsSetCorrectly(t
 	ueIPAddress, err := ie.NewUEIPAddress("", "", sd, 0, prefixLength, false, true)
 	if err != nil {
 		t.Fatalf("Error creating UEIPAddress: %v", err)
-	}
-
-	if ueIPAddress.Header.Type != 93 {
-		t.Errorf("Expected UEIPAddress, got %d", ueIPAddress.Header.Type)
-	}
-
-	if ueIPAddress.Header.Length != 2 {
-		t.Errorf("Expected UEIPAddress length 2, got %d", ueIPAddress.Header.Length)
 	}
 
 	if ueIPAddress.IP6PL != true {
@@ -327,7 +287,7 @@ func TestGivenSerializesWhenDeserializeUEIPAddressThenFieldsSetCorrectly(t *test
 
 	serializedUEIPAddress := ueIPAddress.Serialize()
 
-	deserialized, err := ie.DeserializeUEIPAddress(serializedUEIPAddress[4:])
+	deserialized, err := ie.DeserializeUEIPAddress(serializedUEIPAddress)
 
 	if err != nil {
 		t.Fatalf("Error deserializing UEIPAddress: %v", err)

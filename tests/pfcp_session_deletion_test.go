@@ -45,13 +45,20 @@ func HandlePFCPSessionDeletionResponse(client *client.Pfcp, sequenceNumber uint3
 
 func TestPFCPSessionDeletion(t *testing.T) {
 	t.Run("TestPFCPSessionDeletionRequest", PFCPSessionDeletionRequest)
-	// t.Run("TestPFCPSessionDeletionResponse", PFCPSessionDeletionResponse)
+	t.Run("TestPFCPSessionDeletionResponse", PFCPSessionDeletionResponse)
 }
 
 func PFCPSessionDeletionRequest(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionDeletionRequest(HandlePFCPSessionDeletionRequest)
-	go pfcpServer.Run()
+
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
+
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)
@@ -87,7 +94,14 @@ func PFCPSessionDeletionRequest(t *testing.T) {
 func PFCPSessionDeletionResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionDeletionResponse(HandlePFCPSessionDeletionResponse)
-	go pfcpServer.Run()
+
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
+
 	defer pfcpServer.Close()
 
 	time.Sleep(time.Second)

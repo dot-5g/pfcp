@@ -15,9 +15,7 @@ type HeartbeatResponse struct {
 
 func (msg HeartbeatRequest) GetIEs() []ie.InformationElement {
 	ies := []ie.InformationElement{msg.RecoveryTimeStamp}
-	if !msg.SourceIPAddress.IsZeroValue() {
-		ies = append(ies, msg.SourceIPAddress)
-	}
+	ies = append(ies, msg.SourceIPAddress)
 	return ies
 }
 

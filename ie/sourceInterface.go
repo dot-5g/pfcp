@@ -6,8 +6,7 @@ import (
 )
 
 type SourceInterface struct {
-	Header Header
-	Value  int
+	Value int
 }
 
 func NewSourceInterface(value int) (SourceInterface, error) {
@@ -15,22 +14,13 @@ func NewSourceInterface(value int) (SourceInterface, error) {
 		return SourceInterface{}, fmt.Errorf("invalid value for SourceInterface: got %d, want 0-15", value)
 	}
 
-	ieHeader := Header{
-		Type:   SourceInterfaceIEType,
-		Length: 1,
-	}
-
 	return SourceInterface{
-		Header: ieHeader,
-		Value:  value,
+		Value: value,
 	}, nil
 }
 
 func (sourceInterface SourceInterface) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(sourceInterface.Header.Serialize())
 
 	// Octet 5: Spare (4 bits), Interface Value (4 bits)
 	spareAndValue := (0x00 << 4) | (sourceInterface.Value & 0x0F)
@@ -39,13 +29,8 @@ func (sourceInterface SourceInterface) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (sourceInterface SourceInterface) IsZeroValue() bool {
-	return sourceInterface.Header.Length == 0
-}
-
-func (sourceInterface SourceInterface) SetHeader(header Header) InformationElement {
-	sourceInterface.Header = header
-	return sourceInterface
+func (sourceInterface SourceInterface) GetType() IEType {
+	return SourceInterfaceIEType
 }
 
 func DeserializeSourceInterface(ieValue []byte) (SourceInterface, error) {
