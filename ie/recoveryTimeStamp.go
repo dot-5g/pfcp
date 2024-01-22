@@ -14,7 +14,6 @@ type RecoveryTimeStamp struct {
 }
 
 func NewRecoveryTimeStamp(value time.Time) (RecoveryTimeStamp, error) {
-
 	return RecoveryTimeStamp{
 		Value: value.Unix() + ntpEpochOffset,
 	}, nil
@@ -34,7 +33,6 @@ func (rt RecoveryTimeStamp) GetType() IEType {
 }
 
 func DeserializeRecoveryTimeStamp(ieValue []byte) (RecoveryTimeStamp, error) {
-
 	if len(ieValue) < 4 {
 		return RecoveryTimeStamp{}, fmt.Errorf("invalid length for RecoveryTimeStamp value: expected at least 4 bytes, got %d", len(ieValue))
 	}

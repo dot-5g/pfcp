@@ -7,23 +7,23 @@ import (
 	"strings"
 )
 
-type UdpServer struct {
+type UDPServer struct {
 	conn    *net.UDPConn
 	closeCh chan struct{}
 	Handler func(net.Addr, []byte)
 }
 
-func (udpServer *UdpServer) SetHandler(handler func(net.Addr, []byte)) {
+func (udpServer *UDPServer) SetHandler(handler func(net.Addr, []byte)) {
 	udpServer.Handler = handler
 }
 
-func NewUdpServer() *UdpServer {
-	return &UdpServer{
+func NewUDPServer() *UDPServer {
+	return &UDPServer{
 		closeCh: make(chan struct{}),
 	}
 }
 
-func (udpServer *UdpServer) Run(address string) error {
+func (udpServer *UDPServer) Run(address string) error {
 	var err error
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
@@ -42,7 +42,7 @@ func (udpServer *UdpServer) Run(address string) error {
 	return err
 }
 
-func (udpServer *UdpServer) listen() error {
+func (udpServer *UDPServer) listen() error {
 	for {
 		select {
 		case <-udpServer.closeCh:
@@ -63,7 +63,7 @@ func (udpServer *UdpServer) listen() error {
 	}
 }
 
-func (udpServer *UdpServer) Close() error {
+func (udpServer *UDPServer) Close() error {
 	var err error
 	select {
 	case <-udpServer.closeCh:

@@ -27,7 +27,7 @@ var (
 	pfcpNodeReportResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPNodeReportRequest(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPNodeReportRequest) {
+func HandlePFCPNodeReportRequest(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPNodeReportRequest) {
 	pfcpNodeReportRequestMu.Lock()
 	defer pfcpNodeReportRequestMu.Unlock()
 	pfcpNodeReportRequesthandlerCalled = true
@@ -36,7 +36,7 @@ func HandlePFCPNodeReportRequest(client *client.Pfcp, sequenceNumber uint32, msg
 	pfcpNodeReportRequestReceivedNodeReportType = msg.NodeReportType
 }
 
-func HandlePFCPNodeReportResponse(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPNodeReportResponse) {
+func HandlePFCPNodeReportResponse(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPNodeReportResponse) {
 	pfcpNodeReportResponseMu.Lock()
 	defer pfcpNodeReportResponseMu.Unlock()
 	pfcpNodeReportResponsehandlerCalled = true
@@ -203,5 +203,4 @@ func PFCPNodeReportResponse(t *testing.T) {
 	if pfcpNodeReportResponseReceivedCause.Value != cause.Value {
 		t.Errorf("PFCP Node Report Response handler was called with wrong cause value.\n- Sent cause value: %v\n- Received cause value %v\n", cause.Value, pfcpNodeReportResponseReceivedCause.Value)
 	}
-
 }

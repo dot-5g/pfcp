@@ -132,46 +132,46 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 	}, nil
 }
 
-func (applyaction ApplyAction) Serialize() []byte {
+func (applyAction ApplyAction) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
 	// Octet 5: DFRT (bit 8), IPMD (bit 7), IPMA (bit 6), DUPL (bit 5), NOCP (bit 4), BUFF (bit 3), FORW (bit 2), DROP (bit 1)
 	var byte5 byte
-	if applyaction.DFRT {
+	if applyAction.DFRT {
 		byte5 |= 1 << 7
 	}
-	if applyaction.IPMD {
+	if applyAction.IPMD {
 		byte5 |= 1 << 6
 	}
-	if applyaction.IPMA {
+	if applyAction.IPMA {
 		byte5 |= 1 << 5
 	}
-	if applyaction.DUPL {
+	if applyAction.DUPL {
 		byte5 |= 1 << 4
 	}
-	if applyaction.NOCP {
+	if applyAction.NOCP {
 		byte5 |= 1 << 3
 	}
-	if applyaction.BUFF {
+	if applyAction.BUFF {
 		byte5 |= 1 << 2
 	}
-	if applyaction.FORW {
+	if applyAction.FORW {
 		byte5 |= 1 << 1
 	}
-	if applyaction.DROP {
+	if applyAction.DROP {
 		byte5 |= 1
 	}
 	buf.WriteByte(byte5)
 
 	// Octet 6: Spare (bits 8 to 4), DDPN (bit 3), BDPN (bit 2), EDRT (bit 1)
 	var byte6 byte
-	if applyaction.DDPN {
+	if applyAction.DDPN {
 		byte6 |= 1 << 2
 	}
-	if applyaction.BDPN {
+	if applyAction.BDPN {
 		byte6 |= 1 << 1
 	}
-	if applyaction.EDRT {
+	if applyAction.EDRT {
 		byte6 |= 1
 	}
 	buf.WriteByte(byte6)

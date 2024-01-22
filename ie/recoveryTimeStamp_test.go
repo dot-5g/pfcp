@@ -20,7 +20,6 @@ func TestGivenCorrectTimeWhenNewRecoveryTimeStampThenFieldsSetCorrectly(t *testi
 	if recoveryTimeStamp.Value != time.Unix()+2208988800 {
 		t.Errorf("Expected Value %d, got %d", time.Unix()+2208988800, recoveryTimeStamp.Value)
 	}
-
 }
 
 func TestGivenRecoveryTimeStampSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {

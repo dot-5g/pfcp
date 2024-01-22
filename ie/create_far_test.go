@@ -7,7 +7,7 @@ import (
 )
 
 func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
-	farId, err := ie.NewFarID(1)
+	farID, err := ie.NewFarID(1)
 
 	if err != nil {
 		t.Fatalf("Error creating FARID: %v", err)
@@ -20,7 +20,7 @@ func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
 		t.Fatalf("Error creating ApplyAction: %v", err)
 	}
 
-	createFar, err := ie.NewCreateFAR(farId, applyAction)
+	createFar, err := ie.NewCreateFAR(farID, applyAction)
 
 	if err != nil {
 		t.Fatalf("Error creating CreateFAR: %v", err)
@@ -73,11 +73,10 @@ func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
 	if createFar.ApplyAction.BDPN != false {
 		t.Errorf("Expected BDPN false, got %v", createFar.ApplyAction.BDPN)
 	}
-
 }
 
 func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testing.T) {
-	farId, err := ie.NewFarID(1)
+	farID, err := ie.NewFarID(1)
 	if err != nil {
 		t.Fatalf("Error creating FARID: %v", err)
 	}
@@ -88,7 +87,7 @@ func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testin
 	if err != nil {
 		t.Fatalf("Error creating ApplyAction: %v", err)
 	}
-	createFar, err := ie.NewCreateFAR(farId, applyAction)
+	createFar, err := ie.NewCreateFAR(farID, applyAction)
 
 	if err != nil {
 		t.Fatalf("Error creating CreateFAR: %v", err)
@@ -102,8 +101,8 @@ func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testin
 		t.Fatalf("Error deserializing CreateFAR: %v", err)
 	}
 
-	if deserialized.FARID != farId {
-		t.Errorf("Expected FARID %v, got %v", farId, deserialized.FARID)
+	if deserialized.FARID != farID {
+		t.Errorf("Expected FARID %v, got %v", farID, deserialized.FARID)
 	}
 
 	if deserialized.ApplyAction != applyAction {

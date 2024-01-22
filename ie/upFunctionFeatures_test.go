@@ -42,5 +42,4 @@ func TestGivenSerializedWhenDeserializeUPFunctionFeaturesThenDeserializedCorrect
 	if deserializedFeatures[1] != ie.TRACE {
 		t.Errorf("Expected TRACE feature, got %v", deserializedFeatures[1])
 	}
-
 }

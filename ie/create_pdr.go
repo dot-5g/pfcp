@@ -35,7 +35,6 @@ func (createPDR CreatePDR) Serialize() []byte {
 	}
 
 	return buf.Bytes()
-
 }
 
 func (createPDR CreatePDR) GetIEs() []InformationElement {

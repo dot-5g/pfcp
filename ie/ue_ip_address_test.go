@@ -59,7 +59,6 @@ func TestGivenIPv4AddressWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) 
 	if ueIPAddress.IPv6PrefixLength != 0 {
 		t.Errorf("Expected UEIPAddress IPv6 prefix length 0, got %d", ueIPAddress.IPv6PrefixLength)
 	}
-
 }
 
 func TestGivenIPv6AddresWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
@@ -113,7 +112,6 @@ func TestGivenIPv6AddresWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
 	if ueIPAddress.IPv6PrefixLength != 0 {
 		t.Errorf("Expected UEIPAddress IPv6 prefix length 0, got %d", ueIPAddress.IPv6PrefixLength)
 	}
-
 }
 
 func TestGivenChooseV4WhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
@@ -166,7 +164,6 @@ func TestGivenChooseV4WhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
 	if ueIPAddress.IPv6PrefixLength != 0 {
 		t.Errorf("Expected UEIPAddress IPv6 prefix length 0, got %d", ueIPAddress.IPv6PrefixLength)
 	}
-
 }
 
 func TestGivenChooseV6WithDelegationWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
@@ -220,7 +217,6 @@ func TestGivenChooseV6WithDelegationWhenNewUEIPAddressThenFieldsSetCorrectly(t *
 	if ueIPAddress.IPv6PrefixLength != 0 {
 		t.Errorf("Expected UEIPAddress IPv6 prefix length 0, got %d", ueIPAddress.IPv6PrefixLength)
 	}
-
 }
 
 func TestGivenChooseV6WithPrefixLengthWhenNewUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
@@ -274,7 +270,6 @@ func TestGivenChooseV6WithPrefixLengthWhenNewUEIPAddressThenFieldsSetCorrectly(t
 	if ueIPAddress.IPv6PrefixLength != prefixLength {
 		t.Errorf("Expected UEIPAddress IPv6 prefix length %d, got %d", prefixLength, ueIPAddress.IPv6PrefixLength)
 	}
-
 }
 
 func TestGivenSerializesWhenDeserializeUEIPAddressThenFieldsSetCorrectly(t *testing.T) {
@@ -336,5 +331,4 @@ func TestGivenSerializesWhenDeserializeUEIPAddressThenFieldsSetCorrectly(t *test
 	if deserialized.IPv6PrefixLength != prefixLength {
 		t.Errorf("Expected UEIPAddress IPv6 prefix length %d, got %d", prefixLength, deserialized.IPv6PrefixLength)
 	}
-
 }

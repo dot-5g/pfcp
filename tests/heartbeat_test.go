@@ -16,7 +16,7 @@ var (
 	heartbeatRequesthandlerCalled             bool
 	heartbeatRequestreceivedRecoveryTimestamp ie.RecoveryTimeStamp
 	heartbeatRequestReceivedSequenceNumber    uint32
-	heartbeatRequestReceivedPFCPClient        *client.Pfcp
+	heartbeatRequestReceivedPFCPClient        *client.PFCP
 )
 
 var (
@@ -34,7 +34,7 @@ var (
 	heartbeatResponseReceivedSequenceNumber    uint32
 )
 
-func HandleHeartbeatRequest(pfcpClient *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatRequest) {
+func HandleHeartbeatRequest(pfcpClient *client.PFCP, sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestMu.Lock()
 	defer heartbeatRequestMu.Unlock()
 	heartbeatRequesthandlerCalled = true
@@ -43,7 +43,7 @@ func HandleHeartbeatRequest(pfcpClient *client.Pfcp, sequenceNumber uint32, msg 
 	heartbeatRequestReceivedPFCPClient = pfcpClient
 }
 
-func HandleHeartbeatRequestWithSourceIP(pfcpClient *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatRequest) {
+func HandleHeartbeatRequestWithSourceIP(pfcpClient *client.PFCP, sequenceNumber uint32, msg messages.HeartbeatRequest) {
 	heartbeatRequestWithSourceIPMu.Lock()
 	defer heartbeatRequestWithSourceIPMu.Unlock()
 	heartbeatRequestWithSourceIPhandlerCalled = true
@@ -52,7 +52,7 @@ func HandleHeartbeatRequestWithSourceIP(pfcpClient *client.Pfcp, sequenceNumber 
 	heartbeatRequestWithSourceIPReceivedSequenceNumber = sequenceNumber
 }
 
-func HandleHeartbeatResponse(pfcpClient *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatResponse) {
+func HandleHeartbeatResponse(pfcpClient *client.PFCP, sequenceNumber uint32, msg messages.HeartbeatResponse) {
 	heartbeatResponseMu.Lock()
 	defer heartbeatResponseMu.Unlock()
 	heartbeatResponsehandlerCalled = true
@@ -80,12 +80,7 @@ func HeartbeatRequest(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	go func() {
-		err := pfcpServer.Run()
-		if err != nil {
-			t.Errorf("Expected no error to be returned")
-		}
-	}()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -138,12 +133,7 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 		SourceIPAddress:   sourceIPAddress,
 	}
 
-	go func() {
-		err := pfcpServer.Run()
-		if err != nil {
-			t.Errorf("Expected no error to be returned")
-		}
-	}()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -179,7 +169,6 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 		t.Errorf("Heartbeat request handler was called with wrong sequence number.\n- Sent sequence number: %v\n- Received sequence number %v\n", sentSequenceNumber, heartbeatRequestWithSourceIPReceivedSequenceNumber)
 	}
 	heartbeatRequestWithSourceIPMu.Unlock()
-
 }
 
 func HeartbeatResponse(t *testing.T) {
@@ -196,12 +185,7 @@ func HeartbeatResponse(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	go func() {
-		err := pfcpServer.Run()
-		if err != nil {
-			t.Errorf("Expected no error to be returned")
-		}
-	}()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -227,5 +211,4 @@ func HeartbeatResponse(t *testing.T) {
 	}
 
 	heartbeatResponseMu.Unlock()
-
 }

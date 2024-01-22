@@ -198,5 +198,4 @@ func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testin
 	if deserialized.PDI.UEIPAddress.IPv6PrefixLength != 0 {
 		t.Errorf("Expected CreatePDR PDI UEIPAddress IPv6PrefixLength 0, got %d", deserialized.PDI.UEIPAddress.IPv6PrefixLength)
 	}
-
 }

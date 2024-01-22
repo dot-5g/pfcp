@@ -27,7 +27,6 @@ func TestNewNodeIDIPv4(t *testing.T) {
 			t.Errorf("Expected NodeID value %v, got %v", expectedNodeIDValue, nodeID.Value)
 		}
 	}
-
 }
 
 func TestString(t *testing.T) {
@@ -40,7 +39,6 @@ func TestString(t *testing.T) {
 	if nodeID.String() != nodeIDstring {
 		t.Errorf("Expected NodeID string, got %s", nodeID.String())
 	}
-
 }
 
 func TestNewNodeIDIPv6(t *testing.T) {
@@ -64,7 +62,6 @@ func TestNewNodeIDIPv6(t *testing.T) {
 			t.Errorf("Expected NodeID value %v, got %v", expectedNodeIDValue, nodeID.Value)
 		}
 	}
-
 }
 
 func TestNewNodeIDFQDN(t *testing.T) {
@@ -88,7 +85,6 @@ func TestNewNodeIDFQDN(t *testing.T) {
 			t.Errorf("Expected NodeID value %v, got %v", expectedNodeIDValue, nodeID.Value)
 		}
 	}
-
 }
 
 func TestGivenSerializedWhenDeserializNodeIDThenFieldsSetCorrectly(t *testing.T) {
@@ -113,5 +109,4 @@ func TestGivenSerializedWhenDeserializNodeIDThenFieldsSetCorrectly(t *testing.T)
 	if len(deserializedNodeID.Value) != 4 {
 		t.Errorf("Expected NodeID value length 4, got %d", len(deserializedNodeID.Value))
 	}
-
 }

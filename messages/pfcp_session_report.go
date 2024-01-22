@@ -43,7 +43,6 @@ func DeserializePFCPSessionReportRequest(data []byte) (PFCPSessionReportRequest,
 			reportType = reportTypeIE
 			continue
 		}
-
 	}
 
 	return PFCPSessionReportRequest{
@@ -60,7 +59,6 @@ func DeserializePFCPSessionReportResponse(data []byte) (PFCPSessionReportRespons
 			cause = causeIE
 			continue
 		}
-
 	}
 
 	return PFCPSessionReportResponse{

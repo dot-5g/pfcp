@@ -12,7 +12,6 @@ type CreateFAR struct {
 }
 
 func NewCreateFAR(farid FARID, applyaction ApplyAction) (CreateFAR, error) {
-
 	return CreateFAR{
 		FARID:       farid,
 		ApplyAction: applyaction,
@@ -40,7 +39,7 @@ func (createFAR CreateFAR) GetIEs() []InformationElement {
 	return []InformationElement{createFAR.FARID, createFAR.ApplyAction}
 }
 
-func (createfar CreateFAR) GetType() IEType {
+func (createFAR CreateFAR) GetType() IEType {
 	return CreateFARIEType
 }
 

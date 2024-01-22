@@ -48,12 +48,6 @@ func ServerClosedNoError(t *testing.T) {
 	time.Sleep(time.Second)
 	server.Close()
 
-	go func() {
-		err := server.Run()
-		if err != nil {
-			t.Errorf("Expected no error to be returned")
-		}
-	}()
+	go server.Run()
 	defer server.Close()
-
 }

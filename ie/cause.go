@@ -56,7 +56,6 @@ func (cause Cause) GetType() IEType {
 }
 
 func DeserializeCause(ieValue []byte) (Cause, error) {
-
 	if len(ieValue) != 1 {
 		return Cause{}, fmt.Errorf("invalid length for Cause: got %d bytes, want 1", len(ieValue))
 	}

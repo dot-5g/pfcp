@@ -7,7 +7,6 @@ import (
 )
 
 func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *testing.T) {
-
 	sourceIPAddress, err := ie.NewSourceIPAddress("1.2.3.4/24", "")
 
 	if err != nil {
@@ -32,7 +31,6 @@ func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 }
 
 func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *testing.T) {
-
 	sourceIPAddress, err := ie.NewSourceIPAddress("", "2001:db8::/32")
 
 	if err != nil {
@@ -57,7 +55,6 @@ func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 }
 
 func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
-
 	sourceIPAddress, err := ie.NewSourceIPAddress("2.2.3.1/24", "")
 
 	if err != nil {
@@ -99,5 +96,4 @@ func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.
 			t.Errorf("Expected IPv4 address %v, got %v", expectedIPv4Address, deserializedIPv4Address)
 		}
 	}
-
 }

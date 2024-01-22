@@ -27,7 +27,7 @@ var (
 	pfcpSessionReportResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPSessionReportRequest(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportRequest) {
+func HandlePFCPSessionReportRequest(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportRequest) {
 	pfcpSessionReportRequestMu.Lock()
 	defer pfcpSessionReportRequestMu.Unlock()
 	pfcpSessionReportRequesthandlerCalled = true
@@ -36,7 +36,7 @@ func HandlePFCPSessionReportRequest(client *client.Pfcp, sequenceNumber uint32, 
 	pfcpSessionReportRequestReceivedReportType = msg.ReportType
 }
 
-func HandlePFCPSessionReportResponse(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportResponse) {
+func HandlePFCPSessionReportResponse(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportResponse) {
 	pfcpSessionReportResponseMu.Lock()
 	defer pfcpSessionReportResponseMu.Unlock()
 	pfcpSessionReportResponsehandlerCalled = true
@@ -107,19 +107,13 @@ func PFCPSessionReportRequest(t *testing.T) {
 	if pfcpSessionReportRequestReceivedReportType.Reports[1] != ie.SESR {
 		t.Errorf("Expected report %d, got %d", ie.SESR, pfcpSessionReportRequestReceivedReportType.Reports[1])
 	}
-
 }
 
 func PFCPSessionReportResponse(t *testing.T) {
 	pfcpServer := server.New("127.0.0.1:8805")
 	pfcpServer.PFCPSessionReportResponse(HandlePFCPSessionReportResponse)
 
-	go func() {
-		err := pfcpServer.Run()
-		if err != nil {
-			t.Errorf("Expected no error to be returned")
-		}
-	}()
+	go pfcpServer.Run()
 
 	defer pfcpServer.Close()
 
@@ -159,5 +153,4 @@ func PFCPSessionReportResponse(t *testing.T) {
 	if pfcpSessionReportResponseReceivedCause.Value != ie.RequestAccepted {
 		t.Errorf("Expected cause value %d, got %d", ie.RequestAccepted, pfcpSessionReportResponseReceivedCause.Value)
 	}
-
 }

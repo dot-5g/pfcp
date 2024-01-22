@@ -9,16 +9,16 @@ import (
 	"github.com/dot-5g/pfcp/messages"
 )
 
-type MockUdpSender struct {
+type MockUDPSender struct {
 	SendFunc func(msg []byte) error
 }
 
-func (m *MockUdpSender) Send(msg []byte) error {
+func (m *MockUDPSender) Send(msg []byte) error {
 	return m.SendFunc(msg)
 }
 
 func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
-	mockSender := &MockUdpSender{
+	mockSender := &MockUDPSender{
 		SendFunc: func(msg []byte) error {
 			return nil
 		},
@@ -41,5 +41,4 @@ func TestGivenPfcpWhenSendHeartbeatRequestThenNoError(t *testing.T) {
 	if err != nil {
 		t.Errorf("SendHeartbeatRequest failed: %v", err)
 	}
-
 }

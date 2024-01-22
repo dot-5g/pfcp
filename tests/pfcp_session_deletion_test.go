@@ -26,7 +26,7 @@ var (
 	pfcpSessionDeletionResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPSessionDeletionRequest(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest) {
+func HandlePFCPSessionDeletionRequest(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest) {
 	pfcpSessionDeletionRequestMu.Lock()
 	defer pfcpSessionDeletionRequestMu.Unlock()
 	pfcpSessionDeletionRequesthandlerCalled = true
@@ -34,7 +34,7 @@ func HandlePFCPSessionDeletionRequest(client *client.Pfcp, sequenceNumber uint32
 	pfcpSessionDeletionRequestReceivedSEID = seid
 }
 
-func HandlePFCPSessionDeletionResponse(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse) {
+func HandlePFCPSessionDeletionResponse(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse) {
 	pfcpSessionDeletionResponseMu.Lock()
 	defer pfcpSessionDeletionResponseMu.Unlock()
 	pfcpSessionDeletionResponsehandlerCalled = true
@@ -135,5 +135,4 @@ func PFCPSessionDeletionResponse(t *testing.T) {
 	if pfcpSessionDeletionResponseReceivedCause != PFCPSessionDeletionResponseMsg.Cause {
 		t.Errorf("PFCP Session Deletion Response handler was called with wrong cause.\n- Sent cause: %v\n- Received cause %v\n", PFCPSessionDeletionResponseMsg.Cause, pfcpSessionDeletionResponseReceivedCause)
 	}
-
 }

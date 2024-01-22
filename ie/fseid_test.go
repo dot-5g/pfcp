@@ -34,7 +34,6 @@ func TestGivenValidIPv4AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing.T
 			t.Errorf("Expected FSEID IPv4 %v, got %v", expectedIPv4, fseid.IPv4)
 		}
 	}
-
 }
 
 func TestGivenValidIPv6AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing.T) {
@@ -64,7 +63,6 @@ func TestGivenValidIPv6AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing.T
 			t.Errorf("Expected FSEID IPv6 %v, got %v", expectedIPv6, fseid.IPv6)
 		}
 	}
-
 }
 
 func TestGivenIPv4AndIPv6AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing.T) {
@@ -101,7 +99,6 @@ func TestGivenIPv4AndIPv6AddressWhenNewFSEIDThenFieldsAreSetCorrectly(t *testing
 			t.Errorf("Expected FSEID IPv6 %v, got %v", expectedIPv6, fseid.IPv6)
 		}
 	}
-
 }
 
 func TestGivenIPv4SerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
@@ -150,5 +147,4 @@ func TestGivenIPv4SerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) 
 			t.Errorf("Expected FSEID IPv6 %v, got %v", expectedIPv6, deserialized.IPv6)
 		}
 	}
-
 }

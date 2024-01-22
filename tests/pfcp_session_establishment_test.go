@@ -30,7 +30,7 @@ var (
 	pfcpSessionEstablishmentResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPSessionEstablishmentRequest(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest) {
+func HandlePFCPSessionEstablishmentRequest(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest) {
 	pfcpSessionEstablishmentRequestMu.Lock()
 	defer pfcpSessionEstablishmentRequestMu.Unlock()
 	pfcpSessionEstablishmentRequesthandlerCalled = true
@@ -42,7 +42,7 @@ func HandlePFCPSessionEstablishmentRequest(client *client.Pfcp, sequenceNumber u
 	pfcpSessionEstablishmentRequestReceivedCreateFAR = msg.CreateFAR
 }
 
-func HandlePFCPSessionEstablishmentResponse(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse) {
+func HandlePFCPSessionEstablishmentResponse(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse) {
 	pfcpSessionEstablishmentResponseMu.Lock()
 	defer pfcpSessionEstablishmentResponseMu.Unlock()
 	pfcpSessionEstablishmentResponsehandlerCalled = true
@@ -303,5 +303,4 @@ func PFCPSessionEstablishmentResponse(t *testing.T) {
 	}
 
 	pfcpSessionEstablishmentResponseMu.Unlock()
-
 }

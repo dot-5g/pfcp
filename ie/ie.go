@@ -1,3 +1,4 @@
+// Package ie contains the Information Elements (IEs) used by the PFCP protocol.
 package ie
 
 import (
@@ -47,18 +48,13 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 		ieLength := binary.BigEndian.Uint16(b[index+2 : index+4])
 		index += HeaderLength
 
-		ieHeader := Header{
-			Type:   ieType,
-			Length: ieLength,
+		if len(b[index:]) < int(ieLength) {
+			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieLength, len(b[index:]))
 		}
 
-		if len(b[index:]) < int(ieHeader.Length) {
-			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieHeader.Length, len(b[index:]))
-		}
-
-		ieValue := b[index : index+int(ieHeader.Length)]
+		ieValue := b[index : index+int(ieLength)]
 		var ie InformationElement
-		switch ieHeader.Type {
+		switch ieType {
 		case CauseIEType:
 			ie, err = DeserializeCause(ieValue)
 		case NodeIDIEType:
@@ -94,14 +90,14 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 		case UEIPAddressIEType:
 			ie, err = DeserializeUEIPAddress(ieValue)
 		default:
-			err = fmt.Errorf("unknown IE type %d", ieHeader.Type)
+			err = fmt.Errorf("unknown IE type %d", ieType)
 		}
 
 		if ie != nil {
 			ies = append(ies, ie)
 		}
 
-		index += int(ieHeader.Length)
+		index += int(ieLength)
 	}
 
 	return ies, err

@@ -26,7 +26,7 @@ var (
 	pfcpAssociationUpdateResponseReceivedCause          ie.Cause
 )
 
-func HandlePFCPAssociationUpdateRequest(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationUpdateRequest) {
+func HandlePFCPAssociationUpdateRequest(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationUpdateRequest) {
 	pfcpAssociationUpdateRequestMu.Lock()
 	defer pfcpAssociationUpdateRequestMu.Unlock()
 	pfcpAssociationUpdateRequesthandlerCalled = true
@@ -34,7 +34,7 @@ func HandlePFCPAssociationUpdateRequest(client *client.Pfcp, sequenceNumber uint
 	pfcpAssociationUpdateRequestReceivedNodeID = msg.NodeID
 }
 
-func HandlePFCPAssociationUpdateResponse(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse) {
+func HandlePFCPAssociationUpdateResponse(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse) {
 	pfcpAssociationUpdateResponseMu.Lock()
 	defer pfcpAssociationUpdateResponseMu.Unlock()
 	pfcpAssociationUpdateResponsehandlerCalled = true
@@ -173,5 +173,4 @@ func PFCPAssociationUpdateResponse(t *testing.T) {
 	if pfcpAssociationUpdateResponseReceivedCause.Value != cause.Value {
 		t.Errorf("PFCP Association Update Response handler was called with wrong cause value.\n- Sent cause value: %v\n- Received cause value %v\n", cause.Value, pfcpAssociationUpdateResponseReceivedCause.Value)
 	}
-
 }

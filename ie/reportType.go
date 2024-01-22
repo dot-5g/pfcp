@@ -45,7 +45,6 @@ func (reportType ReportType) GetType() IEType {
 }
 
 func DeserializeReportType(ieValue []byte) (ReportType, error) {
-
 	var reports []Report
 	reportsByte := ieValue[0]
 
