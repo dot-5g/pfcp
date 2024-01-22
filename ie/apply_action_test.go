@@ -14,14 +14,6 @@ func TestGivenCorrectValuesWhenNewApplyActionThenFieldsSetCorrectly(t *testing.T
 		t.Fatalf("Error creating ApplyAction: %v", err)
 	}
 
-	if applyAction.Header.Type != 44 {
-		t.Errorf("Expected IEType 44, got %d", applyAction.Header.Type)
-	}
-
-	if applyAction.Header.Length != 2 {
-		t.Errorf("Expected Length 2, got %d", applyAction.Header.Length)
-	}
-
 	if applyAction.FORW != true {
 		t.Errorf("Expected FORW %v, got %v", flag, applyAction.FORW)
 	}
@@ -114,7 +106,7 @@ func TestGivenApplyActionSerializedWhenDeserializeThenFieldsSetCorrectly(t *test
 
 	serialized := applyAction.Serialize()
 
-	deserialized, err := ie.DeserializeApplyAction(serialized[4:])
+	deserialized, err := ie.DeserializeApplyAction(serialized)
 
 	if err != nil {
 		t.Fatalf("Error deserializing ApplyAction: %v", err)

@@ -6,7 +6,6 @@ import (
 )
 
 type SourceIPAddress struct {
-	Header           Header
 	MPL              bool
 	V4               bool
 	V6               bool
@@ -18,19 +17,16 @@ type SourceIPAddress struct {
 func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress, error) {
 	var v4 bool
 	var v6 bool
-	var length uint16
 	var mpl bool
 	var maskPrefixLength uint8
 	var ipv4Addr []byte
 	var ipv6Addr []byte
-	length = 2
 	ipv4, ipv4net, _ := net.ParseCIDR(ipv4Address)
 	ipv6, ipv6net, _ := net.ParseCIDR(ipv6Address)
 
 	if ipv4.To4() != nil {
 		v4 = true
 		ipv4Addr = ipv4.To4()
-		length += 4
 		mpl = true
 		ones, _ := ipv4net.Mask.Size()
 		maskPrefixLength = uint8(ones)
@@ -39,19 +35,12 @@ func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress
 	if ipv6.To16() != nil {
 		v6 = true
 		ipv6Addr = ipv6.To16()
-		length += 16
 		mpl = true
 		ones, _ := ipv6net.Mask.Size()
 		maskPrefixLength = uint8(ones)
 	}
 
-	ieHeader := Header{
-		Type:   SourceIPAddressIEType,
-		Length: length,
-	}
-
 	sourceIPAddress := SourceIPAddress{
-		Header:           ieHeader,
 		MPL:              mpl,
 		V4:               v4,
 		V6:               v6,
@@ -63,15 +52,8 @@ func NewSourceIPAddress(ipv4Address string, ipv6Address string) (SourceIPAddress
 	return sourceIPAddress, nil
 }
 
-func (sourceIPAddress SourceIPAddress) IsZeroValue() bool {
-	return sourceIPAddress.Header.Length == 0
-}
-
 func (sourceIPAddress SourceIPAddress) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(sourceIPAddress.Header.Serialize())
 
 	// Octet 5: Spare, Spare, Spare, MPL, V4, V6
 	var octet5 byte
@@ -101,9 +83,8 @@ func (sourceIPAddress SourceIPAddress) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (sourceIPAddress SourceIPAddress) SetHeader(header Header) InformationElement {
-	sourceIPAddress.Header = header
-	return sourceIPAddress
+func (sourceIPAddress SourceIPAddress) GetType() IEType {
+	return SourceIPAddressIEType
 }
 
 func DeserializeSourceIPAddress(ieValue []byte) (SourceIPAddress, error) {

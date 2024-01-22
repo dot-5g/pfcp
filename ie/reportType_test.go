@@ -15,14 +15,6 @@ func TestGivenCorrectValueWhenNewReportTypeThenFieldsSetCorrectly(t *testing.T) 
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	if reportType.Header.Type != ie.ReportTypeIEType {
-		t.Errorf("Expected IE type %d, got %d", ie.ReportTypeIEType, reportType.Header.Type)
-	}
-
-	if reportType.Header.Length != 1 {
-		t.Errorf("Expected length 1, got %d", reportType.Header.Length)
-	}
-
 	if len(reportType.Reports) != 2 {
 		t.Errorf("Expected 2 reports, got %d", len(reportType.Reports))
 	}
@@ -47,7 +39,7 @@ func TestGivenSerializedWhenDeserializeReportTypeThenFieldsSetCorrectly(t *testi
 
 	serializedReportType := reportType.Serialize()
 
-	deserializedReportType, err := ie.DeserializeReportType(serializedReportType[4:])
+	deserializedReportType, err := ie.DeserializeReportType(serializedReportType)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}

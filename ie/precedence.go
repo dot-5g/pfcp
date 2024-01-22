@@ -7,27 +7,17 @@ import (
 )
 
 type Precedence struct {
-	Header Header
-	Value  uint32
+	Value uint32
 }
 
 func NewPrecedence(value uint32) (Precedence, error) {
-	ieHeader := Header{
-		Type:   PrecedenceIEType,
-		Length: 4,
-	}
-
 	return Precedence{
-		Header: ieHeader,
-		Value:  value,
+		Value: value,
 	}, nil
 }
 
 func (precedence Precedence) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(precedence.Header.Serialize())
 
 	// Octets 5 to 8: Value
 	binary.Write(buf, binary.BigEndian, precedence.Value)
@@ -35,13 +25,8 @@ func (precedence Precedence) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (precedence Precedence) IsZeroValue() bool {
-	return precedence.Header.Length == 0
-}
-
-func (precedence Precedence) SetHeader(header Header) InformationElement {
-	precedence.Header = header
-	return precedence
+func (precedence Precedence) GetType() IEType {
+	return PrecedenceIEType
 }
 
 func DeserializePrecedence(ieValue []byte) (Precedence, error) {

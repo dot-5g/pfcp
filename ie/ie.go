@@ -29,8 +29,7 @@ const (
 
 type InformationElement interface {
 	Serialize() []byte
-	IsZeroValue() bool
-	SetHeader(Header) InformationElement
+	GetType() IEType
 }
 
 func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
@@ -99,7 +98,6 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 		}
 
 		if ie != nil {
-			ie = ie.SetHeader(ieHeader)
 			ies = append(ies, ie)
 		}
 

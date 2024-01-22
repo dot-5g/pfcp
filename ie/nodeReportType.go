@@ -6,32 +6,23 @@ import (
 )
 
 type NodeReportType struct {
-	Header Header
-	GPQR   bool
-	CKDR   bool
-	UPRR   bool
-	UPFR   bool
+	GPQR bool
+	CKDR bool
+	UPRR bool
+	UPFR bool
 }
 
 func NewNodeReportType(gpqr bool, ckdr bool, uprr bool, upfr bool) (NodeReportType, error) {
-	ieHeader := Header{
-		Type:   NodeReportTypeIEType,
-		Length: 1,
-	}
 	return NodeReportType{
-		Header: ieHeader,
-		GPQR:   gpqr,
-		CKDR:   ckdr,
-		UPRR:   uprr,
-		UPFR:   upfr,
+		GPQR: gpqr,
+		CKDR: ckdr,
+		UPRR: uprr,
+		UPFR: upfr,
 	}, nil
 }
 
 func (nrt NodeReportType) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(nrt.Header.Serialize())
 
 	// Octet 5: Spare, Spare, Spare, Spare, GPQR, CKDR, UPRR, UPFR
 	var octet5 byte
@@ -52,13 +43,8 @@ func (nrt NodeReportType) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (nrt NodeReportType) IsZeroValue() bool {
-	return nrt.Header.Length == 0
-}
-
-func (nrt NodeReportType) SetHeader(header Header) InformationElement {
-	nrt.Header = header
-	return nrt
+func (nrt NodeReportType) GetType() IEType {
+	return NodeReportTypeIEType
 }
 
 func DeserializeNodeReportType(ieValue []byte) (NodeReportType, error) {

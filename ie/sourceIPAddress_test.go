@@ -14,14 +14,6 @@ func TestGivenCorrectIPv4AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
 	}
 
-	if sourceIPAddress.Header.Type != 192 {
-		t.Errorf("Expected NodeID, got %d", sourceIPAddress.Header.Type)
-	}
-
-	if sourceIPAddress.Header.Length != 6 {
-		t.Errorf("Expected NodeID length 5, got %d", sourceIPAddress.Header.Length)
-	}
-
 	if sourceIPAddress.MPL != true {
 		t.Errorf("Expected NodeID MPL true, got %v", sourceIPAddress.MPL)
 	}
@@ -45,14 +37,6 @@ func TestGivenCorrectIPv6AddressWhenSourceIPAddressThenFieldsSetCorrectly(t *tes
 
 	if err != nil {
 		t.Fatalf("Error creating SourceIPAddress: %v", err)
-	}
-
-	if sourceIPAddress.Header.Type != 192 {
-		t.Errorf("Expected NodeID, got %d", sourceIPAddress.Header.Type)
-	}
-
-	if sourceIPAddress.Header.Length != 18 {
-		t.Errorf("Expected NodeID length 18, got %d", sourceIPAddress.Header.Length)
 	}
 
 	if sourceIPAddress.MPL != true {
@@ -82,7 +66,7 @@ func TestGivenSerializedAddressWhenDeserializeThenFieldsSetCorrectly(t *testing.
 
 	serializedSourceIPAddress := sourceIPAddress.Serialize()
 
-	deserializedSourceIPAddress, err := ie.DeserializeSourceIPAddress(serializedSourceIPAddress[4:])
+	deserializedSourceIPAddress, err := ie.DeserializeSourceIPAddress(serializedSourceIPAddress)
 
 	if err != nil {
 		t.Fatalf("Error deserializing SourceIPAddress: %v", err)

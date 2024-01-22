@@ -6,18 +6,17 @@ import (
 )
 
 type ApplyAction struct {
-	Header Header
-	DFRT   bool
-	IPMD   bool
-	IPMA   bool
-	DUPL   bool
-	NOCP   bool
-	BUFF   bool
-	FORW   bool
-	DROP   bool
-	DDPN   bool
-	BDPN   bool
-	EDRT   bool
+	DFRT bool
+	IPMD bool
+	IPMA bool
+	DUPL bool
+	NOCP bool
+	BUFF bool
+	FORW bool
+	DROP bool
+	DDPN bool
+	BDPN bool
+	EDRT bool
 }
 
 type ApplyActionFlag int
@@ -61,11 +60,6 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 	var ddpn bool
 	var bdpn bool
 	var edrt bool
-
-	ieHeader := Header{
-		Type:   IEType(ApplyActionIEType),
-		Length: 2,
-	}
 
 	if (contains(extraFlags, NOCP) || contains(extraFlags, BDPN) || contains(extraFlags, DDPN)) && flag != BUFF {
 		return ApplyAction{}, fmt.Errorf("the NOCP flag, BDPN and DDPN flag may only be set if the BUFF flag is set")
@@ -124,26 +118,22 @@ func NewApplyAction(flag ApplyActionFlag, extraFlags []ApplyActionExtraFlag) (Ap
 	}
 
 	return ApplyAction{
-		Header: ieHeader,
-		DFRT:   dfrt,
-		IPMD:   ipmd,
-		IPMA:   ipma,
-		DUPL:   dupl,
-		NOCP:   nocp,
-		BUFF:   buff,
-		FORW:   forw,
-		DROP:   drop,
-		DDPN:   ddpn,
-		BDPN:   bdpn,
-		EDRT:   edrt,
+		DFRT: dfrt,
+		IPMD: ipmd,
+		IPMA: ipma,
+		DUPL: dupl,
+		NOCP: nocp,
+		BUFF: buff,
+		FORW: forw,
+		DROP: drop,
+		DDPN: ddpn,
+		BDPN: bdpn,
+		EDRT: edrt,
 	}, nil
 }
 
 func (applyaction ApplyAction) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(applyaction.Header.Serialize())
 
 	// Octet 5: DFRT (bit 8), IPMD (bit 7), IPMA (bit 6), DUPL (bit 5), NOCP (bit 4), BUFF (bit 3), FORW (bit 2), DROP (bit 1)
 	var byte5 byte
@@ -189,13 +179,8 @@ func (applyaction ApplyAction) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (applyaction ApplyAction) IsZeroValue() bool {
-	return applyaction.Header.Length == 0
-}
-
-func (applyaction ApplyAction) SetHeader(header Header) InformationElement {
-	applyaction.Header = header
-	return applyaction
+func (applyAction ApplyAction) GetType() IEType {
+	return ApplyActionIEType
 }
 
 func DeserializeApplyAction(ieValue []byte) (ApplyAction, error) {

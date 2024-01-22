@@ -74,19 +74,10 @@ func TestGivenCorrectValuesWhenNewFarThenFieldsSetCorrectly(t *testing.T) {
 		t.Errorf("Expected BDPN false, got %v", createFar.ApplyAction.BDPN)
 	}
 
-	if createFar.ApplyAction.Header.Length != 2 {
-		t.Errorf("Expected Length 2, got %d", createFar.ApplyAction.Header.Length)
-	}
-
-	if createFar.ApplyAction.Header.Type != 44 {
-		t.Errorf("Expected IEType 44, got %d", createFar.ApplyAction.Header.Type)
-	}
-
 }
 
 func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testing.T) {
 	farId, err := ie.NewFarID(1)
-
 	if err != nil {
 		t.Fatalf("Error creating FARID: %v", err)
 	}
@@ -105,7 +96,7 @@ func TestGivenSerializedWhenDeserializeCreateFarThenFieldsSetCorrectly(t *testin
 
 	serialized := createFar.Serialize()
 
-	deserialized, err := ie.DeserializeCreateFAR(serialized[4:])
+	deserialized, err := ie.DeserializeCreateFAR(serialized)
 
 	if err != nil {
 		t.Fatalf("Error deserializing CreateFAR: %v", err)

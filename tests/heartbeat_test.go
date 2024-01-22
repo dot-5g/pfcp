@@ -80,7 +80,12 @@ func HeartbeatRequest(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 
@@ -133,7 +138,12 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 		SourceIPAddress:   sourceIPAddress,
 	}
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 
@@ -153,14 +163,6 @@ func HeartbeatRequestWithSourceIPAddress(t *testing.T) {
 	}
 	if heartbeatRequestWithSourceIPreceivedRecoveryTimestamp != recoveryTimeStamp {
 		t.Errorf("Heartbeat request handler was called with wrong timestamp.\n- Sent timestamp: %v\n- Received timestamp %v\n", recoveryTimeStamp, heartbeatRequestWithSourceIPreceivedRecoveryTimestamp)
-	}
-
-	if heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Type != sourceIPAddress.Header.Type {
-		t.Errorf("Heartbeat request handler was called with wrong source IP address type.\n- Sent source IP address type: %v\n- Received source IP address type %v\n", sourceIPAddress.Header.Type, heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Type)
-	}
-
-	if heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Length != sourceIPAddress.Header.Length {
-		t.Errorf("Heartbeat request handler was called with wrong source IP address length.\n- Sent source IP address length: %v\n- Received source IP address length %v\n", sourceIPAddress.Header.Length, heartbeatRequestWithSourceIPreceivedSourceIPAddress.Header.Length)
 	}
 
 	if len(heartbeatRequestWithSourceIPreceivedSourceIPAddress.IPv4Address) != len(sourceIPAddress.IPv4Address) {
@@ -194,7 +196,12 @@ func HeartbeatResponse(t *testing.T) {
 		RecoveryTimeStamp: recoveryTimeStamp,
 	}
 
-	go pfcpServer.Run()
+	go func() {
+		err := pfcpServer.Run()
+		if err != nil {
+			t.Errorf("Expected no error to be returned")
+		}
+	}()
 
 	defer pfcpServer.Close()
 

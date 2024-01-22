@@ -137,7 +137,7 @@ func TestGivenSerializedWhenDeserializeCreatePDRThenFieldsSetCorrectly(t *testin
 
 	serialized := createPDR.Serialize()
 
-	deserialized, err := ie.DeserializeCreatePDR(serialized[4:])
+	deserialized, err := ie.DeserializeCreatePDR(serialized)
 
 	if err != nil {
 		t.Fatalf("Error deserializing CreatePDR: %v", err)

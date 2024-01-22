@@ -18,11 +18,7 @@ type PFCPAssociationSetupResponse struct {
 
 func (msg PFCPAssociationSetupRequest) GetIEs() []ie.InformationElement {
 	ies := []ie.InformationElement{msg.NodeID, msg.RecoveryTimeStamp}
-
-	if !msg.UPFunctionFeatures.IsZeroValue() {
-		ies = append(ies, msg.UPFunctionFeatures)
-	}
-
+	ies = append(ies, msg.UPFunctionFeatures)
 	return ies
 }
 

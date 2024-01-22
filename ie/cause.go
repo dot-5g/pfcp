@@ -6,8 +6,7 @@ import (
 )
 
 type Cause struct {
-	Header Header
-	Value  CauseValue
+	Value CauseValue
 }
 
 type CauseValue uint8
@@ -38,22 +37,13 @@ func NewCause(value CauseValue) (Cause, error) {
 		return Cause{}, fmt.Errorf("invalid value for Cause: %d", value)
 	}
 
-	header := Header{
-		Type:   CauseIEType,
-		Length: 1,
-	}
-
 	return Cause{
-		Header: header,
-		Value:  value,
+		Value: value,
 	}, nil
 }
 
 func (cause Cause) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(cause.Header.Serialize())
 
 	// Octet 5: Value (1 byte)
 	buf.WriteByte(uint8(cause.Value))
@@ -61,13 +51,8 @@ func (cause Cause) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (cause Cause) IsZeroValue() bool {
-	return cause.Value == 0
-}
-
-func (cause Cause) SetHeader(ieHeader Header) InformationElement {
-	cause.Header = ieHeader
-	return cause
+func (cause Cause) GetType() IEType {
+	return CauseIEType
 }
 
 func DeserializeCause(ieValue []byte) (Cause, error) {

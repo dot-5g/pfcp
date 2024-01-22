@@ -7,7 +7,6 @@ import (
 )
 
 type UEIPAddress struct {
-	Header                   Header
 	IP6PL                    bool
 	CHV6                     bool
 	CHV4                     bool
@@ -30,7 +29,6 @@ func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination
 	var sourceDestination bool
 	var ipv4Bytes []byte
 	var ipv6Bytes []byte
-	var length uint16 = 1
 	var v4 bool
 	var v6 bool
 	var ipv6d bool
@@ -49,7 +47,6 @@ func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination
 			return UEIPAddress{}, fmt.Errorf("cannot provide IPv6 prefix delegation bits without IPv6 Address or choosing IPv6")
 		}
 		ipv6d = true
-		length += 1
 	}
 
 	if ipv6PrefixLength != 0 {
@@ -60,7 +57,6 @@ func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination
 			return UEIPAddress{}, fmt.Errorf("cannot provide IPv6 prefix length with IPv6 prefix delegation bits")
 		}
 		ip6pl = true
-		length += 1
 	}
 
 	if ipv4Address != "" {
@@ -69,7 +65,6 @@ func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination
 			return UEIPAddress{}, fmt.Errorf("invalid IPv4 address")
 		}
 		v4 = true
-		length += 4
 	}
 
 	if ipv6Address != "" {
@@ -78,16 +73,9 @@ func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination
 			return UEIPAddress{}, fmt.Errorf("invalid IPv6 address")
 		}
 		v6 = true
-		length += 16
-	}
-
-	ieHeader := Header{
-		Type:   UEIPAddressIEType,
-		Length: length,
 	}
 
 	return UEIPAddress{
-		Header:                   ieHeader,
 		IP6PL:                    ip6pl,
 		CHV6:                     chooseV6,
 		CHV4:                     chooseV4,
@@ -102,15 +90,8 @@ func NewUEIPAddress(ipv4Address string, ipv6Address string, sd SourceDestination
 	}, nil
 }
 
-func (ueIPaddress UEIPAddress) IsZeroValue() bool {
-	return ueIPaddress.Header.Length == 0
-}
-
 func (ueIPaddress UEIPAddress) Serialize() []byte {
 	buf := new(bytes.Buffer)
-
-	// Octets 1 to 4: Header
-	buf.Write(ueIPaddress.Header.Serialize())
 
 	// Octet 5: Bit 1: V6, Bit 2: V4, Bit 3: S/D, Bit 4: IPv6D, Bit 5: CHV4, Bit 6: CHV6, Bit 7: IP6PL, Bit 8: Spare
 	var octet5 byte
@@ -160,9 +141,8 @@ func (ueIPaddress UEIPAddress) Serialize() []byte {
 	return buf.Bytes()
 }
 
-func (ueIPaddress UEIPAddress) SetHeader(ieHeader Header) InformationElement {
-	ueIPaddress.Header = ieHeader
-	return ueIPaddress
+func (ueIPaddress UEIPAddress) GetType() IEType {
+	return UEIPAddressIEType
 }
 
 func DeserializeUEIPAddress(ieValue []byte) (UEIPAddress, error) {
