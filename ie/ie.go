@@ -2,7 +2,6 @@
 package ie
 
 import (
-	"encoding/binary"
 	"fmt"
 )
 
@@ -35,7 +34,6 @@ type InformationElement interface {
 
 func Serialize(ie InformationElement) []byte {
 	var payload []byte
-
 	serializedElement := ie.Serialize()
 	elementLength := uint16(len(serializedElement))
 	header := Header{
@@ -44,32 +42,35 @@ func Serialize(ie InformationElement) []byte {
 	}
 	payload = append(payload, header.Serialize()...)
 	payload = append(payload, serializedElement...)
-
 	return payload
 }
 
-func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
+func DeserializeInformationElements(payload []byte) ([]InformationElement, error) {
 	var ies []InformationElement
 	var err error
+	var header Header
 
 	index := 0
 
-	for index < len(b) {
-		if len(b[index:]) < HeaderLength {
+	for index < len(payload) {
+		if len(payload[index:]) < HeaderLength {
 			return nil, fmt.Errorf("not enough bytes for IE header")
 		}
 
-		ieType := IEType(binary.BigEndian.Uint16(b[index : index+2]))
-		ieLength := binary.BigEndian.Uint16(b[index+2 : index+4])
-		index += HeaderLength
-
-		if len(b[index:]) < int(ieLength) {
-			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", ieLength, len(b[index:]))
+		header, err = DeserializeHeader(payload[index : index+HeaderLength])
+		if err != nil {
+			return nil, err
 		}
 
-		ieValue := b[index : index+int(ieLength)]
+		index += HeaderLength
+
+		if len(payload[index:]) < int(header.Length) {
+			return nil, fmt.Errorf("not enough bytes for IE data, expected %d, got %d", header.Length, len(payload[index:]))
+		}
+
+		ieValue := payload[index : index+int(header.Length)]
 		var ie InformationElement
-		switch ieType {
+		switch header.Type {
 		case CauseIEType:
 			ie, err = DeserializeCause(ieValue)
 		case NodeIDIEType:
@@ -105,14 +106,14 @@ func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 		case UEIPAddressIEType:
 			ie, err = DeserializeUEIPAddress(ieValue)
 		default:
-			err = fmt.Errorf("unknown IE type %d", ieType)
+			err = fmt.Errorf("unknown IE type %d", header.Type)
 		}
 
 		if ie != nil {
 			ies = append(ies, ie)
 		}
 
-		index += int(ieLength)
+		index += int(header.Length)
 	}
 
 	return ies, err
