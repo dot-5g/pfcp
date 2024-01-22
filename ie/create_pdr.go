@@ -23,38 +23,23 @@ func NewCreatePDR(pdrID PDRID, precedence Precedence, pdi PDI) (CreatePDR, error
 func (createPDR CreatePDR) Serialize() []byte {
 	buf := new(bytes.Buffer)
 
-	// Octets 5 to n: PDR ID
-	serializedPDRID := createPDR.PDRID.Serialize()
-	pdrIDLength := uint16(len(serializedPDRID))
-	pdrIDHeader := Header{
-		Type:   createPDR.PDRID.GetType(),
-		Length: pdrIDLength,
+	for _, ie := range createPDR.GetIEs() {
+		serializedIE := ie.Serialize()
+		ieLength := uint16(len(serializedIE))
+		ieHeader := Header{
+			Type:   ie.GetType(),
+			Length: ieLength,
+		}
+		buf.Write(ieHeader.Serialize())
+		buf.Write(ie.Serialize())
 	}
-	buf.Write(pdrIDHeader.Serialize())
-	buf.Write(serializedPDRID)
-
-	// Octets n+1 to m: Precedence
-	serializedPrecedence := createPDR.Precedence.Serialize()
-	precedenceLength := uint16(len(serializedPrecedence))
-	precedenceHeader := Header{
-		Type:   createPDR.Precedence.GetType(),
-		Length: precedenceLength,
-	}
-	buf.Write(precedenceHeader.Serialize())
-	buf.Write(serializedPrecedence)
-
-	// Octets m+1 to o: PDI
-	serializedPDI := createPDR.PDI.Serialize()
-	pdiLength := uint16(len(serializedPDI))
-	pdiHeader := Header{
-		Type:   createPDR.PDI.GetType(),
-		Length: pdiLength,
-	}
-	buf.Write(pdiHeader.Serialize())
-	buf.Write(serializedPDI)
 
 	return buf.Bytes()
 
+}
+
+func (createPDR CreatePDR) GetIEs() []InformationElement {
+	return []InformationElement{createPDR.PDRID, createPDR.Precedence, createPDR.PDI}
 }
 
 func (createPDR CreatePDR) GetType() IEType {
