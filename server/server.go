@@ -1,3 +1,4 @@
+// Package server contains the server layer of the PFCP protocol.
 package server
 
 import (
@@ -9,27 +10,27 @@ import (
 	"github.com/dot-5g/pfcp/network"
 )
 
-type HandleHeartbeatRequest func(client *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatRequest)
-type HandleHeartbeatResponse func(client *client.Pfcp, sequenceNumber uint32, msg messages.HeartbeatResponse)
-type HandlePFCPAssociationSetupRequest func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest)
-type HandlePFCPAssociationSetupResponse func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse)
-type HandlePFCPAssociationUpdateRequest func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationUpdateRequest)
-type HandlePFCPAssociationUpdateResponse func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse)
-type HandlePFCPAssociationReleaseRequest func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationReleaseRequest)
-type HandlePFCPAssociationReleaseResponse func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse)
-type HandlePFCPNodeReportRequest func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPNodeReportRequest)
-type HandlePFCPNodeReportResponse func(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPNodeReportResponse)
-type HandlePFCPSessionEstablishmentRequest func(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest)
-type HandlePFCPSessionEstablishmentResponse func(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse)
-type HandlePFCPSessionDeletionRequest func(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest)
-type HandlePFCPSessionDeletionResponse func(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse)
-type HandlePFCPSessionReportRequest func(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportRequest)
-type HandlePFCPSessionReportResponse func(client *client.Pfcp, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportResponse)
+type HandleHeartbeatRequest func(client *client.PFCP, sequenceNumber uint32, msg messages.HeartbeatRequest)
+type HandleHeartbeatResponse func(client *client.PFCP, sequenceNumber uint32, msg messages.HeartbeatResponse)
+type HandlePFCPAssociationSetupRequest func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest)
+type HandlePFCPAssociationSetupResponse func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse)
+type HandlePFCPAssociationUpdateRequest func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationUpdateRequest)
+type HandlePFCPAssociationUpdateResponse func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationUpdateResponse)
+type HandlePFCPAssociationReleaseRequest func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationReleaseRequest)
+type HandlePFCPAssociationReleaseResponse func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationReleaseResponse)
+type HandlePFCPNodeReportRequest func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPNodeReportRequest)
+type HandlePFCPNodeReportResponse func(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPNodeReportResponse)
+type HandlePFCPSessionEstablishmentRequest func(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentRequest)
+type HandlePFCPSessionEstablishmentResponse func(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionEstablishmentResponse)
+type HandlePFCPSessionDeletionRequest func(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionRequest)
+type HandlePFCPSessionDeletionResponse func(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionDeletionResponse)
+type HandlePFCPSessionReportRequest func(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportRequest)
+type HandlePFCPSessionReportResponse func(client *client.PFCP, sequenceNumber uint32, seid uint64, msg messages.PFCPSessionReportResponse)
 
 type Server struct {
 	address   string
-	udpServer *network.UdpServer
-	clients   map[string]*client.Pfcp
+	udpServer *network.UDPServer
+	clients   map[string]*client.PFCP
 
 	heartbeatRequestHandler                 HandleHeartbeatRequest
 	heartbeatResponseHandler                HandleHeartbeatResponse
@@ -52,8 +53,8 @@ type Server struct {
 func New(address string) *Server {
 	server := &Server{
 		address:   address,
-		udpServer: network.NewUdpServer(),
-		clients:   make(map[string]*client.Pfcp),
+		udpServer: network.NewUDPServer(),
+		clients:   make(map[string]*client.PFCP),
 	}
 	return server
 }
@@ -68,15 +69,15 @@ func (server *Server) Close() {
 	server.udpServer.Close()
 }
 
-func (server *Server) GetClients() []*client.Pfcp {
-	clients := make([]*client.Pfcp, 0)
+func (server *Server) GetClients() []*client.PFCP {
+	clients := make([]*client.PFCP, 0)
 	for _, cl := range server.clients {
 		clients = append(clients, cl)
 	}
 	return clients
 }
 
-func (server *Server) GetClientForAddress(addr net.Addr) *client.Pfcp {
+func (server *Server) GetClientForAddress(addr net.Addr) *client.PFCP {
 	addrStr := addr.String()
 	if cl, exists := server.clients[addrStr]; exists {
 		return cl
@@ -164,7 +165,6 @@ func (server *Server) PFCPSessionReportResponse(handler HandlePFCPSessionReportR
 }
 
 func (server *Server) handlePFCPMessage(address net.Addr, payload []byte) {
-
 	header, err := messages.DeserializeHeader(payload)
 	if err != nil {
 		log.Fatalf("Error deserializing header: %v", err)

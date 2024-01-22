@@ -29,7 +29,7 @@ var (
 	pfcpAssociationSetupResponseReceivedCause             ie.Cause
 )
 
-func HandlePFCPAssociationSetupRequest(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest) {
+func HandlePFCPAssociationSetupRequest(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationSetupRequest) {
 	pfcpAssociationSetupRequestMu.Lock()
 	defer pfcpAssociationSetupRequestMu.Unlock()
 	pfcpAssociationSetupRequesthandlerCalled = true
@@ -39,7 +39,7 @@ func HandlePFCPAssociationSetupRequest(client *client.Pfcp, sequenceNumber uint3
 	pfcpAssociationSetupRequestReceivedUPFunctionFeatures = msg.UPFunctionFeatures
 }
 
-func HandlePFCPAssociationSetupResponse(client *client.Pfcp, sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse) {
+func HandlePFCPAssociationSetupResponse(client *client.PFCP, sequenceNumber uint32, msg messages.PFCPAssociationSetupResponse) {
 	pfcpAssociationSetupResponseMu.Lock()
 	defer pfcpAssociationSetupResponseMu.Unlock()
 	pfcpAssociationSetupResponsehandlerCalled = true
@@ -227,5 +227,4 @@ func PFCPAssociationSetupResponse(t *testing.T) {
 		t.Errorf("PFCP Association Setup Response handler was called with wrong cause value.\n- Sent cause value: %v\n- Received cause value %v\n", cause.Value, pfcpAssociationSetupResponseReceivedCause.Value)
 	}
 	pfcpAssociationSetupResponseMu.Unlock()
-
 }

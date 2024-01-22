@@ -55,5 +55,4 @@ func TestGivenSerializedWhenDeserializeReportTypeThenFieldsSetCorrectly(t *testi
 	if deserializedReportType.Reports[1] != ie.SESR {
 		t.Errorf("Expected report %d, got %d", ie.SESR, deserializedReportType.Reports[1])
 	}
-
 }

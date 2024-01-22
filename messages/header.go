@@ -19,16 +19,13 @@ type Header struct {
 
 func NewNodeHeader(messageType MessageType, sequenceNumber uint32) Header {
 	var version byte = 1
-	var fo bool = false
-	var mp bool = false
-	var s bool = false
 	var messageLength uint16 = 0 // To be set later
 
 	return Header{
 		Version:        version,
-		FO:             fo,
-		MP:             mp,
-		S:              s,
+		FO:             false,
+		MP:             false,
+		S:              false,
 		MessageType:    messageType,
 		MessageLength:  messageLength,
 		SequenceNumber: sequenceNumber,
@@ -37,16 +34,13 @@ func NewNodeHeader(messageType MessageType, sequenceNumber uint32) Header {
 
 func NewSessionHeader(messageType MessageType, seid uint64, sequenceNumber uint32) Header {
 	var version byte = 1
-	var fo bool = false
-	var mp bool = false
-	var s bool = true
 	var messageLength uint16 = 0 // To be set later
 
 	return Header{
 		Version:        version,
-		FO:             fo,
-		MP:             mp,
-		S:              s,
+		FO:             false,
+		MP:             false,
+		S:              true,
 		MessageType:    messageType,
 		MessageLength:  messageLength,
 		SEID:           seid,

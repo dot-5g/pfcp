@@ -192,7 +192,6 @@ func DeserializeUEIPAddress(ieValue []byte) (UEIPAddress, error) {
 			return UEIPAddress{}, fmt.Errorf("invalid length for IPv6 prefix length")
 		}
 		ueIPAddress.IPv6PrefixLength = ieValue[index]
-		index += 1
 	}
 
 	return ueIPAddress, nil

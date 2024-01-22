@@ -1,3 +1,4 @@
+// Package network contains the network layer of the PFCP protocol.
 package network
 
 import (
@@ -5,27 +6,26 @@ import (
 	"net"
 )
 
-type Udp struct {
+type UDP struct {
 	address *net.UDPAddr
 }
 
-type UdpSender interface {
+type UDPSender interface {
 	Send(message []byte) error
 }
 
-func NewUdp(address string) (*Udp, error) {
+func NewUDP(address string) (*UDP, error) {
 	udpAddress, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
 		log.Printf("Error resolving UDP address: %s\n", err)
 		return nil, err
 	}
-	return &Udp{
+	return &UDP{
 		address: udpAddress,
 	}, nil
 }
 
-func (udp *Udp) Send(message []byte) error {
-
+func (udp *UDP) Send(message []byte) error {
 	conn, err := net.DialUDP("udp", nil, udp.address)
 
 	if err != nil {

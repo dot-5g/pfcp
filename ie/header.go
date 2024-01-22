@@ -19,7 +19,7 @@ func (ieHeader *Header) Serialize() []byte {
 	binary.Write(buf, binary.BigEndian, uint16(ieHeader.Type))
 
 	// Octets 3 to 4: Length
-	binary.Write(buf, binary.BigEndian, uint16(ieHeader.Length))
+	binary.Write(buf, binary.BigEndian, ieHeader.Length)
 
 	return buf.Bytes()
 }

@@ -62,7 +62,6 @@ func DeserializePFCPSessionEstablishmentRequest(data []byte) (PFCPSessionEstabli
 			createFAR = createFARIE
 			continue
 		}
-
 	}
 
 	return PFCPSessionEstablishmentRequest{

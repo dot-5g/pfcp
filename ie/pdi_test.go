@@ -71,7 +71,6 @@ func TestGivenCorrectPDIWhenNewPDIThenFieldsSetCorrectly(t *testing.T) {
 	if pdi.UEIPAddress.IPv6PrefixLength != prefixLength {
 		t.Errorf("Expected UEIPAddress IPv6PrefixLength %d, got %d", prefixLength, pdi.UEIPAddress.IPv6PrefixLength)
 	}
-
 }
 
 func TestGivenPDISerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
@@ -147,5 +146,4 @@ func TestGivenPDISerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {
 	if deserializedPDI.UEIPAddress.IPv6PrefixLength != prefixLength {
 		t.Errorf("Expected UEIPAddress IPv6PrefixLength %d, got %d", prefixLength, deserializedPDI.UEIPAddress.IPv6PrefixLength)
 	}
-
 }

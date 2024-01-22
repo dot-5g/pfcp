@@ -1,3 +1,4 @@
+// Package messages contains the PFCP messages.
 package messages
 
 import (

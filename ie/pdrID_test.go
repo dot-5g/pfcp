@@ -18,7 +18,6 @@ func TestGivenCorrectRuleIDWhenNewPdrIDThenFieldsSetCorrectly(t *testing.T) {
 	if pdrID.RuleID != ruleID {
 		t.Errorf("Expected RuleID %d, got %d", ruleID, pdrID.RuleID)
 	}
-
 }
 
 func TestGivenPDRIDSerializedWhenDeserializeThenFieldsSetCorrectly(t *testing.T) {

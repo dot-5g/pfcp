@@ -48,7 +48,6 @@ func (nrt NodeReportType) GetType() IEType {
 }
 
 func DeserializeNodeReportType(ieValue []byte) (NodeReportType, error) {
-
 	if len(ieValue) < 1 {
 		return NodeReportType{}, fmt.Errorf("invalid length for NodeReportType: got %d bytes, expected at least 1", len(ieValue))
 	}

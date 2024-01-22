@@ -77,7 +77,6 @@ func (n NodeID) GetType() IEType {
 }
 
 func DeserializeNodeID(ieValue []byte) (NodeID, error) {
-
 	if len(ieValue) < 1 {
 		return NodeID{}, fmt.Errorf("invalid length for NodeID: got %d bytes, expected at least 1", len(ieValue))
 	}
