@@ -33,6 +33,21 @@ type InformationElement interface {
 	GetType() IEType
 }
 
+func Serialize(ie InformationElement) []byte {
+	var payload []byte
+
+	serializedElement := ie.Serialize()
+	elementLength := uint16(len(serializedElement))
+	header := Header{
+		Type:   ie.GetType(),
+		Length: elementLength,
+	}
+	payload = append(payload, header.Serialize()...)
+	payload = append(payload, serializedElement...)
+
+	return payload
+}
+
 func DeserializeInformationElements(b []byte) ([]InformationElement, error) {
 	var ies []InformationElement
 	var err error
